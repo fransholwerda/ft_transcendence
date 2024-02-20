@@ -3,6 +3,7 @@ import './App.css'
 import io, { Socket } from "socket.io-client"
 import MessageInput from './chat/MessageInput'
 import Messages from './chat/Messages'
+import LoginForm from './Login/LoginForm'
 
 function App() {
   const [socket, setSocket] = useState<Socket>()
@@ -28,8 +29,9 @@ function App() {
   return (
     <>
       {" "}
-      <MessageInput send={send}/>
-      <Messages messages={messages}/>
+      {/* <MessageInput send={send}/>
+      <Messages messages={messages}/> */}
+      <LoginForm/>
     </>
   )
 }
