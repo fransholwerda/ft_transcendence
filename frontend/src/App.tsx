@@ -29,9 +29,9 @@ function App() {
   return (
     <>
       {" "}
-      {/* <MessageInput send={send}/>
-      <Messages messages={messages}/> */}
-      <LoginForm/>
+      <MessageInput send={send}/>
+      <Messages messages={messages}/>
+      {/* <LoginForm/> */}
     </>
   )
 }
