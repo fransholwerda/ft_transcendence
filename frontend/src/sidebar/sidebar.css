@@ -1,0 +1,31 @@
+.sidebar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 300px;
+	height: 100vh;
+	background-color: #f0f0f0;
+	border-right: 1px solid #ccc;
+	padding: 10px;
+	overflow-y: auto; /* Enable vertical scrolling */
+	z-index: 1000; /* Ensure the sidebar is on top of other content */
+  }
+  
+  .sidebar h2 {
+	margin-top: 0;
+  }
+  
+  .sidebar ul {
+	list-style-type: none;
+	padding: 0;
+  }
+  
+  .sidebar ul li {
+	margin-bottom: 10px;
+  }
+  
+  .chat-container {
+	margin-left: 300px; /* Adjust margin to account for sidebar width */
+	padding: 20px;
+  }
+  
