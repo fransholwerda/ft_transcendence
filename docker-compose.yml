@@ -2,25 +2,28 @@ version: '3.8'
 
 services:
 
- database:
- container_name: database
- build: ./database
- restart: always
- env_file:
-  - ./database/data.env
- ports:
-  - 5432:5432
- volumes:
-  - postgres_data:/var/lib/postgresql/data/
- networks:
-  - backend
+#  database:
+#  container_name: database
+#  build: ./database
+#  restart: always
+#  env_file:
+#   - ./database/data.env
+#  ports:
+#   - 5432:5432
+#  volumes:
+#   - postgres_data:/var/lib/postgresql/data/
+#  networks:
+#   - backend
 
  backend:
   container_name: backend
-  depends_on:
-   - database
-  build: ./backend
+  # depends_on:
+  #  - database
+  build:
+    dockerfile: Dockerfile
+    context: ./backend
   env_file: ./backend/back.env
+  command: npm run start:dev
   restart: unless-stopped
   ports:
    - 3000:3000
@@ -34,8 +37,10 @@ services:
   depends_on:
    - backend
   env_file: ./frontend/front.env
-  restart: unless-stopped
-  build: ./frontend
+  #restart: unless-stopped
+  build: 
+   dockerfile: Dockerfile
+   context: ./frontend
   ports:
    - 8080:8080
   volumes:
