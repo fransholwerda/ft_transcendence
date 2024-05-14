@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode,node,dotenv,xcode,macos
-# Edit at https://www.toptal.com/developers/gitignore?templates=linux,visualstudiocode,node,dotenv,xcode,macos
+# Created by https://www.toptal.com/developers/gitignore/api/node,linux,macos,xcode,dotenv,visualstudiocode,svelte
+# Edit at https://www.toptal.com/developers/gitignore?templates=node,linux,macos,xcode,dotenv,visualstudiocode,svelte
 
 ### dotenv ###
 .env
@@ -191,6 +191,13 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+### Svelte ###
+# gitignore template for the SvelteKit, frontend web component framework
+# website: https://kit.svelte.dev/
+
+.svelte-kit/
+package
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -227,4 +234,4 @@ xcuserdata/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 
-# End of https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode,node,dotenv,xcode,macos
+# End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,xcode,dotenv,visualstudiocode,svelte
