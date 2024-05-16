@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import io, { Socket } from "socket.io-client"
 import MessageInput from './chat/MessageInput'
-import Messages from './chat/Messages'
-import LoginForm from './Login/LoginForm'
+// import Messages from './chat/Messages'
+// import LoginForm from './Login/LoginForm'
 import Sidebar from './sidebar/sidebar'
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
     socket?.emit("message", value)
   }
   useEffect(() => {
-    const newSocket=io("http://localhost:8001")
+    const newSocket=io("http://localhost:8005")
     setSocket(newSocket)
   },[setSocket])
 

@@ -1,5 +1,7 @@
 FROM node:latest
 
+WORKDIR /frontend
+
 COPY package*.json ./
 
 RUN npm install
@@ -10,8 +12,12 @@ EXPOSE 8080
 
 RUN npm run build
 
-FROM nginx:stable-alpine
+#RUN chmod +x ./entrypoint.sh
 
-COPY --from=build /app/build /usr/share/nginx/html
+#ENTRYPOINT [ "/usr/local/bin/npm", "run", "dev" ]
 
-CMD [ "nginx", "-g", "daemon off;"]
+#FROM nginx
+
+# COPY --from=build /app/build /usr/share/nginx/html
+
+#CMD [ "nginx", "-g", "daemon off;"]
