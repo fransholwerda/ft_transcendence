@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
 #  database:
@@ -23,7 +21,7 @@ services:
     dockerfile: Dockerfile
     context: ./backend
   env_file: ./backend/back.env
-  command: npm run start:dev
+  command: npm start dev
   restart: unless-stopped
   ports:
    - 3000:3000
@@ -37,6 +35,7 @@ services:
   depends_on:
    - backend
   env_file: ./frontend/front.env
+  command: npm run dev
   #restart: unless-stopped
   build: 
    dockerfile: Dockerfile
