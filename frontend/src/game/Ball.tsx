@@ -17,36 +17,26 @@ export class Ball {
 		this.speedX = speedX;
 		this.speedY = speedY;
 	}
-
 	draw(context: CanvasRenderingContext2D) {
 		context.fillStyle = 'white';
 		context.fillRect(this.x, this.y, this.width, this.height);
 	}
-
 	update(canvas: HTMLCanvasElement, lPad: Paddle, rPad: Paddle, score: Score) {
 		this.x += this.speedX;
 		this.y += this.speedY;
-
 		if (this.y < 0 || this.y + this.height > canvas.height) {
 			this.speedY = -this.speedY;
 		}
-
-		if (
-			this.x < lPad.x + lPad.width &&
+		if (this.x < lPad.x + lPad.width &&
 			this.y + this.height > lPad.y &&
-			this.y < lPad.y + lPad.height
-		) {
+			this.y < lPad.y + lPad.height) {
 			this.speedX = -this.speedX;
 		}
-
-		if (
-			this.x + this.width > rPad.x &&
+		if (this.x + this.width > rPad.x &&
 			this.y + this.height > rPad.y &&
-			this.y < rPad.y + rPad.height
-		) {
+			this.y < rPad.y + rPad.height) {
 			this.speedX = -this.speedX;
 		}
-
 		if (this.x < 0) {
 			score.right += 1;
 			this.reset(canvas);
@@ -55,7 +45,6 @@ export class Ball {
 			this.reset(canvas);
 		}
 	}
-
 	reset(canvas: HTMLCanvasElement) {
 		this.x = canvas.width / 2;
 		this.y = canvas.height / 2;
