@@ -50,7 +50,9 @@ export class Ball {
 				// if (this.speedY < 0) return; // If ball is moving upwards, don't reverse direction
 				this.speedY = Math.abs(this.speedY); // Bounce the ball downwards
 			}
+			return true;
 		}
+		return false;
 	}
 	bounce_back(lPad: Paddle, rPad: Paddle) {
 		this.bounce_helper(lPad);
