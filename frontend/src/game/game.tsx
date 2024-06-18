@@ -16,12 +16,12 @@ const Game: React.FC = () => {
 		if (!context) {
 			return;
 		}
-		const paddleWidth = 15;
-		const paddleHeight = 100;
-		const paddleSpeed = 5;
+		const padW = 15;
+		const padH = 100;
+		const padS = 5;
 
-		const leftPaddle = new Paddle(50, canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed);
-		const rightPaddle = new Paddle(canvas.width - 50 - paddleWidth, canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed);
+		const leftPaddle = new Paddle(50, canvas.height / 2 - padH / 2, padW, padH, padS);
+		const rightPaddle = new Paddle(canvas.width - 50 - padW, canvas.height / 2 - padH / 2, padW, padH, padS);
 		const ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 4, 4);
 		const score = new Score();
 
