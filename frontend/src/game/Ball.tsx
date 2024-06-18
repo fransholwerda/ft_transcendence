@@ -21,22 +21,7 @@ export class Ball {
 		context.fillStyle = 'white';
 		context.fillRect(this.x, this.y, this.width, this.height);
 	}
-	update(canvas: HTMLCanvasElement, lPad: Paddle, rPad: Paddle, score: Score) {
-		this.x += this.speedX;
-		this.y += this.speedY;
-		if (this.y < 0 || this.y + this.height > canvas.height) {
-			this.speedY = -this.speedY;
-		}
-		if (this.x < lPad.x + lPad.width &&
-			this.y + this.height > lPad.y &&
-			this.y < lPad.y + lPad.height) {
-			this.speedX = -this.speedX;
-		}
-		if (this.x + this.width > rPad.x &&
-			this.y + this.height > rPad.y &&
-			this.y < rPad.y + rPad.height) {
-			this.speedX = -this.speedX;
-		}
+	score(canvas: HTMLCanvasElement, score: Score) {
 		if (this.x < 0) {
 			score.right += 1;
 			this.reset(canvas);
@@ -44,6 +29,32 @@ export class Ball {
 			score.left += 1;
 			this.reset(canvas);
 		}
+	}
+	check_collision(r1x: number, r1y: number, r1w: number, r1h: number, r2x: number, r2y: number, r2w: number, r2h: number) {
+		if (r1x < r2x + r2w &&
+			r1x + r1w > r2x &&
+			r1y < r2y + r2h &&
+			r1y + r1h > r2y) {
+			return true;
+		}
+		return false;
+	}
+	bounce_back(lPad: Paddle, rPad: Paddle) {
+		if (this.check_collision(this.x, this.y, this.width, this.height, lPad.x, lPad.y, lPad.width, lPad.height)) {
+			this.speedX = -this.speedX;
+		}
+		else if (this.check_collision(this.x, this.y, this.width, this.height, rPad.x, rPad.y, rPad.width, rPad.height)) {
+			this.speedX = -this.speedX;
+		}
+	}
+	update(canvas: HTMLCanvasElement, lPad: Paddle, rPad: Paddle, score: Score) {
+		this.x += this.speedX;
+		this.y += this.speedY;
+		if (this.y < 0 || this.y + this.height > canvas.height) {
+			this.speedY = -this.speedY;
+		}
+		this.bounce_back(lPad, rPad);
+		this.score(canvas, score);
 	}
 	reset(canvas: HTMLCanvasElement) {
 		this.x = canvas.width / 2;
