@@ -39,14 +39,19 @@ export class Ball {
 		}
 		return false;
 	}
-	bounce_back(lPad: Paddle, rPad: Paddle) {
+	// bounce_helper(p: Paddle) {
+	// 	let direction = this.speedX > 0 ? -1 : 1;
 
+	// }
+	bounce_back(lPad: Paddle, rPad: Paddle) {
 		if (this.check_collision(this.x, this.y, this.width, this.height, lPad.x, lPad.y, lPad.width, lPad.height)) {
 			this.speedX = -this.speedX;
 			// Check if the ball is hitting the top half or bottom half of the left paddle
 			if (this.y + this.height / 2 < lPad.y + lPad.height / 2) {
+				// if (this.speedY > 0) return; // If ball is moving downwards, don't reverse direction
 				this.speedY = -Math.abs(this.speedY); // Bounce the ball upwards
 			} else {
+				// if (this.speedY < 0) return; // If ball is moving upwards, don't reverse direction
 				this.speedY = Math.abs(this.speedY); // Bounce the ball downwards
 			}
 		}
@@ -54,8 +59,10 @@ export class Ball {
 			this.speedX = -this.speedX;
 			// Check if the ball is hitting the top half or bottom half of the right paddle
 			if (this.y + this.height / 2 < rPad.y + rPad.height / 2) {
+				// if (this.speedY > 0) return; // If ball is moving downwards, don't reverse direction
 				this.speedY = -Math.abs(this.speedY); // Bounce the ball upwards
 			} else {
+				// if (this.speedY < 0) return; // If ball is moving upwards, don't reverse direction
 				this.speedY = Math.abs(this.speedY); // Bounce the ball downwards
 			}
 		}

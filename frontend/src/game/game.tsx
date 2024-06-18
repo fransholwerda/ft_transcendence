@@ -3,33 +3,49 @@ import React, { useEffect, useRef } from 'react';
 import { Paddle } from './Paddle';
 import { Ball } from './Ball';
 import { Score } from './Score';
+import { PongC } from '../../shared/constants'
 
 const Game: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	const gameManager = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
-		const padW = 15;
-		const padH = 100;
-		const padS = 5;
+		let cW = canvas.width;
+		let cH = canvas.height;
 
-		const leftPaddle = new Paddle(50, canvas.height / 2 - padH / 2, padW, padH, padS);
-		const rightPaddle = new Paddle(canvas.width - 50 - padW, canvas.height / 2 - padH / 2, padW, padH, padS);
-		const ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 10, 5, 5);
+		const lPad = new Paddle(50,
+			cH / 2 - PongC.padH / 2,
+			PongC.padW,
+			PongC.padH,
+			PongC.padS);
+
+		const rPad = new Paddle(cW - 50 - PongC.padW,
+			cH / 2 - PongC.padH / 2,
+			PongC.padW,
+			PongC.padH,
+			PongC.padS);
+
+		const ball = new Ball(cW / 2,
+			cH / 2,
+			PongC.ballW,
+			PongC.ballH,
+			PongC.ballSpeedX,
+			PongC.ballSpeedY);
+
 		const score = new Score();
 
 		const handleKeyDown = (e: KeyboardEvent) => {
 			switch (e.key) {
 				case 'w':
-					leftPaddle.moveUp();
+					lPad.moveUp();
 					break;
 				case 's':
-					leftPaddle.moveDown();
+					lPad.moveDown();
 					break;
 				case 'ArrowUp':
-					rightPaddle.moveUp();
+					rPad.moveUp();
 					break;
 				case 'ArrowDown':
-					rightPaddle.moveDown();
+					rPad.moveDown();
 					break;
 			}
 		};
@@ -38,11 +54,11 @@ const Game: React.FC = () => {
 			switch (e.key) {
 				case 'w':
 				case 's':
-					leftPaddle.stop();
+					lPad.stop();
 					break;
 				case 'ArrowUp':
 				case 'ArrowDown':
-					rightPaddle.stop();
+					rPad.stop();
 					break;
 			}
 		};
@@ -54,11 +70,11 @@ const Game: React.FC = () => {
 			context.fillStyle = 'black';
 			context.fillRect(0, 0, canvas.width, canvas.height);
 
-			leftPaddle.update(canvas);
-			rightPaddle.update(canvas);
-			leftPaddle.draw(context);
-			rightPaddle.draw(context);
-			ball.update(canvas, leftPaddle, rightPaddle, score);
+			lPad.update(canvas);
+			rPad.update(canvas);
+			lPad.draw(context);
+			rPad.draw(context);
+			ball.update(canvas, lPad, rPad, score);
 			ball.draw(context);
 			score.draw(context, canvas);
 
