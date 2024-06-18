@@ -24,8 +24,12 @@ export class Paddle {
 	}
 	update(canvas: HTMLCanvasElement) {
 		this.y += this.dy;
-		if (this.y < 0) this.y = 0;
-		if (this.y + this.height > canvas.height) this.y = canvas.height - this.height;
+		if (this.y < 0) {
+			this.y = 0;
+		}
+		if (this.y + this.height > canvas.height) {
+			this.y = canvas.height - this.height;
+		}
 	}
 	draw(context: CanvasRenderingContext2D) {
 		context.fillStyle = 'white';

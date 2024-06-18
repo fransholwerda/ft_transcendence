@@ -9,11 +9,13 @@ const Game: React.FC = () => {
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
-		if (!canvas) return;
-
+		if (!canvas) {
+			return;
+		}
 		const context = canvas.getContext('2d');
-		if (!context) return;
-
+		if (!context) {
+			return;
+		}
 		const paddleWidth = 15;
 		const paddleHeight = 100;
 		const paddleSpeed = 5;

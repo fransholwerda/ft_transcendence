@@ -23,7 +23,7 @@ export class Ball {
 		context.fill();
 	}
 
-	update(canvas: HTMLCanvasElement, leftPaddle: Paddle, rightPaddle: Paddle, score: Score) {
+	update(canvas: HTMLCanvasElement, lPad: Paddle, rPad: Paddle, score: Score) {
 		this.x += this.speedX;
 		this.y += this.speedY;
 
@@ -32,17 +32,17 @@ export class Ball {
 		}
 
 		if (
-			this.x - this.radius < leftPaddle.x + leftPaddle.width &&
-			this.y > leftPaddle.y &&
-			this.y < leftPaddle.y + leftPaddle.height
+			this.x - this.radius < lPad.x + lPad.width &&
+			this.y > lPad.y &&
+			this.y < lPad.y + lPad.height
 		) {
 			this.speedX = -this.speedX;
 		}
 
 		if (
-			this.x + this.radius > rightPaddle.x &&
-			this.y > rightPaddle.y &&
-			this.y < rightPaddle.y + rightPaddle.height
+			this.x + this.radius > rPad.x &&
+			this.y > rPad.y &&
+			this.y < rPad.y + rPad.height
 		) {
 			this.speedX = -this.speedX;
 		}
