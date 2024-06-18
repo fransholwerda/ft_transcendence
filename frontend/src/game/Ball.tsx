@@ -9,6 +9,7 @@ export class Ball {
 	speedX: number;
 	speedY: number;
 
+	lastBounce: string = "left";
 	constructor(x: number, y: number, width: number, height: number, speedX: number, speedY: number) {
 		this.x = x;
 		this.y = y;
@@ -24,9 +25,11 @@ export class Ball {
 	score(canvas: HTMLCanvasElement, score: Score) {
 		if (this.x < 0) {
 			score.right += 1;
+			this.lastBounce = "left";
 			this.reset(canvas);
 		} else if (this.x + this.width > canvas.width) {
 			score.left += 1;
+			this.lastBounce = "right";
 			this.reset(canvas);
 		}
 	}
@@ -55,8 +58,13 @@ export class Ball {
 		return false;
 	}
 	bounce_back(lPad: Paddle, rPad: Paddle) {
-		this.bounce_helper(lPad);
-		this.bounce_helper(rPad);
+		// keep track of the last paddle the ball hit
+		if (this.lastBounce === "right" && this.bounce_helper(lPad)) {
+			this.lastBounce = "left";
+		}
+		else if (this.lastBounce === "left" && this.bounce_helper(rPad)) {
+			this.lastBounce = "right";
+		}
 	}
 	update(canvas: HTMLCanvasElement, lPad: Paddle, rPad: Paddle, score: Score) {
 		this.x += this.speedX;
