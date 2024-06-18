@@ -1,4 +1,3 @@
-// Ball.tsx
 import { Paddle } from './Paddle';
 import { Score } from './Score';
 

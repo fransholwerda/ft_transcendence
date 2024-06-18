@@ -1,4 +1,3 @@
-// Score.tsx
 export class Score {
 	left: number;
 	right: number;

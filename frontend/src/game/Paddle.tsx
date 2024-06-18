@@ -1,4 +1,3 @@
-// Paddle.tsx
 export class Paddle {
 	x: number;
 	y: number;
