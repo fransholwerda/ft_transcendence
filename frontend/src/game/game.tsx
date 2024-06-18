@@ -7,15 +7,7 @@ import { Score } from './Score';
 const Game: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (!canvas) {
-			return;
-		}
-		const context = canvas.getContext('2d');
-		if (!context) {
-			return;
-		}
+	const initializeGame = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
 		const padW = 15;
 		const padH = 100;
 		const padS = 5;
@@ -79,6 +71,19 @@ const Game: React.FC = () => {
 			window.removeEventListener('keydown', handleKeyDown);
 			window.removeEventListener('keyup', handleKeyUp);
 		};
+	};
+
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (!canvas) {
+			return;
+		}
+		const context = canvas.getContext('2d');
+		if (!context) {
+			return;
+		}
+
+		initializeGame(canvas, context);
 	}, []);
 
 	return (
