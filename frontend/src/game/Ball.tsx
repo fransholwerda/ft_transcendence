@@ -42,9 +42,23 @@ export class Ball {
 	bounce_back(lPad: Paddle, rPad: Paddle) {
 		if (this.check_collision(this.x, this.y, this.width, this.height, lPad.x, lPad.y, lPad.width, lPad.height)) {
 			this.speedX = -this.speedX;
+			let collidePoint = (this.y + (this.height / 2)) - (lPad.y + (lPad.height / 2));
+			collidePoint = collidePoint / (lPad.height / 2);
+			const angleRad = (Math.PI / 4) * collidePoint;
+			this.speedY = this.speedY * Math.sin(angleRad);
+			if (this.speedY === 0) {
+				this.speedY = 1;
+			}
 		}
 		else if (this.check_collision(this.x, this.y, this.width, this.height, rPad.x, rPad.y, rPad.width, rPad.height)) {
 			this.speedX = -this.speedX;
+			let collidePoint = (this.y + (this.height / 2)) - (rPad.y + (rPad.height / 2));
+			collidePoint = collidePoint / (rPad.height / 2);
+			const angleRad = (Math.PI / 4) * collidePoint;
+			this.speedY = this.speedY * Math.sin(angleRad);
+			if (this.speedY === 0) {
+				this.speedY = 1;
+			}
 		}
 	}
 	update(canvas: HTMLCanvasElement, lPad: Paddle, rPad: Paddle, score: Score) {
