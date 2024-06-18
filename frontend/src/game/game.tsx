@@ -12,24 +12,28 @@ const Game: React.FC = () => {
 		let cW = canvas.width;
 		let cH = canvas.height;
 
+		let lPadSpeed = PongC.PADDLE_SPEED;
 		const lPad = new Paddle(50,
-			cH / 2 - PongC.padH / 2,
-			PongC.padW,
-			PongC.padH,
-			PongC.padS);
+			cH / 2 - PongC.PADDLE_HEIGHT / 2,
+			PongC.PADDLE_WIDTH,
+			PongC.PADDLE_HEIGHT,
+			lPadSpeed);
 
-		const rPad = new Paddle(cW - 50 - PongC.padW,
-			cH / 2 - PongC.padH / 2,
-			PongC.padW,
-			PongC.padH,
-			PongC.padS);
+		let rPadSpeed = PongC.PADDLE_SPEED;
+		const rPad = new Paddle(cW - 50 - PongC.PADDLE_WIDTH,
+			cH / 2 - PongC.PADDLE_HEIGHT / 2,
+			PongC.PADDLE_WIDTH,
+			PongC.PADDLE_HEIGHT,
+			rPadSpeed);
 
+		let ballSpeedX = PongC.BALL_SPEEDX;
+		let ballSpeedY = PongC.BALL_SPEEDY;
 		const ball = new Ball(cW / 2,
 			cH / 2,
-			PongC.ballW,
-			PongC.ballH,
-			PongC.ballSpeedX,
-			PongC.ballSpeedY);
+			PongC.BALL_WIDTH,
+			PongC.BALL_HEIGHT,
+			ballSpeedX,
+			ballSpeedY);
 
 		const score = new Score();
 
@@ -103,7 +107,7 @@ const Game: React.FC = () => {
 	}, []);
 
 	return (
-		<canvas ref={canvasRef} width={800} height={400} />
+		<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
 	);
 };
 

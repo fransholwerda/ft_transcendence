@@ -12,11 +12,17 @@ export class Constants {
 }
 
 export class PongC {
-	public static ballW = 10;
-	public static ballH = 10;
-	public static ballSpeedX = 5;
-	public static ballSpeedY = 5;
-	public static padW = 15;
-	public static padH = 100;
-	public static padS = 5;
+	public static BALL_WIDTH = 10;
+	public static BALL_HEIGHT = 10;
+	public static BALL_SPEEDX = 5;
+	public static BALL_SPEEDY = 5;
+
+	public static PADDLE_WIDTH = 15;
+	public static PADDLE_HEIGHT = 100;
+	public static PADDLE_SPEED = 5;
+
+	public static SCORE_SIZE = 50;
+
+	public static CANVAS_WIDTH = 858;
+	public static CANVAS_HEIGHT = 525;
 }
