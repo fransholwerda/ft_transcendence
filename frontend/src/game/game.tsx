@@ -22,7 +22,7 @@ const Game: React.FC = () => {
 
 		const leftPaddle = new Paddle(50, canvas.height / 2 - padH / 2, padW, padH, padS);
 		const rightPaddle = new Paddle(canvas.width - 50 - padW, canvas.height / 2 - padH / 2, padW, padH, padS);
-		const ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 4, 4);
+		const ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 10, 5, 5);
 		const score = new Score();
 
 		const handleKeyDown = (e: KeyboardEvent) => {
