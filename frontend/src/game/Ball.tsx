@@ -31,34 +31,40 @@ export class Ball {
 		}
 	}
 	check_collision(r1x: number, r1y: number, r1w: number, r1h: number, r2x: number, r2y: number, r2w: number, r2h: number) {
-		if (r1x < r2x + r2w &&
+		if (!(r1x < r2x + r2w &&
 			r1x + r1w > r2x &&
 			r1y < r2y + r2h &&
-			r1y + r1h > r2y) {
-			return true;
+			r1y + r1h > r2y)) {
+			return "no hit";
 		}
-		return false;
+		if (r1y + r1h >= r2y) {
+			return "hit on top";
+		}
+		if (r1y <= r2y + r2h) {
+			return "hit on bottom";
+		}
+		return "hit on front";
 	}
 	bounce_back(lPad: Paddle, rPad: Paddle) {
-		if (this.check_collision(this.x, this.y, this.width, this.height, lPad.x, lPad.y, lPad.width, lPad.height)) {
+		let hit = this.check_collision(this.x, this.y, this.width, this.height, lPad.x, lPad.y, lPad.width, lPad.height);
+		
+		if (hit == "hit on top" || hit == "hit on bottom") {
+			this.speedY = -this.speedY;
 			this.speedX = -this.speedX;
-			let collidePoint = (this.y + (this.height / 2)) - (lPad.y + (lPad.height / 2));
-			collidePoint = collidePoint / (lPad.height / 2);
-			const angleRad = (Math.PI / 4) * collidePoint;
-			this.speedY = this.speedY * Math.sin(angleRad);
-			if (this.speedY === 0) {
-				this.speedY = 1;
-			}
 		}
-		else if (this.check_collision(this.x, this.y, this.width, this.height, rPad.x, rPad.y, rPad.width, rPad.height)) {
+		else if (hit == "hit on front") {
 			this.speedX = -this.speedX;
-			let collidePoint = (this.y + (this.height / 2)) - (rPad.y + (rPad.height / 2));
-			collidePoint = collidePoint / (rPad.height / 2);
-			const angleRad = (Math.PI / 4) * collidePoint;
-			this.speedY = this.speedY * Math.sin(angleRad);
-			if (this.speedY === 0) {
-				this.speedY = 1;
-			}
+		}
+		else {
+			hit = this.check_collision(this.x, this.y, this.width, this.height, rPad.x, rPad.y, rPad.width, rPad.height);
+		}
+
+		if (hit == "hit on top" || hit == "hit on bottom") {
+			this.speedY = -this.speedY;
+			this.speedX = -this.speedX;
+		}
+		else if (hit == "hit on front") {
+			this.speedX = -this.speedX;
 		}
 	}
 	update(canvas: HTMLCanvasElement, lPad: Paddle, rPad: Paddle, score: Score) {
