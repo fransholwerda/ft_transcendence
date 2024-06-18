@@ -7,7 +7,7 @@ import { Score } from './Score';
 const Game: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-	const initializeGame = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
+	const gameManager = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
 		const padW = 15;
 		const padH = 100;
 		const padS = 5;
@@ -83,7 +83,7 @@ const Game: React.FC = () => {
 			return;
 		}
 
-		initializeGame(canvas, context);
+		gameManager(canvas, context);
 	}, []);
 
 	return (
