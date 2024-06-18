@@ -40,11 +40,24 @@ export class Ball {
 		return false;
 	}
 	bounce_back(lPad: Paddle, rPad: Paddle) {
+
 		if (this.check_collision(this.x, this.y, this.width, this.height, lPad.x, lPad.y, lPad.width, lPad.height)) {
 			this.speedX = -this.speedX;
+			// Check if the ball is hitting the top half or bottom half of the left paddle
+			if (this.y + this.height / 2 < lPad.y + lPad.height / 2) {
+				this.speedY = -Math.abs(this.speedY); // Bounce the ball upwards
+			} else {
+				this.speedY = Math.abs(this.speedY); // Bounce the ball downwards
+			}
 		}
 		else if (this.check_collision(this.x, this.y, this.width, this.height, rPad.x, rPad.y, rPad.width, rPad.height)) {
 			this.speedX = -this.speedX;
+			// Check if the ball is hitting the top half or bottom half of the right paddle
+			if (this.y + this.height / 2 < rPad.y + rPad.height / 2) {
+				this.speedY = -Math.abs(this.speedY); // Bounce the ball upwards
+			} else {
+				this.speedY = Math.abs(this.speedY); // Bounce the ball downwards
+			}
 		}
 	}
 	update(canvas: HTMLCanvasElement, lPad: Paddle, rPad: Paddle, score: Score) {
