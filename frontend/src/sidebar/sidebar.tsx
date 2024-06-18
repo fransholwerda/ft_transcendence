@@ -7,7 +7,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ messages }) => {
   return (
-    <div style={{ width: '300px', height: '100vh', borderRight: '1px solid #ccc', padding: '10px' }}>
+    <div>
       <h2>Chat Messages</h2>
       <ul style={{ listStyleType: 'none', padding: 0 }}>
         {messages.map((message, index) => (
