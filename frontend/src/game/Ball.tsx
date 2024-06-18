@@ -31,39 +31,19 @@ export class Ball {
 		}
 	}
 	check_collision(r1x: number, r1y: number, r1w: number, r1h: number, r2x: number, r2y: number, r2w: number, r2h: number) {
-		if (!(r1x < r2x + r2w &&
+		if (r1x < r2x + r2w &&
 			r1x + r1w > r2x &&
 			r1y < r2y + r2h &&
-			r1y + r1h > r2y)) {
-			return "no hit";
+			r1y + r1h > r2y) {
+			return true;
 		}
-		if (r1y + r1h >= r2y) {
-			return "hit on top";
-		}
-		if (r1y <= r2y + r2h) {
-			return "hit on bottom";
-		}
-		return "hit on front";
+		return false;
 	}
 	bounce_back(lPad: Paddle, rPad: Paddle) {
-		let hit = this.check_collision(this.x, this.y, this.width, this.height, lPad.x, lPad.y, lPad.width, lPad.height);
-		
-		if (hit == "hit on top" || hit == "hit on bottom") {
-			this.speedY = -this.speedY;
+		if (this.check_collision(this.x, this.y, this.width, this.height, lPad.x, lPad.y, lPad.width, lPad.height)) {
 			this.speedX = -this.speedX;
 		}
-		else if (hit == "hit on front") {
-			this.speedX = -this.speedX;
-		}
-		else {
-			hit = this.check_collision(this.x, this.y, this.width, this.height, rPad.x, rPad.y, rPad.width, rPad.height);
-		}
-
-		if (hit == "hit on top" || hit == "hit on bottom") {
-			this.speedY = -this.speedY;
-			this.speedX = -this.speedX;
-		}
-		else if (hit == "hit on front") {
+		else if (this.check_collision(this.x, this.y, this.width, this.height, rPad.x, rPad.y, rPad.width, rPad.height)) {
 			this.speedX = -this.speedX;
 		}
 	}
