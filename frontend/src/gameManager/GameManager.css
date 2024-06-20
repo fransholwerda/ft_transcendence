@@ -9,12 +9,21 @@
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
-	background-color: rgb(68, 68, 68); /* A different color to distinguish */
+	background-color: rgb(163 124 53);
 	padding: 10px;
+}
+
+.game-controls button {
+	background-color: rgb(103 109 17);
+	color: rgb(40, 39, 39);
+	border: none;
+	padding: 10px;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
 .game-content {
 	flex: 1;
 	overflow-y: auto;
-	background-color: rgb(2, 2, 58); /* Match the game area background */
+	background-color: rgb(103 109 17);
 }
