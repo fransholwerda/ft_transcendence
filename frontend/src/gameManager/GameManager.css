@@ -21,9 +21,19 @@
 	border-radius: 5px;
 	cursor: pointer;
 }
-
 .game-content {
 	flex: 1;
 	overflow-y: auto;
 	background-color: rgb(103 109 17);
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
+
+/* .game-content .game {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+} */
