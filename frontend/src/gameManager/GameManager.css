@@ -1,0 +1,20 @@
+.game-manager-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.game-controls {
+	flex: 0 0 50px; /* Adjust height as needed */
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	background-color: rgb(68, 68, 68); /* A different color to distinguish */
+	padding: 10px;
+}
+
+.game-content {
+	flex: 1;
+	overflow-y: auto;
+	background-color: rgb(2, 2, 58); /* Match the game area background */
+}
