@@ -1,4 +1,7 @@
 .game canvas {
 	width: 100%;
 	object-fit: contain;
+	min-width: 80px;
+	min-height: 50px;
+	margin: 20px;
 }
