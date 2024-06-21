@@ -90,7 +90,6 @@ const Game: React.FC = () => {
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
 			window.removeEventListener('keyup', handleKeyUp);
-			// window.removeEventListener('resize', resizeCanvas);
 		};
 	};
 
