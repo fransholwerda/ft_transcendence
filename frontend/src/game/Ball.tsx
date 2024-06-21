@@ -18,6 +18,13 @@ export class Ball {
 		this.speedX = speedX;
 		this.speedY = speedY;
 	}
+	updateDimensions(canvas: HTMLCanvasElement) {
+		this.width = canvas.width * 0.0125;
+		this.height = canvas.height * 0.02;
+		this.speedX = canvas.width * 0.00625;
+		this.speedY = canvas.height * 0.01;
+
+	}
 	draw(context: CanvasRenderingContext2D) {
 		context.fillStyle = 'white';
 		context.fillRect(this.x, this.y, this.width, this.height);
