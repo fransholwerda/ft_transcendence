@@ -1,3 +1,14 @@
+:root {
+	--game_button_background: rgb(103 109 17);
+	--game_button_color: black;
+	--game_button_border: rgb(148, 157, 24);
+	--game_button_hover: rgb(222, 235, 44);
+	--game_button_active: rgb(230, 247, 2);
+
+	--game_controls_background: rgb(163 124 53);
+	--game_content_background: rgb(103 109 17);
+}
+
 .game-manager-container {
 	display: flex;
 	flex-direction: column;
@@ -9,22 +20,33 @@
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
-	background-color: rgb(163 124 53);
+	background-color: var(--game_controls_background);
 	padding: 10px;
 }
 
 .game-controls button {
-	background-color: rgb(103 109 17);
-	color: rgb(40, 39, 39);
-	border: none;
-	padding: 10px;
-	border-radius: 5px;
-	cursor: pointer;
+	background-color: var(--game_button_background);
+	color: var(--game_button_color);
+	height: 40px;
+	font-size: 1rem;
+	font-weight: bold;
+	border: 2px solid var(--game_button_border);
+	border-radius: 100vw;
+	padding-inline: 30px;
 }
+
+.game-controls button:hover {
+	border: 2px solid var(--game_button_hover);
+}
+
+.game-controls button:active {
+	background-color: var(--game_button_active);
+}
+
 .game-content {
 	flex: 1;
 	overflow-y: auto;
-	background-color: rgb(103 109 17);
+	background-color: var(--game_content_background);
 	display: flex;
 	justify-content: center;
 	align-items: center;
