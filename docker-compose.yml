@@ -1,22 +1,27 @@
 services:
 
-#  database:
-#  container_name: database
-#  build: ./database
-#  restart: always
-#  env_file:
-#   - ./database/data.env
-#  ports:
-#   - 5432:5432
-#  volumes:
-#   - postgres_data:/var/lib/postgresql/data/
-#  networks:
-#   - backend
+ postgres:
+  container_name: postgres
+  image: postgres:latest
+  environment: #              !!!!!!!!!!!!!!CONVERT THIS TO AN ENV FILE LATER!!!!!!!!!!!!!
+    - POSTGRES_HOST=postgres
+    - POSTGRESS_PORT=5432
+    - POSTGRES_USER=postgres
+    - POSTGRESS_PASSWORD=postpass
+    - POSTGRES_DB=postgres
+  ports:
+    - 5432:5432
+  restart: always
+  user: postgres
+  volumes:
+      - ./database/data:/data/postgres
+  networks:
+    - backend
 
  backend:
   container_name: backend
-  # depends_on:
-  #  - database
+  depends_on:
+   - postgres
   build:
     dockerfile: Dockerfile
     context: ./backend
