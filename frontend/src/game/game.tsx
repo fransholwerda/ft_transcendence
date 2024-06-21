@@ -67,21 +67,6 @@ const Game: React.FC = () => {
 			}
 		};
 
-		const resizeCanvas = () => {
-			canvas.width = 800;
-			canvas.height = 500;
-	
-			// Update the objects' dimensions based on the new canvas dimensions
-			lPad.updateDimensions(canvas);
-			rPad.updateDimensions(canvas);
-			ball.updateDimensions(canvas);
-		};
-	
-		// Initial resize
-		resizeCanvas();
-	
-		// Resize the canvas and update the objects' dimensions when the window is resized
-		window.addEventListener('resize', resizeCanvas);
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('keyup', handleKeyUp);
 
@@ -105,7 +90,7 @@ const Game: React.FC = () => {
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
 			window.removeEventListener('keyup', handleKeyUp);
-			window.removeEventListener('resize', resizeCanvas);
+			// window.removeEventListener('resize', resizeCanvas);
 		};
 	};
 

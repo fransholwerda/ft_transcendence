@@ -13,11 +13,6 @@ export class Paddle {
 		this.speed = speed;
 		this.dy = 0;
 	}
-	updateDimensions(canvas: HTMLCanvasElement) {
-		this.width = canvas.width * 0.025;
-		this.height = canvas.height * 0.2;
-		this.speed = canvas.height * 0.01;
-	}
 	moveUp() {
 		this.dy = -this.speed;
 	}
