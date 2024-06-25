@@ -109,20 +109,19 @@ const Game: React.FC<{ start: boolean, onGameEnd: () => void }> = ({ start, onGa
     };
 
     useEffect(() => {
-        if (!start || gameInProgress) {
-            return;
-        }
-        const canvas = canvasRef.current;
-        if (!canvas) {
-            return;
-        }
-        const context = canvas.getContext('2d');
-        if (!context) {
-            return;
-        }
-        setGameInProgress(true); // Mark the game as in progress
+        if (start && !gameInProgress) {
+            const canvas = canvasRef.current;
+            if (!canvas) {
+                return;
+            }
+            const context = canvas.getContext('2d');
+            if (!context) {
+                return;
+            }
+            setGameInProgress(true); // Mark the game as in progress
 
-        gameManager(canvas, context);
+            gameManager(canvas, context);
+        }
     }, [start, gameInProgress]);
 
     return (

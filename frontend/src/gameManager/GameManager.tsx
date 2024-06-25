@@ -8,7 +8,7 @@ const GameManager: React.FC = () => {
 
     const handleStartGame = () => {
         if (!isGameInProgress) {
-            setStartGame(prev => !prev); // Toggle the state to restart the game
+            setStartGame(true); // Start or restart the game
             setIsGameInProgress(true); // Mark the game as in progress
         }
     };
@@ -16,13 +16,14 @@ const GameManager: React.FC = () => {
     // Function to be called when the game ends
     const handleGameEnd = () => {
         setIsGameInProgress(false);
+        setStartGame(false); // Reset startGame to allow for restart
     };
 
     return (
         <div className="game-manager-container">
             <div className="game-controls">
                 <button>Look for Game</button>
-                <button onClick={handleStartGame}>Start Game</button>
+                <button onClick={handleStartGame}>(Re)Start Game</button>
                 <button>Leave Game</button>
             </div>
             <div className="game-content">
@@ -30,6 +31,6 @@ const GameManager: React.FC = () => {
             </div>
         </div>
     );
-};
+}
 
 export default GameManager;
