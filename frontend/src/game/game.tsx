@@ -7,7 +7,7 @@ import { PongC } from '../../shared/constants'
 
 const Game: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-
+	const SCORE_LIMIT = 10;
 	const gameManager = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
 		let cW = canvas.width;
 		let cH = canvas.height;
@@ -71,6 +71,16 @@ const Game: React.FC = () => {
 		window.addEventListener('keyup', handleKeyUp);
 
 		const gameLoop = () => {
+			if (score.left >= SCORE_LIMIT || score.right >= SCORE_LIMIT) {
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				context.font = '30px Arial';
+				context.fillText(
+					`Game Over. ${(score.left >= SCORE_LIMIT) ? 'Left' : 'Right'} Player Wins!`,
+					canvas.width / 4,
+					canvas.height / 2,
+				);
+				return; // Stop the game loop
+			}
 			context.fillStyle = 'black';
 			context.fillRect(0, 0, canvas.width, canvas.height);
 
