@@ -6,127 +6,127 @@ import { Score } from './Score';
 import { PongC } from '../../shared/constants';
 
 const Game: React.FC<{ start: boolean, onGameEnd: () => void }> = ({ start, onGameEnd }) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const SCORE_LIMIT = 10;
-    const [gameInProgress, setGameInProgress] = useState(false);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const SCORE_LIMIT = 10;
+	const [gameInProgress, setGameInProgress] = useState(false);
 
-    const gameManager = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
-        let cW = canvas.width;
-        let cH = canvas.height;
+	const gameManager = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
+		let cW = canvas.width;
+		let cH = canvas.height;
 
-        let lPadSpeed = PongC.PADDLE_SPEED;
-        const lPad = new Paddle(50,
-            cH / 2 - PongC.PADDLE_HEIGHT / 2,
-            PongC.PADDLE_WIDTH,
-            PongC.PADDLE_HEIGHT,
-            lPadSpeed);
+		let lPadSpeed = PongC.PADDLE_SPEED;
+		const lPad = new Paddle(50,
+			cH / 2 - PongC.PADDLE_HEIGHT / 2,
+			PongC.PADDLE_WIDTH,
+			PongC.PADDLE_HEIGHT,
+			lPadSpeed);
 
-        let rPadSpeed = PongC.PADDLE_SPEED;
-        const rPad = new Paddle(cW - 50 - PongC.PADDLE_WIDTH,
-            cH / 2 - PongC.PADDLE_HEIGHT / 2,
-            PongC.PADDLE_WIDTH,
-            PongC.PADDLE_HEIGHT,
-            rPadSpeed);
+		let rPadSpeed = PongC.PADDLE_SPEED;
+		const rPad = new Paddle(cW - 50 - PongC.PADDLE_WIDTH,
+			cH / 2 - PongC.PADDLE_HEIGHT / 2,
+			PongC.PADDLE_WIDTH,
+			PongC.PADDLE_HEIGHT,
+			rPadSpeed);
 
-        let ballSpeedX = PongC.BALL_SPEEDX;
-        let ballSpeedY = PongC.BALL_SPEEDY;
-        const ball = new Ball(cW / 2,
-            cH / 2,
-            PongC.BALL_WIDTH,
-            PongC.BALL_HEIGHT,
-            ballSpeedX,
-            ballSpeedY);
+		let ballSpeedX = PongC.BALL_SPEEDX;
+		let ballSpeedY = PongC.BALL_SPEEDY;
+		const ball = new Ball(cW / 2,
+			cH / 2,
+			PongC.BALL_WIDTH,
+			PongC.BALL_HEIGHT,
+			ballSpeedX,
+			ballSpeedY);
 
-        const score = new Score();
+		const score = new Score();
 
-        const handleKeyDown = (e: KeyboardEvent) => {
-            switch (e.key) {
-                case 'w':
-                    lPad.moveUp();
-                    break;
-                case 's':
-                    lPad.moveDown();
-                    break;
-                case 'ArrowUp':
-                    rPad.moveUp();
-                    break;
-                case 'ArrowDown':
-                    rPad.moveDown();
-                    break;
-            }
-        };
+		const handleKeyDown = (e: KeyboardEvent) => {
+			switch (e.key) {
+				case 'w':
+					lPad.moveUp();
+					break;
+				case 's':
+					lPad.moveDown();
+					break;
+				case 'ArrowUp':
+					rPad.moveUp();
+					break;
+				case 'ArrowDown':
+					rPad.moveDown();
+					break;
+			}
+		};
 
-        const handleKeyUp = (e: KeyboardEvent) => {
-            switch (e.key) {
-                case 'w':
-                case 's':
-                    lPad.stop();
-                    break;
-                case 'ArrowUp':
-                case 'ArrowDown':
-                    rPad.stop();
-                    break;
-            }
-        };
+		const handleKeyUp = (e: KeyboardEvent) => {
+			switch (e.key) {
+				case 'w':
+				case 's':
+					lPad.stop();
+					break;
+				case 'ArrowUp':
+				case 'ArrowDown':
+					rPad.stop();
+					break;
+			}
+		};
 
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
+		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('keyup', handleKeyUp);
 
-        const gameLoop = () => {
-            if (score.left >= SCORE_LIMIT || score.right >= SCORE_LIMIT) {
-                setGameInProgress(false);
-                onGameEnd(); // Notify parent component that the game has ended
+		const gameLoop = () => {
+			if (score.left >= SCORE_LIMIT || score.right >= SCORE_LIMIT) {
+				setGameInProgress(false);
+				onGameEnd(); // Notify parent component that the game has ended
 
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                context.font = '30px Arial';
-                context.fillText(
-                    `Game Over. ${(score.left >= SCORE_LIMIT) ? 'Left' : 'Right'} Player Wins!`,
-                    canvas.width / 4,
-                    canvas.height / 2,
-                );
-                return; // Stop the game loop
-            }
-            context.fillStyle = 'black';
-            context.fillRect(0, 0, canvas.width, canvas.height);
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				context.font = '30px Arial';
+				context.fillText(
+					`Game Over. ${(score.left >= SCORE_LIMIT) ? 'Left' : 'Right'} Player Wins!`,
+					canvas.width / 4,
+					canvas.height / 2,
+				);
+				return; // Stop the game loop
+			}
+			context.fillStyle = 'black';
+			context.fillRect(0, 0, canvas.width, canvas.height);
 
-            lPad.update(canvas);
-            rPad.update(canvas);
-            lPad.draw(context);
-            rPad.draw(context);
-            ball.update(canvas, lPad, rPad, score);
-            ball.draw(context);
-            score.draw(context, canvas);
+			lPad.update(canvas);
+			rPad.update(canvas);
+			lPad.draw(context);
+			rPad.draw(context);
+			ball.update(canvas, lPad, rPad, score);
+			ball.draw(context);
+			score.draw(context, canvas);
 
-            requestAnimationFrame(gameLoop);
-        };
+			requestAnimationFrame(gameLoop);
+		};
 
-        gameLoop();
+		gameLoop();
 
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    };
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+			window.removeEventListener('keyup', handleKeyUp);
+		};
+	};
 
-    useEffect(() => {
-        if (start && !gameInProgress) {
-            const canvas = canvasRef.current;
-            if (!canvas) {
-                return;
-            }
-            const context = canvas.getContext('2d');
-            if (!context) {
-                return;
-            }
-            setGameInProgress(true); // Mark the game as in progress
+	useEffect(() => {
+		if (start && !gameInProgress) {
+			const canvas = canvasRef.current;
+			if (!canvas) {
+				return;
+			}
+			const context = canvas.getContext('2d');
+			if (!context) {
+				return;
+			}
+			setGameInProgress(true); // Mark the game as in progress
 
-            gameManager(canvas, context);
-        }
-    }, [start, gameInProgress]);
+			gameManager(canvas, context);
+		}
+	}, [start, gameInProgress]);
 
-    return (
-        <canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
-    );
+	return (
+		<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
+	);
 };
 
 export default Game;
