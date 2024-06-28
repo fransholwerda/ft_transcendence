@@ -5,9 +5,9 @@ services:
   image: postgres:latest
   environment: #              !!!!!!!!!!!!!!CONVERT THIS TO AN ENV FILE LATER!!!!!!!!!!!!!
     - POSTGRES_HOST=postgres
-    - POSTGRESS_PORT=5432
+    - POSTGRES_PORT=0.0.0.0:5432
     - POSTGRES_USER=postgres
-    - POSTGRESS_PASSWORD=postpass
+    - POSTGRES_PASSWORD=postpass
     - POSTGRES_DB=postgres
   ports:
     - 5432:5432

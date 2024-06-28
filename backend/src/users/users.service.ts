@@ -12,7 +12,7 @@ export class UsersService {
 	){}
 
 	//This function should create a User in User Entity. the createUserDto paramater will create an object
-	//of type createUserDtop where we have already defined what we are expecting.
+	//of type createUserDto where we have already defined what we are expecting.
   createUser(createUserDto: CreateUserDto): Promise<User>{
 	const user: User = new User();
 	user.name = createUserDto.name;
