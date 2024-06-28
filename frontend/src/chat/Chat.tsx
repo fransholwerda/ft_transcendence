@@ -22,7 +22,9 @@ const Chat: React.FC = () => {
   }, []);
 
   const sendMessage = () => {
-    socket.emit('message', message);
+    if (message.trim().length > 0) {
+      socket.emit('message', message);
+    }
     setMessage('');
   };
 
