@@ -1,26 +1,25 @@
-/* Reset default margin and padding */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* LoginForm.css */
 
-/* Ensure full page height and flex centering */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #073916;
+  background-color: #03240b;
+  margin: 0;
   display: flex;
-  align-items: center;
+  align-items: right;
   justify-content: center;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .login-container {
-  background-color: #120202;
+  background-color: #220e58;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  width: 300px; /* Adjust as needed */
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
@@ -30,32 +29,61 @@ h2 {
 
 form {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Align items to the left */
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 label {
-  margin-bottom: 8px;
+  margin-right: 10px;
   color: #555;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-input,
-button {
-  padding: 10px;
-  margin-bottom: 16px;
-  border: 1px solid #000000;
+input {
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  width: calc(100% - 22px); /* Adjust width to fit container */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.button-group {
+  display: flex;
+  align-items: center;
 }
 
 button {
+  padding: 10px 20px;
   background-color: #007bff;
-  color: #fff;
+  color: #2c0b77;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
+  margin-left: 10px;
   transition: background-color 0.3s ease;
 }
 
 button:hover {
   background-color: #0056b3;
+}
+
+@media (max-width: 600px) {
+  form {
+    flex-direction: column;
+  }
+
+  .button-group {
+    margin-top: 10px;
+  }
+
+  button {
+    margin: 5px 0;
+    width: 100%;
+  }
 }
