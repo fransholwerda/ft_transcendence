@@ -6,7 +6,6 @@ import './LoginForm.css';
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -19,44 +18,33 @@ const LoginForm: React.FC = () => {
   const handleLogin = () => {
     // Add your login logic here, e.g., send a request to a server
     console.log(`Logging in with username: ${username} and password: ${password}`);
-    setIsLoggedIn(true);
   };
 
-  const handleProfile = () => {
-    setUsername('');
-    setPassword('');
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const handleReset = () => {
     setUsername('');
     setPassword('');
   };
 
   return (
     <div className="login-container">
+      <h2>Login</h2>
       <form>
         <label>
           Username:
           <input type="text" value={username} onChange={handleUsernameChange} />
         </label>
+        <br />
         <label>
           Password:
           <input type="password" value={password} onChange={handlePasswordChange} />
         </label>
-        <div className="button-group">
-          <button type="button" onClick={handleLogin}>
-            Login
-          </button>
-          <button type="button" onClick={handleProfile}>
-            Profile
-          </button>
-          {isLoggedIn && (
-            <button type="button" onClick={handleLogout}>
-              Logout
-            </button>
-          )}
-        </div>
+        <br />
+        <button type="button" onClick={handleLogin}>
+          Login
+        </button>
+        <button type="button" onClick={handleReset}>
+          Reset
+        </button>
       </form>
     </div>
   );
