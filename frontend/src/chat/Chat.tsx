@@ -1,7 +1,6 @@
-// src/components/Chat.tsx
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import './Chat.css'; // Import the CSS file
+import './Chat.css';
 
 const socket = io('http://localhost:3000');
 
