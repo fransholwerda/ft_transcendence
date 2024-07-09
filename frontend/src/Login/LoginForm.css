@@ -1,58 +1,89 @@
 /* LoginForm.css */
 
-/* body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-	background-image: url("../bg.jpg"); */
-	/* color:#333; */
-    /* margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  } */
-  
-  .login-container {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 300px;
-    text-align: center;
-  }
-  
-  h2 {
-    color: #333;
-  }
-  
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #03240b;
+  margin: 0;
+  display: flex;
+  align-items: right;
+  justify-content: center;
+  height: 100vh;
+}
+
+.login-container {
+  background-color: #220e58;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+h2 {
+  color: #333;
+}
+
+form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+label {
+  margin-right: 10px;
+  color: #555;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+input {
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.button-group {
+  display: flex;
+  align-items: center;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #2c0b77;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 600px) {
   form {
-    display: flex;
     flex-direction: column;
   }
-  
-  label {
-    margin-bottom: 8px;
-    color: #555;
+
+  .button-group {
+    margin-top: 10px;
   }
-  
-  input {
-    padding: 8px;
-    margin-bottom: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
+
   button {
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    margin: 5px 0;
+    width: 100%;
   }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
+}
