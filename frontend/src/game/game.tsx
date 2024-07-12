@@ -1,12 +1,14 @@
 import './game.css';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Paddle } from './Paddle';
 import { Ball } from './Ball';
 import { Score } from './Score';
-import { PongC } from '../../shared/constants'
+import { PongC } from '../../shared/constants';
 
-const Game: React.FC = () => {
+const Game: React.FC<{ start: boolean, onGameEnd: () => void }> = ({ start, onGameEnd }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const SCORE_LIMIT = 10;
+	const [gameInProgress, setGameInProgress] = useState(false);
 
 	const gameManager = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
 		let cW = canvas.width;
@@ -71,6 +73,19 @@ const Game: React.FC = () => {
 		window.addEventListener('keyup', handleKeyUp);
 
 		const gameLoop = () => {
+			if (score.left >= SCORE_LIMIT || score.right >= SCORE_LIMIT) {
+				setGameInProgress(false);
+				onGameEnd(); // Notify parent component that the game has ended
+
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				context.font = '30px Arial';
+				context.fillText(
+					`Game Over. ${(score.left >= SCORE_LIMIT) ? 'Left' : 'Right'} Player Wins!`,
+					canvas.width / 4,
+					canvas.height / 2,
+				);
+				return; // Stop the game loop
+			}
 			context.fillStyle = 'black';
 			context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -94,17 +109,20 @@ const Game: React.FC = () => {
 	};
 
 	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (!canvas) {
-			return;
-		}
-		const context = canvas.getContext('2d');
-		if (!context) {
-			return;
-		}
+		if (start && !gameInProgress) {
+			const canvas = canvasRef.current;
+			if (!canvas) {
+				return;
+			}
+			const context = canvas.getContext('2d');
+			if (!context) {
+				return;
+			}
+			setGameInProgress(true); // Mark the game as in progress
 
-		gameManager(canvas, context);
-	}, []);
+			gameManager(canvas, context);
+		}
+	}, [start, gameInProgress]);
 
 	return (
 		<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
