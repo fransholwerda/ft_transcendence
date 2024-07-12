@@ -15,6 +15,7 @@ import { User } from "../users/entities/user.entity";
 				username: 'postgres',
 				password: 'postpass',
 				database: 'postgres',
+				// synchronize: true,
 
 				//all entites need to be represented in the database. ad stuff onto here like channels, matches, etc.
 				entities: [
