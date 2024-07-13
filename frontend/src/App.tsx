@@ -3,13 +3,10 @@ import './App.css'
 import io, { Socket } from 'socket.io-client'
 import MessageInput from './chat/MessageInput'
 // import Messages from './chat/Messages'
-import LoginForm from './Login/LoginForm'
 import Sidebar from './sidebar/sidebar'
 import { Constants } from '../shared/constants'
 
 function App() {
-	const isVerified = true;
-
 	const [socket, setSocket] = useState<Socket>()
 //   const[messages, setMessages] = useState<string[]>([])
 	const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
@@ -32,8 +29,6 @@ function App() {
 		socket?.off("message", messageListener)
 		}
 	},[messageListener])
-	if (!isVerified)
-		return (<LoginForm/>)
 	return (
 		<div>
 			<Sidebar messages={messages} />
