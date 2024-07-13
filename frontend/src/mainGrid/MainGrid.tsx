@@ -1,10 +1,10 @@
 import React from 'react';
-import './grid.css';
+import './MainGrid.css';
 // import App from '../App';
 import Chat from '../chat/Chat'
 import GameManager from '../gameManager/GameManager';
 
-const Grid: React.FC = () => {
+const MainGrid: React.FC = () => {
     return (
         <div className="parent">
             <div className="header"></div>
@@ -15,4 +15,4 @@ const Grid: React.FC = () => {
     );
 }
 
-export default Grid;
+export default MainGrid;
