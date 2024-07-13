@@ -62,8 +62,8 @@
 }
 
 .header-title h1 {
-	overflow: hidden;
-	text-overflow: ellipsis;
+	/* overflow: hidden; */
+	/* text-overflow: ellipsis; */
 	white-space: nowrap;
 	margin: 0;
 	padding: 0;
@@ -96,7 +96,7 @@
 	background-color: var(--main_head_btn_bg);
 	color: var(--main_head_btn_color);
 	border: 2px solid var(--main_head_btn_border);
-	margin-top: -1.5vh;
+	margin-top: -10%;
 	font-size: 1rem;
 	font-weight: bold;
 	border-radius: 15px;
