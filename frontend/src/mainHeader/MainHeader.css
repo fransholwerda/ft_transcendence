@@ -1,0 +1,66 @@
+:root {
+	--main_head_btn_bg: rgb(17, 57, 109);
+	--main_head_btn_color: black;
+	--main_head_btn_border: rgb(24, 71, 157);
+	--main_head_btn_hover: rgb(44, 111, 235);
+	--main_head_btn_active: rgb(2, 88, 247);
+
+	--main_head_bg: rgb(53, 159, 163);
+	--main_head_content_bg: rgb(17, 103, 109);
+	--main_head_content_logo_bg: rgb(59, 99, 102);
+	--main_head_content_title_bg: rgb(8, 78, 83);
+	--main_head_logout_bg: rgb(42, 84, 87);
+	--main_head_profile_bg: rgb(17, 65, 68);
+}
+
+.main-header {
+	background-color: var(--main_head_bg);
+	display: grid;
+	grid-template-columns: 6fr 1fr 1fr;
+	grid-template-rows: 1fr;
+}
+
+.header-content {
+	background-color: var(--main_head_content_bg);
+	grid-column: 1/2;
+	display: grid;
+	grid-template-columns: 1fr 9fr;
+	grid-template-rows: 1fr;
+}
+
+.header-logo {
+	background-color: var(--main_head_content_logo_bg);
+	grid-column: 1/2;
+}
+
+.header-logo img {
+	/* background-color: var(--main_head_content_logo_bg); */
+	
+}
+
+.header-title {
+	background-color: var(--main_head_content_title_bg);
+	grid-column: 2/3;
+}
+
+.header-title h1 {
+	
+}
+
+.header-profile {
+	background-color: var(--main_head_profile_bg);
+	grid-column: 2/3;
+}
+
+.header-profile-button {
+
+}
+
+.header-logout {
+	background-color: var(--main_head_logout_bg);
+	grid-column: 3/4;
+}
+
+.header-logout-button {
+
+}
