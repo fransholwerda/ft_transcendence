@@ -1,15 +1,4 @@
 /* LoginForm.css */
-
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #03240b;
-  margin: 0;
-  display: flex;
-  align-items: right;
-  justify-content: center;
-  height: 100vh;
-}
-
 .login-container {
   background-color: #220e58;
   border-radius: 8px;
@@ -23,11 +12,11 @@ body {
   text-align: center;
 }
 
-h2 {
+.login-container h2 {
   color: #333;
 }
 
-form {
+.login-container form {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -35,7 +24,7 @@ form {
   width: 100%;
 }
 
-label {
+.login-container label {
   margin-right: 10px;
   color: #555;
   flex-grow: 1;
@@ -44,7 +33,7 @@ label {
   align-items: flex-start;
 }
 
-input {
+.login-container input {
   padding: 8px;
   margin-top: 4px;
   border: 1px solid #ccc;
@@ -53,12 +42,12 @@ input {
   box-sizing: border-box;
 }
 
-.button-group {
+.login-container .button-group {
   display: flex;
   align-items: center;
 }
 
-button {
+.login-container button {
   padding: 10px 20px;
   background-color: #007bff;
   color: #2c0b77;
@@ -69,20 +58,20 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+.login-container button:hover {
   background-color: #0056b3;
 }
 
 @media (max-width: 600px) {
-  form {
+  .login-container form {
     flex-direction: column;
   }
 
-  .button-group {
+  .login-container .button-group {
     margin-top: 10px;
   }
 
-  button {
+  .login-container button {
     margin: 5px 0;
     width: 100%;
   }
