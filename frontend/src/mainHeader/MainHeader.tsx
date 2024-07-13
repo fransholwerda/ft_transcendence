@@ -1,15 +1,16 @@
 import React from 'react';
 import './MainHeader.css';
+import mainHeaderImage from './mainheader.png';
 
 const MainHeader: React.FC = () => {
 	return (
 		<div className="main-header">
 			<div className="header-content">
 				<div className="header-logo">
-					<img src="mainheader.png" alt="logo" />
+					<img src={mainHeaderImage} alt="logo" />
 				</div>
 				<div className="header-title">
-					<h1>Transcendence</h1>
+					<h1>FT Transcendence</h1>
 				</div>
 			</div>
 			<div className="header-profile">

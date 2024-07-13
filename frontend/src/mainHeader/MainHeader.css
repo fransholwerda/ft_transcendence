@@ -4,6 +4,8 @@
 	--main_head_btn_border: rgb(24, 71, 157);
 	--main_head_btn_hover: rgb(44, 111, 235);
 	--main_head_btn_active: rgb(2, 88, 247);
+	--main_head_btn_width: 6vw;
+	--main_head_btn_height: 6vh;
 
 	--main_head_bg: rgb(53, 159, 163);
 	--main_head_content_bg: rgb(17, 103, 109);
@@ -11,9 +13,16 @@
 	--main_head_content_title_bg: rgb(8, 78, 83);
 	--main_head_logout_bg: rgb(42, 84, 87);
 	--main_head_profile_bg: rgb(17, 65, 68);
+
+	--main_head_max_height: 10vh;
+
+	--main_head_img_width: 8vw;
+	--main_head_img_height: 8vh;
 }
 
 .main-header {
+	height: var(--main_head_max_height);
+	max-height: var(--main_head_max_height);
 	background-color: var(--main_head_bg);
 	display: grid;
 	grid-template-columns: 6fr 1fr 1fr;
@@ -31,36 +40,72 @@
 .header-logo {
 	background-color: var(--main_head_content_logo_bg);
 	grid-column: 1/2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .header-logo img {
 	/* background-color: var(--main_head_content_logo_bg); */
-	
+	height: var(--main_head_img_height);
+	max-height: var(--main_head_img_height);
+	margin-top: -1.5vh;
 }
 
 .header-title {
 	background-color: var(--main_head_content_title_bg);
 	grid-column: 2/3;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding-top: 2px;
 }
 
 .header-title h1 {
-	
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin: 0;
+	padding: 0;
+	font-size: var(--main_head_max_height);
+	margin-top: -3vh;
 }
 
 .header-profile {
 	background-color: var(--main_head_profile_bg);
 	grid-column: 2/3;
-}
-
-.header-profile-button {
-
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .header-logout {
 	background-color: var(--main_head_logout_bg);
 	grid-column: 3/4;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.header-logout-button {
+.main-header button {
+	height: var(--main_head_btn_height);
+	max-height: var(--main_head_btn_height);
+	width: var(--main_head_btn_width);
+	max-width: var(--main_head_btn_width);
 
+	background-color: var(--main_head_btn_bg);
+	color: var(--main_head_btn_color);
+	border: 2px solid var(--main_head_btn_border);
+	margin-top: -1.5vh;
+	font-size: 1rem;
+	font-weight: bold;
+	border-radius: 15px;
+}
+
+.main-header button:hover {
+	border: 2px solid var(--main_head_btn_hover);
+}
+
+.main-header button:active {
+	background-color: var(--main_head_btn_active);
 }
