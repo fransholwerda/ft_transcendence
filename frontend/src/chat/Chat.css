@@ -1,18 +1,17 @@
 .chat-container {
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
-	max-width: 600px;
+	/* max-width: 600px; */
 	margin: 0 auto;
 	border: 1px solid #ccc;
 	border-radius: 8px;
-	overflow: hidden;
+	/* overflow: hidden; */
   }
   
   .messages-box {
 	flex: 1;
 	padding: 10px;
-	overflow-y: auto;
+	/* overflow-y: auto; */
 	background-color: #273443;
 	border-bottom: 1px solid #ccc;
   }

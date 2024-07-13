@@ -4,8 +4,8 @@
 	--main_head_btn_border: rgb(24, 71, 157);
 	--main_head_btn_hover: rgb(44, 111, 235);
 	--main_head_btn_active: rgb(2, 88, 247);
-	--main_head_btn_width: 6vw;
-	--main_head_btn_height: 6vh;
+	--main_head_btn_width: 60%;
+	--main_head_btn_height: 60%;
 
 	--main_head_bg: rgb(53, 159, 163);
 	--main_head_content_bg: rgb(17, 103, 109);
@@ -14,10 +14,10 @@
 	--main_head_logout_bg: rgb(42, 84, 87);
 	--main_head_profile_bg: rgb(17, 65, 68);
 
-	--main_head_max_height: 10vh;
+	--main_head_max_height: 100%;
 
-	--main_head_img_width: 8vw;
-	--main_head_img_height: 8vh;
+	--main_head_img_width: 80%;
+	--main_head_img_height: 80%;
 }
 
 .main-header {
@@ -49,7 +49,7 @@
 	/* background-color: var(--main_head_content_logo_bg); */
 	height: var(--main_head_img_height);
 	max-height: var(--main_head_img_height);
-	margin-top: -1.5vh;
+	margin-top: -10%;
 }
 
 .header-title {
@@ -68,7 +68,7 @@
 	margin: 0;
 	padding: 0;
 	font-size: var(--main_head_max_height);
-	margin-top: -3vh;
+	margin-top: -30%;
 }
 
 .header-profile {

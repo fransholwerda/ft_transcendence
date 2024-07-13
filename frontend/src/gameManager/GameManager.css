@@ -45,7 +45,7 @@
 
 .game-content {
 	flex: 1;
-	overflow-y: auto;
+	/* overflow-y: auto; */
 	background-color: var(--game_content_background);
 	display: flex;
 	justify-content: center;
