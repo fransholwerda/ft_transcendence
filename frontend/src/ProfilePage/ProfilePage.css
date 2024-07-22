@@ -1,0 +1,28 @@
+.parent_profile {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 2fr, 1fr;
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    background-color: rgb(255, 255, 255);
+    }
+    
+    .profile_games_history, .profile_av, .profile_friends {
+        width: 100%;
+        height: 90vh;
+        
+    }
+
+    .profile_header { grid-area: 1 / 1 / 2 / 4; 
+        height: 10vh;
+        background-color: rgb(60, 180, 60);
+    }
+    .profile_friends { grid-area: 2 / 1 / 3 / 2; 
+        background-color: rgb(1, 57, 1);}
+    .profile_av { grid-area: 2 / 2 / 3 / 3; 
+    
+        background-color: rgb(44, 92, 165);}
+   .profile_game_history { grid-area: 2 / 3 / 3 / 4; 
+    
+        background-color: rgb(5, 155, 255);}
+    
