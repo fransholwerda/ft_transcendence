@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './LoginPage.css';
 
 interface LoginProps {
   onLogin: (username: string) => void;
@@ -12,10 +13,13 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
     if (username && password) {
       onLogin(username);
     }
+    else{
+      onLogin('Guest');
+    }
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h2>Login</h2>
       <input
         type="text"
