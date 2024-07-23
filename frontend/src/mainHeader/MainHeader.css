@@ -1,136 +1,63 @@
-:root {
-	--main_head_btn_bg: rgb(17, 57, 109);
-	--main_head_btn_color: black;
-	--main_head_btn_border: rgb(24, 71, 157);
-	--main_head_btn_hover: rgb(44, 111, 235);
-	--main_head_btn_active: rgb(2, 88, 247);
-	--main_head_btn_width: 60%;
-	--main_head_btn_height: 60%;
-
-	--main_head_bg: rgb(53, 159, 163);
-	--main_head_content_bg: rgb(17, 103, 109);
-	--main_head_content_logo_bg: rgb(59, 99, 102);
-	--main_head_content_title_bg: rgb(8, 78, 83);
-	--main_head_logout_bg: rgb(42, 84, 87);
-	--main_head_profile_bg: rgb(17, 65, 68);
-
-	--main_head_max_height: 100%;
-
-	--main_head_img_width: 80%;
-	--main_head_img_height: 80%;
-}
+/* MainHeader.css */
 
 .main-header {
-	height: var(--main_head_max_height);
-	max-height: var(--main_head_max_height);
-	background-color: var(--main_head_bg);
-	display: grid;
-	grid-template-columns: 6fr 1fr 1fr;
-	grid-template-rows: 1fr;
-	width: 100%;
-	max-width: 100%;
-	height: 100%;
-	max-height: 100%;
-}
-
-.header-content {
-	background-color: var(--main_head_content_bg);
-	grid-column: 1/2;
-	display: grid;
-	grid-template-columns: 1fr 9fr;
-	grid-template-rows: 1fr;
-}
-
-.header-logo {
-	background-color: var(--main_head_content_logo_bg);
-	grid-column: 1/2;
 	display: flex;
-	justify-content: stretch;
-	align-items: stretch;
-}
-
-/* .header-logo img {
-	background-color: var(--main_head_content_logo_bg);
-	height: var(--main_head_img_height);
-	max-height: var(--main_head_img_height);
-	margin-top: -10%;
-} */
-
-.header-title {
-	background-color: var(--main_head_content_title_bg);
-	grid-column: 2/3;
+	justify-content: left;
+	align-items: left;
+	background-color: #005289;
+	padding: 10px 20px;
+	border-bottom: 10px solid #747474;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-content {
 	display: flex;
-	justify-content: center;
 	align-items: center;
-	padding-top: 2px;
-}
-
-/* .header-title h1 {
-	white-space: nowrap;
+  }
+  
+  .header-logo img {
+	height: 160px;
+	margin-right: 15px;
+  }
+  
+  .header-title {
+	display: flex;
+	flex-direction: column;
+  }
+  
+  .header-title h1 {
+	font-size: 1.5rem;
 	margin: 0;
-	padding: 0;
-	font-size: var(--main_head_max_height);
-	margin-top: -30%;
-} */
-
-.header-profile {
-	background-color: var(--main_head_profile_bg);
-	grid-column: 2/3;
+	color: #333;
+  }
+  
+  .header-title p {
+	font-size: 1rem;
+	margin: 0;
+	color: #666;
+  }
+  
+  .header-profile,
+  .header-logout {
 	display: flex;
-	justify-content: stretch;
-	align-items: stretch;
-}
-
-.header-logout {
-	background-color: var(--main_head_logout_bg);
-	grid-column: 3/4;
-	display: flex;
-	justify-content: stretch;
-	align-items: stretch;
-}
-
-.main-header button {
-	/* height: var(--main_head_btn_height);
-	max-height: var(--main_head_btn_height);
-	width: var(--main_head_btn_width);
-	max-width: var(--main_head_btn_width); */
-
-	background-color: var(--main_head_btn_bg);
-	color: var(--main_head_btn_color);
-	border: 2px solid var(--main_head_btn_border);
-	/* margin-top: -10%; */
-	font-size: 4vw;
-	font-weight: bold;
-	border-radius: 15px;
+	align-items: center;
+  }
+  
+  .header-profile-button,
+  .header-logout-button {
+	padding: 10px 15px;
+	margin-left: 10px;
+	border: none;
+	border-radius: 5px;
+	background-color: #007bff;
 	color: white;
-}
-
-.main-header button:hover {
-	border: 2px solid var(--main_head_btn_hover);
-}
-
-.main-header button:active {
-	background-color: var(--main_head_btn_active);
-}
-
-.main-header, .header-content, .header-logo, .header-title, .header-profile, .header-logout {
-	width: 100%;
-	height: 100%;
-}
-
-.header-logo img, .header-profile button, .header-logout button {
-	width: 100%;
-	height: auto; /* Maintain aspect ratio for images */
-	object-fit: cover; /* For images, to cover the area without losing aspect ratio */
-}
-
-/* Adjust text size dynamically */
-.header-title h1 {
-	width: 100%; /* Make h1 take up full width of .header-title */
-	height: 100%; /* Make h1 take up full height of .header-title */
-	margin: 0; /* Remove default margin */
-	display: flex; /* Enable flex properties for center alignment */
-	align-items: center; /* Align text vertically */
-	justify-content: center; /* Align text horizontally */
-	font-size: 10vh; /* Set font size to 4% of viewport height */
-}
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+  }
+  
+  .header-profile-button:hover,
+  .header-logout-button:hover {
+	background-color: #0056b3;
+  }
+  
