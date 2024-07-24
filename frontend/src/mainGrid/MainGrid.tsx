@@ -1,8 +1,10 @@
 import React from 'react';
 import './MainGrid.css';
 import Chat from '../chat/Chat'
-// import GameManager from '../gameManager/GameManager';
 import MainHeader from '../mainHeader/MainHeader';
+
+// import GameManager from '../gameManager/GameManager';
+// <GameManager />
 import Connections from '../connections/Connections';
 
 interface MainGridProps {
