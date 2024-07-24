@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import './Chat.css';
 
-const socket = io('http://localhost:3000');
+const chatSocket = io('http://localhost:3000/chat');
 
 const Chat: React.FC = () => {
   const [message, setMessage] = useState('');
@@ -10,19 +10,19 @@ const Chat: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    socket.on('message', (message: string) => {
+    chatSocket.on('message', (message: string) => {
       setMessages((prevMessages) => [...prevMessages, message]);
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     });
 
     return () => {
-      socket.off('message');
+      chatSocket.off('message');
     };
   }, []);
 
   const sendMessage = () => {
     if (message.trim().length > 0) {
-      socket.emit('message', message);
+      chatSocket.emit('message', message);
     }
     setMessage('');
   };
