@@ -6,8 +6,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*', // Or specify the origin(s) you want to allow
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    preflightContinue: false, // check if header is allowed
   });
   await app.listen(3000);
 }
