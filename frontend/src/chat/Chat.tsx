@@ -4,7 +4,9 @@ import './Chat.css';
 import MessageInput from './MessageInput';
 import Messages from './Messages';
 
-const chatSocket = io('http://localhost:3000/chat');
+const chatSocket = io('http://localhost:3000/chat', {
+  transports: ['websocket'],
+});
 
 const Chat: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
@@ -12,6 +14,7 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     chatSocket.on('message', (message: string) => {
+      // console.log('Received message:', message);
       setMessages((prevMessages) => [...prevMessages, message]);
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     });
