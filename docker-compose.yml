@@ -10,14 +10,14 @@ services:
     - POSTGRES_PASSWORD=postpass
     - POSTGRES_DB=postgres
   ports:
-    - "5432:5432"
+    - 5432:5432
   restart: always
   user: postgres
   volumes:
       - ./database/data:/data/postgres
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
   networks:
-    - backend
+    - db
 
  backend:
   container_name: backend
@@ -30,11 +30,11 @@ services:
   command: npm run start:dev
   restart: unless-stopped
   ports:
-   - 3000:3000
+   - 3003:3003
   volumes:
    - ./backend/app:/app
   networks:
-   - backend
+   - db
 
  frontend:
   container_name: frontend
@@ -52,5 +52,5 @@ services:
    - ./frontend/app:/app
 
 networks:
- backend:
+ db:
 

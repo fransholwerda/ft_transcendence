@@ -10,7 +10,7 @@ export class UsersController {
   @Post('/create')
   @HttpCode(200)
   @UsePipes(ValidationPipe)
-  createUser(@Body() userData: CreateUserData) {
+  async createUser(@Body() userData: CreateUserData) {
     return {userData};
   }
 
