@@ -23,8 +23,8 @@
 	min-width: 100vw;
 	max-width: 100vw;
 	/* HEIGHT */
-	min-height: 10vh;
-	max-height: 15vh;
+	min-height: 25vh;
+	max-height: 50vh;
 }
 
 .game {
