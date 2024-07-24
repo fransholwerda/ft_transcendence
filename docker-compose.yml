@@ -10,7 +10,7 @@ services:
     - POSTGRES_PASSWORD=postpass
     - POSTGRES_DB=postgres
   ports:
-    - 5432:5432
+    - "5432:5432"
   restart: always
   user: postgres
   volumes:
@@ -27,7 +27,7 @@ services:
     dockerfile: Dockerfile
     context: ./backend
   env_file: ./backend/back.env
-  command: npm start dev
+  command: npm run start:dev
   restart: unless-stopped
   ports:
    - 3000:3000

@@ -14,4 +14,7 @@ export class User {
 
 	@Column({ type: 'varchar'})
 	password:string;
+
+	@Column({ type: 'boolean', default: 1,})
+	isActive: boolean;
 }
