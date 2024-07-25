@@ -1,0 +1,63 @@
+:root {
+	--conn_bg: #c57f7f;
+	--conn_border: 1px solid #745f5f;
+	--conn_radius: 0px;
+	--conn_padding: 2vh;
+	--conn_margin: 0px;
+	--conn_font_size: 4vh;
+	--conn_margin_bottom: 1vh;
+	--conn_list_padding: 0;
+	--conn_list_margin: 0;
+	--conn_list_margin_bottom: 1vh;
+	--conn_list_padding: 1vh;
+	--conn_list_border: 1px solid #e27676;
+	--conn_list_radius: 4px;
+	--conn_list_bg: #b05454;
+	--conn_list_transition: background-color 0.3s, transform 0.3s;
+	--conn_list_hover_bg: #974444;
+	--conn_list_hover_transform: translateY(-2px);
+	--conn_list_hover_box_shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.connections-container {
+	background-color: var(--conn_bg);
+	margin: var(--conn_margin);
+	padding: var(--conn_padding);
+	border: var(--conn_border);
+	border-radius: var(--conn_radius);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+.connections-container h2 {
+	font-size: var(--conn_font_size);
+	margin-bottom: var(--conn_margin_bottom);
+}
+
+.connections-container ul {
+	list-style-type: none;
+	padding: var(--conn_list_padding);
+	margin: var(--conn_list_margin);
+}
+
+.connections-container li {
+	margin-bottom: var(--conn_list_margin_bottom);
+	padding: var(--conn_list_padding);
+	border: var(--conn_list_border);
+	border-radius: var(--conn_list_radius);
+	background-color: var(--conn_list_bg);
+	transition: var(--conn_list_transition);
+}
+
+.connections-container li:hover {
+	background-color: var(--conn_list_hover_bg);
+	transform: var(--conn_list_hover_transform);
+	box-shadow: var(--conn_list_hover_box_shadow);
+}
+
+.connections-container li:last-child {
+	margin-bottom: 0;
+}
