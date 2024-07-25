@@ -8,9 +8,7 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UsersService {
-	constructor(
-		@InjectRepository(UserRepository) private userRepository: UserRepository,
-	){}
+	constructor( private readonly userRepository: UserRepository){}
 
 	//This function should create a User in User Entity. the createUserData paramater will create an object
 	//of type createUserData where we have already defined what we are expecting.

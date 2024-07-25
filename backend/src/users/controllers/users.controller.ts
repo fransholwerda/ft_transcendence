@@ -11,7 +11,7 @@ export class UsersController {
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   async createUser(@Body() userData: CreateUserData) {
-    return {userData};
+    return await this.usersService.createNewUser(userData);
   }
 
   @Get('/')
