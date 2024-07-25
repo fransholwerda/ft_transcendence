@@ -5,7 +5,8 @@ import MainHeader from '../mainHeader/MainHeader';
 
 // import GameManager from '../gameManager/GameManager';
 // <GameManager />
-import Connections from '../connections/Connections';
+// import Connections from '../connections/Connections';
+import Tabs from '../chat/Tabs';
 
 interface MainGridProps {
   user: string;
@@ -17,7 +18,7 @@ const MainGrid: React.FC<MainGridProps> = ({ user, onProfile, onLogout }) => {
   return (
     <div className="parent">
       <div className="header"><MainHeader user={user} onProfile={onProfile} onLogout={onLogout} /></div>
-      <div className="game"><Connections /></div>
+      <div className="game"><Tabs /></div>
       <div className="chat"><Chat /></div>
     </div>
   );
