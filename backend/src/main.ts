@@ -8,6 +8,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false, // check if header is allowed
   });
-  await app.listen(3000);
+  await app.listen(3003, '0.0.0.0');
 }
 bootstrap();

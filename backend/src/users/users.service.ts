@@ -1,24 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserData } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UsersService {
 	constructor(
-		@InjectRepository(User) private readonly userRepository: Repository<User>,
+		@InjectRepository(UserRepository) private userRepository: UserRepository,
 	){}
 
-	//This function should create a User in User Entity. the createUserDto paramater will create an object
-	//of type createUserDto where we have already defined what we are expecting.
-  createUser(createUserDto: CreateUserDto): Promise<User>{
+	//This function should create a User in User Entity. the createUserData paramater will create an object
+	//of type createUserData where we have already defined what we are expecting.
+  async createNewUser(createUserData: CreateUserData): Promise<User>{
 	const user: User = new User();
-	user.name = createUserDto.name;
-	user.username = createUserDto.username;
-	user.password = createUserDto.password;
-    return this.userRepository.save(user);
+	user.name = createUserData.name;
+	user.username = createUserData.username;
+	user.password = createUserData.password;
+    return await this.userRepository.save(user);
   }
 
   // this function is used to get a list of all the users

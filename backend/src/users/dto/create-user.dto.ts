@@ -2,21 +2,21 @@ import {
 	IsAlphanumeric,
 	IsNotEmpty,
 	IsString,
-	MinLength,
+	Length,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateUserData {
 	@IsString()
-	@MinLength(2, { message: 'Your name is too short bro.'})
-	@IsNotEmpty()
+	@Length(2, 20, {message: 'Name must be between 3 and 20 characters'})
+	@IsNotEmpty({message: 'A name is required.'})
 	name: string;
 
-	@IsNotEmpty()
-	@MinLength(3, { message: 'Username should be at least 3 characters long.'})
-	@IsAlphanumeric(null, { message: 'Username must consist out of alphanumeric characters only.'})
+	@IsNotEmpty({message: 'username is required'})
+	@IsAlphanumeric()
+	@Length(3, 50, {message: 'username must be between 3 and 50 characters'})
 	username: string;
 
 	@IsNotEmpty()
-	@MinLength(4, { message: 'Password must consist of at least 4 characters.'})
+	@Length(4, 50, { message: 'Password must consist of at least 4 characters.'})
 	password: string;
 }

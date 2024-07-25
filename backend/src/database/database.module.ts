@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from "../users/entities/user.entity";
 
 @Module({
@@ -15,7 +15,7 @@ import { User } from "../users/entities/user.entity";
 				username: 'postgres',
 				password: 'postpass',
 				database: 'postgres',
-				// synchronize: true,
+				synchronize: true,
 
 				//all entites need to be represented in the database. ad stuff onto here like channels, matches, etc.
 				entities: [
