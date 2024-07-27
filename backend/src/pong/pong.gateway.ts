@@ -15,28 +15,44 @@ import { Socket } from 'socket.io';
 
 @WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer()
-  server: Server;
+	@WebSocketServer()
+	server: Server;
 
-  private clients: { [key: string]: number } = {};
-  private order: number = 1;
+	private clients: { [key: string]: number } = {};
+	private order: number = 1;
+	private queue: string[] = []; // Step 1: Add queue property
 
-  handleConnection(client: Socket) {
-    this.clients[client.id] = this.order++;
-    this.server.emit('pong', this.formatPong());
-  }
+	handleConnection(client: Socket) {
+		this.clients[client.id] = this.order++;
+		this.server.emit('pong', this.formatPong());
+	}
 
-  handleDisconnect(client: Socket) {
-    delete this.clients[client.id];
-    this.server.emit('pong', this.formatPong());
-  }
+	handleDisconnect(client: Socket) {
+		delete this.clients[client.id];
+		this.server.emit('pong', this.formatPong());
+		this.handleLeaveQueue(client); // Modify to remove from queue on disconnect
+	}
 
-  @SubscribeMessage('request-Pong')
-  handleRequestPong(client: Socket) {
-    client.emit('pong', this.formatPong());
-  }
+	@SubscribeMessage('request-Pong')
+	handleRequestPong(client: Socket) {
+		client.emit('pong', this.formatPong());
+	}
 
-  private formatPong() {
-    return Object.entries(this.clients).map(([id, order]) => ({ id, order }));
-  }
+	@SubscribeMessage('join-queue') // Step 2: Add join-queue handler
+	handleJoinQueue(client: Socket) {
+		if (!this.queue.includes(client.id)) {
+			this.queue.push(client.id);
+			this.server.emit('queue-update', this.queue);
+		}
+	}
+
+	@SubscribeMessage('leave-queue') // Step 3: Add leave-queue handler
+	handleLeaveQueue(client: Socket) {
+		this.queue = this.queue.filter(id => id !== client.id);
+		this.server.emit('queue-update', this.queue);
+	}
+
+	private formatPong() {
+		return Object.entries(this.clients).map(([id, order]) => ({ id, order }));
+	}
 }
