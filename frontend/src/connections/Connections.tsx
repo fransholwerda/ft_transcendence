@@ -7,7 +7,9 @@ interface Connection {
   order: number;
 }
 
-const connectionsSocket = io('http://localhost:3003/connections');
+const connectionsSocket = io('http://localhost:3003/connections', {
+  transports: ['websocket'],
+});
 
 const Connections: React.FC = () => {
   const [connections, setConnections] = useState<Connection[]>([]);
