@@ -18,12 +18,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
     server: Server;
 
-    private clients: { [key: string]: number } = {};
+    private clients: { [key: string]: { order: number, username: string } } = {};
     private order: number = 1;
     private queue: string[] = []; // Queue property to keep track of clients in the queue
 
     handleConnection(client: Socket) {
-        this.clients[client.id] = this.order++;
+        // Assume the client sends their username immediately upon connection
+        // This could be done through a specific message the client sends after connecting
+        // For this example, we'll just initialize with a placeholder
+        this.clients[client.id] = { order: this.order++, username: 'Unknown' };
         this.server.emit('pong', this.formatPong());
     }
 
@@ -33,12 +36,20 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.handleLeaveQueue(client); // Remove from queue on disconnect
     }
 
+    @SubscribeMessage('set-username') // New handler for setting a username
+    handleSetUsername(client: Socket, username: string) {
+        if (this.clients[client.id]) {
+            this.clients[client.id].username = username;
+            this.server.emit('pong', this.formatPong()); // Update all clients with the new username
+        }
+    }
+
     @SubscribeMessage('request-Pong')
     handleRequestPong(client: Socket) {
         client.emit('pong', this.formatPong());
     }
 
-    @SubscribeMessage('join-queue') // Handler for clients joining the queue
+    @SubscribeMessage('join-queue')
     handleJoinQueue(client: Socket) {
         if (!this.queue.includes(client.id)) {
             this.queue.push(client.id);
@@ -46,14 +57,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
-    @SubscribeMessage('leave-queue') // Handler for clients leaving the queue
+    @SubscribeMessage('leave-queue')
     handleLeaveQueue(client: Socket) {
         this.queue = this.queue.filter(id => id !== client.id);
         this.server.emit('queue-update', this.queue); // Emit updated queue to all clients
     }
 
     private formatPong() {
-        return Object.entries(this.clients).map(([id, order]) => ({ id, order }));
+        return Object.entries(this.clients).map(([id, { order, username }]) => ({ id, order, username }));
     }
 }
 

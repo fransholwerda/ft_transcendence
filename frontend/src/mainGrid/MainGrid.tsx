@@ -19,7 +19,7 @@ const MainGrid: React.FC<MainGridProps> = ({ user, onProfile, onLogout }) => {
   return (
     <div className="parent">
       <div className="header"><MainHeader user={user} onProfile={onProfile} onLogout={onLogout} /></div>
-      <div className="game"><Pong /></div>
+      <div className="game"><Pong username={user}/></div>
       <div className="chat"><Chat /></div>
     </div>
   );

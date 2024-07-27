@@ -7,16 +7,26 @@ interface Conn {
 	order: number;
 }
 
+interface PongProps {
+	username: string;
+}
+
 const pongSocket = io('http://localhost:3003/pong', {
 	transports: ['websocket'],
 });
 
-const Pong: React.FC = () => {
+const Pong: React.FC<PongProps> = ({ username }) => {
 	const [pongs, setPongs] = useState<Conn[]>([]);
 	const [inQueue, setInQueue] = useState(false);
 	const [queue, setQueue] = useState<string[]>([]);
+	const [id, setId] = useState('');
 
 	useEffect(() => {
+		pongSocket.on('connect', () => {
+			const pongSocketId = pongSocket.id ? pongSocket.id : '';
+			setId(pongSocketId);
+		});
+
 		pongSocket.on('pong', (pongs: Conn[]) => {
 			setPongs(pongs);
 		});
@@ -33,7 +43,8 @@ const Pong: React.FC = () => {
 
 		return () => {
 			pongSocket.off('pong');
-			pongSocket.off('queue-update'); // Clean up listener
+			pongSocket.off('queue-update');
+			pongSocket.off('connect')
 		};
 	}, []);
 
@@ -47,7 +58,7 @@ const Pong: React.FC = () => {
 
 	return (
 		<div className="pongs-container">
-			<h2>Active Pongs</h2>
+			<h2>{username} : {conn.id}</h2>
 			<ul>
 				{pongs.map((conn) => (
 					<li key={conn.id}>
