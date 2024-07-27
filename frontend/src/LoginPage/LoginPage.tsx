@@ -13,9 +13,6 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
     if (username && password) {
       onLogin(username);
     }
-    else{
-      onLogin('Guest');
-    }
   };
 
   return (
