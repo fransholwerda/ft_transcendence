@@ -13,7 +13,8 @@ const pongSocket = io('http://localhost:3003/pong', {
 
 const Pong: React.FC = () => {
 	const [pongs, setPongs] = useState<Conn[]>([]);
-	const [inQueue, setInQueue] = useState(false); // Step 1: Add inQueue state
+	const [inQueue, setInQueue] = useState(false);
+	const [queue, setQueue] = useState<string[]>([]);
 
 	useEffect(() => {
 		pongSocket.on('pong', (pongs: Conn[]) => {
@@ -25,6 +26,7 @@ const Pong: React.FC = () => {
 			// Ensure pongSocket.id is defined before using it
 			const isSocketInQueue = pongSocket.id ? queue.includes(pongSocket.id) : false;
 			setInQueue(isSocketInQueue);
+			setQueue(queue);
 		});
 
 		pongSocket.emit('request-Pong');
@@ -35,15 +37,14 @@ const Pong: React.FC = () => {
 		};
 	}, []);
 
-	const joinQueue = () => { // Step 3: Define joinQueue function
+	const joinQueue = () => {
 		pongSocket.emit('join-queue');
 	};
 
-	const leaveQueue = () => { // Step 3: Define leaveQueue function
+	const leaveQueue = () => {
 		pongSocket.emit('leave-queue');
 	};
 
-	// Step 4: Update the return statement
 	return (
 		<div className="pongs-container">
 			<h2>Active Pongs</h2>
@@ -59,6 +60,14 @@ const Pong: React.FC = () => {
 			) : (
 				<button onClick={joinQueue}>Join Queue</button>
 			)}
+			<div className="queue-container">
+				<h2>Queue</h2>
+				<ul>
+					{queue.map((clientId) => (
+						<li key={clientId}>{clientId}</li>
+					))}
+				</ul>
+			</div>
 		</div>
 	);
 };

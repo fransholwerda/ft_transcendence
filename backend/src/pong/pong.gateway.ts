@@ -15,44 +15,45 @@ import { Socket } from 'socket.io';
 
 @WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	@WebSocketServer()
-	server: Server;
+    @WebSocketServer()
+    server: Server;
 
-	private clients: { [key: string]: number } = {};
-	private order: number = 1;
-	private queue: string[] = []; // Step 1: Add queue property
+    private clients: { [key: string]: number } = {};
+    private order: number = 1;
+    private queue: string[] = []; // Queue property to keep track of clients in the queue
 
-	handleConnection(client: Socket) {
-		this.clients[client.id] = this.order++;
-		this.server.emit('pong', this.formatPong());
-	}
+    handleConnection(client: Socket) {
+        this.clients[client.id] = this.order++;
+        this.server.emit('pong', this.formatPong());
+    }
 
-	handleDisconnect(client: Socket) {
-		delete this.clients[client.id];
-		this.server.emit('pong', this.formatPong());
-		this.handleLeaveQueue(client); // Modify to remove from queue on disconnect
-	}
+    handleDisconnect(client: Socket) {
+        delete this.clients[client.id];
+        this.server.emit('pong', this.formatPong());
+        this.handleLeaveQueue(client); // Remove from queue on disconnect
+    }
 
-	@SubscribeMessage('request-Pong')
-	handleRequestPong(client: Socket) {
-		client.emit('pong', this.formatPong());
-	}
+    @SubscribeMessage('request-Pong')
+    handleRequestPong(client: Socket) {
+        client.emit('pong', this.formatPong());
+    }
 
-	@SubscribeMessage('join-queue') // Step 2: Add join-queue handler
-	handleJoinQueue(client: Socket) {
-		if (!this.queue.includes(client.id)) {
-			this.queue.push(client.id);
-			this.server.emit('queue-update', this.queue);
-		}
-	}
+    @SubscribeMessage('join-queue') // Handler for clients joining the queue
+    handleJoinQueue(client: Socket) {
+        if (!this.queue.includes(client.id)) {
+            this.queue.push(client.id);
+            this.server.emit('queue-update', this.queue); // Emit updated queue to all clients
+        }
+    }
 
-	@SubscribeMessage('leave-queue') // Step 3: Add leave-queue handler
-	handleLeaveQueue(client: Socket) {
-		this.queue = this.queue.filter(id => id !== client.id);
-		this.server.emit('queue-update', this.queue);
-	}
+    @SubscribeMessage('leave-queue') // Handler for clients leaving the queue
+    handleLeaveQueue(client: Socket) {
+        this.queue = this.queue.filter(id => id !== client.id);
+        this.server.emit('queue-update', this.queue); // Emit updated queue to all clients
+    }
 
-	private formatPong() {
-		return Object.entries(this.clients).map(([id, order]) => ({ id, order }));
-	}
+    private formatPong() {
+        return Object.entries(this.clients).map(([id, order]) => ({ id, order }));
+    }
 }
+
