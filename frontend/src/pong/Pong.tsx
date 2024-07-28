@@ -19,14 +19,8 @@ const Pong: React.FC<PongProps> = ({ username }) => {
 	const [pongs, setPongs] = useState<Conn[]>([]);
 	const [inQueue, setInQueue] = useState(false);
 	const [queue, setQueue] = useState<string[]>([]);
-	const [id, setId] = useState('');
 
 	useEffect(() => {
-		pongSocket.on('connect', () => {
-			const pongSocketId = pongSocket.id ? pongSocket.id : '';
-			setId(pongSocketId);
-		});
-
 		pongSocket.on('pong', (pongs: Conn[]) => {
 			setPongs(pongs);
 		});
@@ -34,7 +28,10 @@ const Pong: React.FC<PongProps> = ({ username }) => {
 		// Listen for queue updates
 		pongSocket.on('queue-update', (queue: string[]) => {
 			// Ensure pongSocket.id is defined before using it
-			const isSocketInQueue = pongSocket.id ? queue.includes(pongSocket.id) : false;
+			let isSocketInQueue = false;
+			if (pongSocket.id) {
+				isSocketInQueue = queue.includes(pongSocket.id);
+			}
 			setInQueue(isSocketInQueue);
 			setQueue(queue);
 		});
@@ -58,7 +55,7 @@ const Pong: React.FC<PongProps> = ({ username }) => {
 
 	return (
 		<div className="pongs-container">
-			<h2>{username} : {conn.id}</h2>
+			<h2>{username}</h2>
 			<ul>
 				{pongs.map((conn) => (
 					<li key={conn.id}>
