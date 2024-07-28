@@ -11,7 +11,7 @@ interface PongProps {
 	username: string;
 }
 
-const pongSocket = io('http://localhost:3003/pong', {
+const ptSock = io('http://localhost:3003/pongtest', {
 	transports: ['websocket'],
 });
 
@@ -21,36 +21,36 @@ const Pong: React.FC<PongProps> = ({ username }) => {
 	const [queue, setQueue] = useState<string[]>([]);
 
 	useEffect(() => {
-		pongSocket.on('pong', (pongs: Conn[]) => {
+		ptSock.on('pong', (pongs: Conn[]) => {
 			setPongs(pongs);
 		});
 
 		// Listen for queue updates
-		pongSocket.on('queue-update', (queue: string[]) => {
-			// Ensure pongSocket.id is defined before using it
+		ptSock.on('queue-update', (queue: string[]) => {
+			// Ensure ptSock.id is defined before using it
 			let isSocketInQueue = false;
-			if (pongSocket.id) {
-				isSocketInQueue = queue.includes(pongSocket.id);
+			if (ptSock.id) {
+				isSocketInQueue = queue.includes(ptSock.id);
 			}
 			setInQueue(isSocketInQueue);
 			setQueue(queue);
 		});
 
-		pongSocket.emit('request-Pong');
+		ptSock.emit('request-Pong');
 
 		return () => {
-			pongSocket.off('pong');
-			pongSocket.off('queue-update');
-			pongSocket.off('connect')
+			ptSock.off('pong');
+			ptSock.off('queue-update');
+			ptSock.off('connect')
 		};
 	}, []);
 
 	const joinQueue = () => {
-		pongSocket.emit('join-queue');
+		ptSock.emit('join-queue');
 	};
 
 	const leaveQueue = () => {
-		pongSocket.emit('leave-queue');
+		ptSock.emit('leave-queue');
 	};
 
 	return (

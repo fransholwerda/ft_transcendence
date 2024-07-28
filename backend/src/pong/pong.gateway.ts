@@ -13,7 +13,7 @@ import { Server } from 'socket.io';
 // Socket functionality: https://socket.io/docs/v4/server-api/#Socket
 import { Socket } from 'socket.io';
 
-@WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
+@WebSocketGateway({ namespace: '/pongtest', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
