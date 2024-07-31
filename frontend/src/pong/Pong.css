@@ -1,67 +1,67 @@
-:root {
-	--pong_h2_color: #242325;
-	--pong_bg: #C8C8C8;
-	--pong_border: 1px solid #242325;
-	--pong_radius: 0px;
-	--pong_padding: 2vh;
-	--pong_margin: 0px;
-	--pong_font_size: 4vh;
-	--pong_margin_bottom: 1vh;
-	--pong_list_padding: 0;
-	--pong_list_margin: 0;
-	--pong_list_margin_bottom: 1vh;
-	--pong_list_padding: 1vh;
-	--pong_list_border: 1px solid #242325;
-	--pong_list_radius: 4px;
-	--pong_list_bg: #BBB891;
-	--pong_list_color: #242325;
-	--pong_list_transition: background-color 0.3s, transform 0.3s;
-	--pong_list_hover_bg: #DC965A;
-	--pong_list_hover_transform: translateY(-2px);
-	--pong_list_hover_box_shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
 .pongs-container {
-	background-color: var(--pong_bg);
-	margin: var(--pong_margin);
-	padding: var(--pong_padding);
-	border: var(--pong_border);
-	border-radius: var(--pong_radius);
 	display: flex;
-	flex-direction: column;
+	justify-content: center;
 	align-items: center;
+	height: 85vh;
+	background-color: #f0f0f0;
+	font-family: Arial, sans-serif;
+}
+
+.pong-card {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	padding: 2rem;
+	text-align: center;
+	max-width: 400px;
 	width: 100%;
-	height: 100%;
 }
 
-.pongs-container h2 {
-	color: var(--pong_h2_color);
-	font-size: var(--pong_font_size);
-	margin-bottom: var(--pong_margin_bottom);
+h2 {
+	color: #333;
+	margin-bottom: 1rem;
 }
 
-.pongs-container ul {
-	list-style-type: none;
-	padding: var(--pong_list_padding);
-	margin: var(--pong_list_margin);
+p {
+	color: #666;
+	margin-bottom: 1rem;
 }
 
-.pongs-container li {
-	color: var(--pong_list_color);
-	margin-bottom: var(--pong_list_margin_bottom);
-	padding: var(--pong_list_padding);
-	border: var(--pong_list_border);
-	border-radius: var(--pong_list_radius);
-	background-color: var(--pong_list_bg);
-	transition: var(--pong_list_transition);
+button {
+	background-color: #4CAF50;
+	border: none;
+	border-radius: 4px;
+	color: white;
+	cursor: pointer;
+	font-size: 1rem;
+	padding: 0.75rem 1.5rem;
+	transition: background-color 0.3s ease;
 }
 
-.pongs-container li:hover {
-	background-color: var(--pong_list_hover_bg);
-	transform: var(--pong_list_hover_transform);
-	box-shadow: var(--pong_list_hover_box_shadow);
+button:hover {
+	background-color: #45a049;
 }
 
-.pongs-container li:last-child {
-	margin-bottom: 0;
+button:disabled {
+	background-color: #cccccc;
+	cursor: not-allowed;
+}
+
+.leave-queue-btn {
+	background-color: #f44336;
+}
+
+.leave-queue-btn:hover {
+	background-color: #da190b;
+}
+
+.game-info {
+	background-color: #e7f3fe;
+	border-radius: 4px;
+	padding: 1rem;
+	margin-top: 1rem;
+}
+
+.game-info p {
+	margin: 0.5rem 0;
 }

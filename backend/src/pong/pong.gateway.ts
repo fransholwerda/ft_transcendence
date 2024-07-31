@@ -18,50 +18,63 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	private clients: { [key: string]: { order: number, username: string } } = {};
-	private order: number = 1;
 	private queue: string[] = [];
+	private rooms: Map<string, string[]> = new Map();
 
 	handleConnection(client: Socket) {
-		this.clients[client.id] = { order: this.order++, username: 'Unknown' };
-		this.server.emit('pong', this.formatPong());
+		console.log(`Client connected: ${client.id}`);
 	}
 
 	handleDisconnect(client: Socket) {
-		delete this.clients[client.id];
-		this.server.emit('pong', this.formatPong());
-		this.handleLeaveQueue(client);
+		console.log(`Client disconnected: ${client.id}`);
+		this.removeFromQueue(client.id);
+		this.removeFromRoom(client.id);
 	}
 
-	@SubscribeMessage('set-username')
-	handleSetUsername(client: Socket, username: string) {
-		if (this.clients[client.id]) {
-			this.clients[client.id].username = username;
-			this.server.emit('pong', this.formatPong());
-		}
-	}
-
-	@SubscribeMessage('request-Pong')
-	handleRequestPong(client: Socket) {
-		client.emit('pong', this.formatPong());
-	}
-
-	@SubscribeMessage('join-queue')
+	@SubscribeMessage('joinQueue')
 	handleJoinQueue(client: Socket) {
 		if (!this.queue.includes(client.id)) {
 			this.queue.push(client.id);
-			this.server.emit('queue-update', this.queue);
+			this.checkQueue();
 		}
 	}
 
-	@SubscribeMessage('leave-queue')
+	@SubscribeMessage('leaveQueue')
 	handleLeaveQueue(client: Socket) {
-		this.queue = this.queue.filter(id => id !== client.id);
-		this.server.emit('queue-update', this.queue);
+		this.removeFromQueue(client.id);
 	}
 
-	private formatPong() {
-		return Object.entries(this.clients).map(([id, { order, username }]) => ({ id, order, username }));
+	private checkQueue() {
+		if (this.queue.length >= 2) {
+			const p1 = this.queue.shift();
+			const p2 = this.queue.shift();
+			const roomId = `pong_${p1}_${p2}`;
+
+			this.rooms.set(roomId, [p1, p2]);
+
+			this.server.to(p1).emit('gameStart', { roomId, opponent: p2 });
+			this.server.to(p2).emit('gameStart', { roomId, opponent: p1 });
+
+			this.server.in(p1).socketsJoin(roomId);
+			this.server.in(p2).socketsJoin(roomId);
+		}
+	}
+
+	private removeFromQueue(clientId: string) {
+		this.queue = this.queue.filter(id => id !== clientId);
+	}
+
+	private removeFromRoom(clientId: string) {
+		for (const [roomId, players] of this.rooms.entries()) {
+			if (players.includes(clientId)) {
+				this.rooms.delete(roomId);
+				players.forEach(playerId => {
+					if (playerId !== clientId) {
+						this.server.to(playerId).emit('opponentLeft');
+					}
+				});
+				break;
+			}
+		}
 	}
 }
-

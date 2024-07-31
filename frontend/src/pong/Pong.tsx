@@ -2,79 +2,69 @@ import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import './Pong.css';
 
-interface Conn {
-	id: string;
-	order: number;
-}
-
-interface PongProps {
-	username: string;
-}
-
 const ptSock = io('http://localhost:3003/pongtest', {
 	transports: ['websocket'],
 });
 
-const Pong: React.FC<PongProps> = ({ username }) => {
-	const [pongs, setPongs] = useState<Conn[]>([]);
+const Pong: React.FC = () => {
 	const [inQueue, setInQueue] = useState(false);
-	const [queue, setQueue] = useState<string[]>([]);
+	const [inGame, setInGame] = useState(false);
+	const [opponent, setOpponent] = useState<string | null>(null);
+	const [roomId, setRoomId] = useState<string | null>(null);
 
 	useEffect(() => {
-		ptSock.on('pong', (pongs: Conn[]) => {
-			setPongs(pongs);
+		ptSock.on('gameStart', ({ roomId, opponent }) => {
+			setInQueue(false);
+			setInGame(true);
+			setOpponent(opponent);
+			setRoomId(roomId);
 		});
 
-		// Listen for queue updates
-		ptSock.on('queue-update', (queue: string[]) => {
-			// Ensure ptSock.id is defined before using it
-			let isSocketInQueue = false;
-			if (ptSock.id) {
-				isSocketInQueue = queue.includes(ptSock.id);
-			}
-			setInQueue(isSocketInQueue);
-			setQueue(queue);
+		ptSock.on('opponentLeft', () => {
+			setInGame(false);
+			setOpponent(null);
+			setRoomId(null);
 		});
-
-		ptSock.emit('request-Pong');
 
 		return () => {
-			ptSock.off('pong');
-			ptSock.off('queue-update');
-			ptSock.off('connect')
+			ptSock.off('gameStart');
+			ptSock.off('opponentLeft');
 		};
 	}, []);
 
 	const joinQueue = () => {
-		ptSock.emit('join-queue');
+		ptSock.emit('joinQueue');
+		setInQueue(true);
 	};
 
 	const leaveQueue = () => {
-		ptSock.emit('leave-queue');
+		ptSock.emit('leaveQueue');
+		setInQueue(false);
 	};
 
 	return (
 		<div className="pongs-container">
-			<h2>{username}</h2>
-			<ul>
-				{pongs.map((conn) => (
-					<li key={conn.id}>
-						{conn.id}: {conn.order}
-					</li>
-				))}
-			</ul>
-			{inQueue ? (
-				<button onClick={leaveQueue}>Leave Queue</button>
-			) : (
-				<button onClick={joinQueue}>Join Queue</button>
-			)}
-			<div className="queue-container">
-				<h2>Queue</h2>
-				<ul>
-					{queue.map((clientId) => (
-						<li key={clientId}>{clientId}</li>
-					))}
-				</ul>
+			<div className="pong-card">
+				<h2>Pong Game</h2>
+				{!inQueue && !inGame && (
+					<button onClick={joinQueue}>Join Queue</button>
+				)}
+				{inQueue && (
+					<>
+						<p>Waiting for opponent...</p>
+						<button className="leave-queue-btn" onClick={leaveQueue}>
+							Leave Queue
+						</button>
+					</>
+				)}
+				{inGame && (
+					<div className="game-info">
+						<p>Game started!</p>
+						<p>Room ID: {roomId}</p>
+						<p>Opponent: {opponent}</p>
+						{/* Add your game component here */}
+					</div>
+				)}
 			</div>
 		</div>
 	);
