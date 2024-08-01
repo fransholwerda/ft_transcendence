@@ -2,13 +2,14 @@ import React from 'react';
 import './MainGrid.css';
 import Chat from '../chat/Chat'
 import MainHeader from '../mainHeader/MainHeader';
+import { User } from '../PageManager.tsx';
 
 // import GameManager from '../gameManager/GameManager';
 // <GameManager />
 import Connections from '../connections/Connections';
 
 interface MainGridProps {
-  user: string;
+  user: User;
   onProfile: () => void;
   onLogout: () => void;
 }
