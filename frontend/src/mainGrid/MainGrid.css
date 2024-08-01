@@ -23,8 +23,8 @@
 	min-width: 100vw;
 	max-width: 100vw;
 	/* HEIGHT */
-	min-height: 25vh;
-	max-height: 50vh;
+	min-height: 20vh;
+	max-height: 20vh;
 }
 
 .game {
@@ -34,8 +34,8 @@
 	min-width: 75vw;
 	max-width: 75vw;
 	/* HEIGHT */
-	min-height: 70vh;
-	max-height: 85vh;
+	min-height: 80vh;
+	max-height: 80vh;
 }
 
 .chat {
@@ -45,6 +45,6 @@
 	min-width: 25vw;
 	max-width: 25vw;
 	/* HEIGHT */
-	min-height: 70vh;
-	max-height: 85vh;
+	min-height: 80vh;
+	max-height: 80vh;
 }

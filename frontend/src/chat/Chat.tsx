@@ -4,7 +4,7 @@ import './Chat.css';
 import MessageInput from './MessageInput';
 import Messages from './Messages';
 
-const chatSocket = io('http://localhost:3000/chat', {
+const chatSocket = io('http://localhost:3003/chat', {
   transports: ['websocket'],
 });
 
