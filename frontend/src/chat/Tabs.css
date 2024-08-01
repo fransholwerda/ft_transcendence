@@ -5,8 +5,10 @@
 	--tabs_sections_height: 100%;
 	--tabs_sect_height: 50%;
 	--tabs_header_height: 5%;
-	--tabs_btns_height: 45%;
+	--tabs_btns_height: 85%;
+	--tabs_add_height: 100%;
 	--tabs_content_height: 100%;
+	--tabs_add-tab-form: 10%;
 }
 
 .Tabs {
@@ -33,6 +35,7 @@
 }
 
 .tab-section {
+	border: 1px solid #ccc;
 	height: var(--tabs_sect_height);
 	min-height: var(--tabs_sect_height);
 	max-height: var(--tabs_sect_height);
@@ -72,11 +75,30 @@
 	cursor: pointer;
 }
 
-.add-tab-button {
-	padding: 10px 20px;
+.add-tab-form {
+	display: grid;
+	grid-template-columns: 4fr 1fr;
+	grid-template-rows: 1fr;
+	height: var(--tabs_add-tab-form);
+	min-height: var(--tabs_add-tab-form);
+	max-height: var(--tabs_add-tab-form);
+}
+
+.add-tab-form input {
+	grid-column: 1/2;
+	height: var(--tabs_add_height);
+	min-height: var(--tabs_add_height);
+	max-height: var(--tabs_add_height);
+}
+
+.add-tab-form button {
+	grid-column: 2/3;
 	cursor: pointer;
 	border: 1px solid #ccc;
 	background-color: #000000;
+	height: var(--tabs_add_height);
+	min-height: var(--tabs_add_height);
+	max-height: var(--tabs_add_height);
 }
 
 .tab-content {

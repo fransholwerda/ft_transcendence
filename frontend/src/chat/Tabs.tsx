@@ -9,10 +9,10 @@ interface Tab {
 
 const Tabs: React.FC = () => {
   const [channels, setChannels] = useState<Tab[]>([
-    { id: 1, title: 'Channel 1', content: 'Content of Channel 1' },
+    { id: 1, title: 'General Chat', content: 'Content of General Chat' },
   ]);
   const [dms, setDms] = useState<Tab[]>([
-    { id: 101, title: 'DM 1', content: 'Content of DM 1' },
+    // { id: 101, title: 'DM 1', content: 'Content of DM 1' },
   ]);
   const [activeTabId, setActiveTabId] = useState<number>(1);
   const [activeType, setActiveType] = useState<'channel' | 'dm'>('channel');
@@ -87,15 +87,15 @@ const Tabs: React.FC = () => {
                   <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel'); }}>×</span>
                 </button>
               ))}
-              <div className="add-tab-form">
-                <input 
-                  type="text" 
-                  value={newChannelName} 
-                  onChange={(e) => setNewChannelName(e.target.value)} 
-                  placeholder="New channel name" 
-                />
-                <button className="add-tab-button" onClick={addChannel}>+</button>
-              </div>
+            </div>
+            <div className="add-tab-form">
+              <input 
+                type="text" 
+                value={newChannelName} 
+                onChange={(e) => setNewChannelName(e.target.value)} 
+                placeholder="New channel name" 
+              />
+              <button onClick={addChannel}>+</button>
             </div>
           </div>
           <div className="tab-section">
@@ -111,15 +111,15 @@ const Tabs: React.FC = () => {
                   <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm'); }}>×</span>
                 </button>
               ))}
-              <div className="add-tab-form">
-                <input 
-                  type="text" 
-                  value={newDmName} 
-                  onChange={(e) => setNewDmName(e.target.value)} 
-                  placeholder="New DM name" 
-                />
-                <button className="add-tab-button" onClick={addDm}>+</button>
-              </div>
+            </div>
+            <div className="add-tab-form">
+              <input
+                type="text" 
+                value={newDmName} 
+                onChange={(e) => setNewDmName(e.target.value)} 
+                placeholder="New DM name" 
+              />
+              <button onClick={addDm}>+</button>
             </div>
           </div>
         </div>
