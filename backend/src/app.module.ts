@@ -5,6 +5,8 @@ import { ChatGateway } from './chat/chat.gateway';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmConfig } from './config/typeorm.config';
 import { ConnectionsGateway } from './connections/connections.gateway';
 
 @Module({
@@ -13,8 +15,8 @@ imports: [
 		  envFilePath: '.env',
 		  
 		}),
-		DatabaseModule,
 		UsersModule,
+		TypeOrmModule.forRoot(typeOrmConfig)
 	],
 controllers: [AppController],
   providers: [AppService, ChatGateway, ConnectionsGateway],

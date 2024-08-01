@@ -3,50 +3,57 @@
 .main-header {
 	display: flex;
 	justify-content: left;
-	align-items: left;
+	align-items: center; /* Centers items vertically */
 	background-color: #005289;
 	padding: 10px 20px;
 	border-bottom: 10px solid #747474;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .header-content {
+	margin-bottom: 10px;
+	flex-wrap: wrap; /* Allows wrapping on small screens */
+	height: 20vh;
+}
+
+.header-content {
 	display: flex;
-	align-items: center;
-  }
-  
-  .header-logo img {
-	height: 160px;
+	align-items: center; /* Centers items vertically */
+	flex-wrap: wrap; /* Allows wrapping on small screens */
+}
+
+.header-logo img {
+	height: 10vh; /* Scales height relative to viewport */
 	margin-right: 15px;
-  }
-  
-  .header-title {
+	margin-top: 15px;
+}
+
+.header-title {
 	display: flex;
 	flex-direction: column;
-  }
-  
-  .header-title h1 {
+}
+
+.header-title h1 {
 	font-size: 1.5rem;
 	margin: 0;
-	color: #333;
-  }
-  
-  .header-title p {
+	color: #ffffff;
+}
+
+.header-title p {
 	font-size: 1rem;
 	margin: 0;
-	color: #666;
-  }
-  
-  .header-profile,
-  .header-logout {
+	color: #ffffff;
+}
+
+.header-profile,
+.header-logout {
 	display: flex;
-	align-items: center;
-  }
-  
-  .header-profile-button,
-  .header-logout-button {
+	align-items: center; /* Centers items vertically */
+	margin-right: 10vw;
+}
+
+.header-profile-button,
+.header-logout-button {
 	padding: 10px 15px;
 	margin-left: 10px;
+	margin-top: 10px; /* Reduces top margin for better responsiveness */
 	border: none;
 	border-radius: 5px;
 	background-color: #007bff;
@@ -54,10 +61,9 @@
 	font-size: 1rem;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
-  }
-  
-  .header-profile-button:hover,
-  .header-logout-button:hover {
+}
+
+.header-profile-button:hover,
+.header-logout-button:hover {
 	background-color: #0056b3;
-  }
-  
+}

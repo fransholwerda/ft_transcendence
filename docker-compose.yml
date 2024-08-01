@@ -17,7 +17,25 @@ services:
       - ./database/data:/data/postgres
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
   networks:
-    - backend
+    - db
+
+ pgadmin:
+  container_name: pgadmin
+  image: dpage/pgadmin4
+  depends_on:
+    - postgres
+  ports:
+    - 8888:80
+  environment: 
+    - PGADMIN_DEFAULT_EMAIL=username@domain.com
+    - PGADMIN_DEFAULT_PASSWORD=password
+  volumes:
+    - ./database/pgadmin:/data/pgadmin
+  networks:
+    - db
+
+# !!!!!UNCOMMENTING THE ABOVE WILL CREATE AN ADDITIONAL CONTAINER RUNNING PGADMIN IN CASE YOU WANT
+# TO HAVE A GUI WHEN WORKING WITH THE DATABASE !!!!!!
 
  backend:
   container_name: backend
@@ -27,14 +45,14 @@ services:
     dockerfile: Dockerfile
     context: ./backend
   env_file: ./backend/back.env
-  command: npm start dev
+  command: npm run start:dev
   restart: unless-stopped
   ports:
-   - 3000:3000
+   - 3003:3003
   volumes:
    - ./backend/app:/app
   networks:
-   - backend
+   - db
 
  frontend:
   container_name: frontend
@@ -52,5 +70,5 @@ services:
    - ./frontend/app:/app
 
 networks:
- backend:
+ db:
 
