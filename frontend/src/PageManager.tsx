@@ -4,7 +4,6 @@ import './index.css'
 import LoginPage from './LoginPage/LoginPage'
 import './LoginPage/LoginPage.css'
 
-import ProfilePage from './ProfilePage/ProfilePage'
 import './ProfilePage/ProfilePage.css'
 
 import MainGrid from './mainGrid/MainGrid'
@@ -28,18 +27,11 @@ const PageManager: React.FC = () => {
     setCurrentPage('profile');
   };
 
-  const goToMain = () => {
-    setCurrentPage('main');
-  };
-
   return (
     <div>
       {currentPage === 'login' && <LoginPage onLogin={handleLogin} />}
       {currentPage === 'main' && user && (
         <MainGrid user={user} onProfile={goToProfile} onLogout={handleLogout} />
-      )}
-      {currentPage === 'profile' && user && (
-        <ProfilePage user={user} onMainPage={goToMain} onLogout={handleLogout} />
       )}
     </div>
   );
