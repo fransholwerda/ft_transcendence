@@ -1,8 +1,12 @@
+@import url('../maincssroot.css');
+
 .pongs-container {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 85vh;
+	height: var(--maingrid_content_height);
+	min-height: var(--maingrid_content_height);
+	max-height: var(--maingrid_content_height);
 	background-color: #f0f0f0;
 	font-family: Arial, sans-serif;
 }

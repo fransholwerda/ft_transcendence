@@ -1,79 +1,92 @@
+@import url('../maincssroot.css');
+
+:root {
+	--tabs_container_height: 100%;
+	--tabs_sections_height: 100%;
+	--tabs_sect_height: 50%;
+	--tabs_header_height: 5%;
+	--tabs_btns_height: 45%;
+	--tabs_content_height: 100%;
+}
+
 .Tabs {
 	font-family: sans-serif;
 	text-align: center;
-  }
-  
-  .tab-container {
+	height: var(--maingrid_content_height);
+	min-height: var(--maingrid_content_height);
+	max-height: var(--maingrid_content_height);
+}
+
+.tab-container {
 	display: flex;
-	height: 85vh;
-	max-height: 85vh;
-  }
-  
-  .tab-sections {
+	height: var(--tabs_container_height);
+	max-height: var(--tabs_container_height);
+}
+
+.tab-sections {
 	display: flex;
 	flex-direction: column;
-	height: 85vh;
-	max-height: 85vh;
+	height: var(--tabs_sections_height);
+	max-height: var(--tabs_sections_height);
 	width: 250px;
 	overflow-y: auto;
-  }
-  
-  .tab-section {
-	height: 42.5vh;
-	min-height: 42.5vh;
-	max-height: 42.5vh;
-  }
-  
-  .tab-header {
+}
+
+.tab-section {
+	height: var(--tabs_sect_height);
+	min-height: var(--tabs_sect_height);
+	max-height: var(--tabs_sect_height);
+}
+
+.tab-header {
 	font-weight: bold;
-	height: 2.5vh;
-	min-height: 2.5vh;
-	max-height: 2.5vh;
-  }
-  
-  .tab-buttons {
+	height: var(--tabs_header_height);
+	min-height: var(--tabs_header_height);
+	max-height: var(--tabs_header_height);
+}
+
+.tab-buttons {
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;
-	height: 40.0vh;
-	min-height: 40.0vh;
-	max-height: 40.0vh;
-  }
-  
-  .tab-button {
+	height: var(--tabs_btns_height);
+	min-height: var(--tabs_btns_height);
+	max-height: var(--tabs_btns_height);
+}
+
+.tab-button {
 	padding: 10px 20px;
 	cursor: pointer;
 	border: 1px solid #ccc;
 	background-color: #000000;
 	position: relative;
 	text-align: left;
-  }
-  
-  .tab-button.active {
+}
+
+.tab-button.active {
 	background-color: #ff0000;
-  }
-  
-  .tab-button .close-button {
+}
+
+.tab-button .close-button {
 	margin-left: 10px;
 	cursor: pointer;
-  }
-  
-  .add-tab-button {
+}
+
+.add-tab-button {
 	padding: 10px 20px;
 	cursor: pointer;
 	border: 1px solid #ccc;
 	background-color: #000000;
-  }
-  
-  .tab-content {
+}
+
+.tab-content {
 	flex-grow: 1;
 	border: 1px solid #ccc;
 	padding: 20px;
-	height: 85vh;
-	min-height: 85vh;
-	max-height: 85vh;
+	height: var(--tabs_content_height);
+	min-height: var(--tabs_content_height);
+	max-height: var(--tabs_content_height);
 	background-color: #000000;
 	text-align: left;
 	overflow-y: auto;
-  }
-  
+}
