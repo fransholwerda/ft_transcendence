@@ -1,9 +1,10 @@
 import React from 'react';
 import './MainHeader.css';
 import mainHeaderImage from './mainheader.png';
+import { User } from '../PageManager.tsx';
 
 interface MainHeaderProps {
-  user: string;
+  user: User;
   onProfile: () => void;
   onLogout: () => void;
 }
@@ -17,7 +18,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onProfile, onLogout }) =>
         </div>
         <div className="header-title">
           <h1>FT Transcendence</h1>
-          <p>Welcome, {user}</p>
+          <p>Welcome, {user.display_name}</p>
         </div>
       </div>
       <div className="header-profile">
