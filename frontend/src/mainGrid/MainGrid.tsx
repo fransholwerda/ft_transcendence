@@ -7,8 +7,9 @@ import { User } from '../PageManager.tsx';
 // <GameManager />
 // import Connections from '../connections/Connections';
 // <Connections />
-import Pong from '../pong/Pong';
+// import Pong from '../pong/Pong';
 import Tabs from '../chat/Tabs';
+import ProfilePage from '../ProfilePage/ProfilePage.tsx';
 
 interface MainGridProps {
   user: User;
@@ -20,7 +21,7 @@ const MainGrid: React.FC<MainGridProps> = ({ user, onProfile, onLogout }) => {
   return (
     <div className="parent">
       <div className="header"><MainHeader user={user} onProfile={onProfile} onLogout={onLogout} /></div>
-      <div className="game"><Pong /></div>
+      <div className="game"><ProfilePage user={user} /></div>
       <div className="chat"><Tabs /></div>
     </div>
   );
