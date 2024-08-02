@@ -1,0 +1,14 @@
+:root {
+	/* PARENT */
+	--maingrid_parent_height: 100vh;
+	--maingrid_parent_width: 100vw;
+	/* HEADER */
+	--maingrid_header_height: 15vh;
+	--maingrid_header_width: 100vw;
+	/* CONTENT */
+	--maingrid_content_height: 85vh;
+	--maingrid_content_width: 75vw;
+	/* CHAT */
+	--maingrid_chat_height: 85vh;
+	--maingrid_chat_width: 25vw;
+}

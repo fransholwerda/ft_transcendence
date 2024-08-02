@@ -7,7 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
-import { ConnectionsGateway } from './connections/connections.gateway';
+import { PongGateway } from './pong/pong.gateway';
 import { AuthController } from './auth/auth.controller';
 
 @Module({
@@ -20,6 +20,6 @@ imports: [
 		TypeOrmModule.forRoot(typeOrmConfig)
 	],
 controllers: [AppController, AuthController],
-  providers: [AppService, ChatGateway, ConnectionsGateway],
+  providers: [AppService, ChatGateway, PongGateway],
 })
 export class AppModule {}

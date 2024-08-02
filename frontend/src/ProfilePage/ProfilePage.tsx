@@ -8,7 +8,7 @@ interface ProfilePageProps {
   onLogout: () => void;
 }
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ user, onMainPage, onLogout }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({ user, onLogout }) => {
   return (
     <div className="parent_profile">
       <div className="profile_header">

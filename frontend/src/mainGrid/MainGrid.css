@@ -1,14 +1,15 @@
+@import url('../maincssroot.css');
+
 .parent {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    grid-template-rows: 15% 85%;
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-    
-    height: 100vh;
-    max-height: 100vh;
-    width: 100vw;
-    max-width: 100vw;
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	grid-template-rows: 15% 80%;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	height: var(--maingrid_parent_height);
+	max-height: var(--maingrid_parent_height);
+	width: var(--maingrid_parent_width);
+	max-width: var(--maingrid_parent_width);
 }
 
 .header, .game, .chat {
@@ -17,34 +18,34 @@
 }
 
 .header {
-    grid-area: 1 / 1 / 2 / 3;
-    background-color: rgb(1, 57, 1);
+	grid-area: 1 / 1 / 2 / 3;
+	background-color: rgb(1, 57, 1);
 	/* WIDTH */
-	min-width: 100vw;
-	max-width: 100vw;
+	min-width: var(--maingrid_header_width);
+	max-width: var(--maingrid_header_width);
 	/* HEIGHT */
-	min-height: 25vh;
-	max-height: 50vh;
+	min-height: var(--maingrid_header_height);
+	max-height: var(--maingrid_header_height);
 }
 
 .game {
-    grid-area: 2 / 1 / 3 / 2;
-    background-color: rgb(2, 2, 58);
+	grid-area: 2 / 1 / 3 / 2;
+	background-color: rgb(2, 2, 58);
 	/* WIDTH */
-	min-width: 75vw;
-	max-width: 75vw;
+	min-width: var(--maingrid_content_width);
+	max-width: var(--maingrid_content_width);
 	/* HEIGHT */
-	min-height: 70vh;
-	max-height: 85vh;
+	min-height: var(--maingrid_content_height);
+	max-height: var(--maingrid_content_height);
 }
 
 .chat {
-    grid-area: 2 / 2 / 3 / 3;
-    background-color: rgb(68, 2, 2);
+	grid-area: 2 / 2 / 3 / 3;
+	background-color: rgb(68, 2, 2);
 	/* WIDTH */
-	min-width: 25vw;
-	max-width: 25vw;
+	min-width: var(--maingrid_chat_width);
+	max-width: var(--maingrid_chat_width);
 	/* HEIGHT */
-	min-height: 70vh;
-	max-height: 85vh;
+	min-height: var(--maingrid_chat_height);
+	max-height: var(--maingrid_chat_height);
 }
