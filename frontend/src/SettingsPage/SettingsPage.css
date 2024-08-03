@@ -1,0 +1,17 @@
+@import url('../maincssroot.css');
+
+:root {
+	--settings_bg_color: #00FF00;
+}
+
+.settings-page {
+	margin: 0;
+	padding: 0;
+	height: var(--maingrid_content_height);
+	min-height: var(--maingrid_content_height);
+	max-height: var(--maingrid_content_height);
+	width: var(--maingrid_content_width);
+	min-width: var(--maingrid_content_width);
+	max-width: var(--maingrid_content_width);
+	background-color: var(--settings_bg_color);
+}
