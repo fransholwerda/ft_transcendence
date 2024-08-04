@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './index.css'
 
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 // components for routing
 import LoginPage from './LoginPage/LoginPage'
@@ -28,23 +28,17 @@ const PageManager: React.FC = () => {
 
   return (
     <Router>
-      <Switch>
-        <Route path="/" exact render={(props: RouteComponentProps) => <LoginPage {...props} onLogin={handleLogin} />} />
+      <Routes>
+        <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
         
-        <Route path="/pong" exact>
-          {user ? <MainGrid initialComponent="Pong" user={user} onLogout={handleLogout} /> : <Redirect to="/" />}
-        </Route>
-
-        <Route path="/settings" exact>
-          {user ? <MainGrid initialComponent="SettingsPage" user={user} onLogout={handleLogout} /> : <Redirect to="/" />}
-        </Route>
-
-        <Route path="/profile" exact>
-          {user ? <MainGrid initialComponent="ProfilePage" user={user} onLogout={handleLogout} /> : <Redirect to="/" />}
-        </Route>
+        <Route path="/pong" element={user ? <MainGrid initialComponent="Pong" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         
-        <Redirect to="/" />
-      </Switch>
+        <Route path="/settings" element={user ? <MainGrid initialComponent="SettingsPage" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
+        
+        <Route path="/profile" element={user ? <MainGrid initialComponent="ProfilePage" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
+        
+        <Route path="*" element={<Navigate replace to="/" />} />
+      </Routes>
     </Router>
   );
 };
