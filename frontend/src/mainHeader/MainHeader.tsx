@@ -22,32 +22,32 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onLogout }) => {
         </div>
       </div>
 
-      <div className="header-profile">
+      <div className="header-item">
         <Link to="/profile">
-          <button className="header-profile-button">
+          <button className="header-button">
             Profile
           </button>
         </Link>
       </div>
 
-      <div className="header-settings">
+      <div className="header-item">
         <Link to="/settings">
-          <button className="header-settings-button">
+          <button className="header-button">
             Settings
           </button>
         </Link>
       </div>
 
-      <div className="header-pong">
+      <div className="header-item">
         <Link to="/pong">
-          <button className="header-Pong-button">
+          <button className="header-button">
             Pong
           </button>
         </Link>
       </div>
 
-      <div className="header-logout">
-        <button className="header-logout-button" onClick={onLogout}>
+      <div className="header-item">
+        <button className="header-button" onClick={onLogout}>
           Logout
         </button>
       </div>
