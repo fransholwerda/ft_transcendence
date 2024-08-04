@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import './LoginPage.css';
 
 interface LoginProps {
@@ -36,6 +38,8 @@ async function requestIntraUser(access_token: object) {
 }
 
 const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
+  const navigate = useNavigate();
+
   const client_id = "u-s4t2ud-d65b8708fe160cee8d25bff3aadbe733bd913f884d1fc2ad79cf4091132d661f";
   const redirect_uri = "http%3A%2F%2Flocalhost%3A8080";
   const scope = "profile public";
@@ -48,6 +52,7 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
     const intra_user = await requestIntraUser(access_token);
     window.history.pushState({}, document.title, "/");
     onLogin(intra_user.id);
+    navigate('/pong');
   }
 
   if (url_params.has("code")) {

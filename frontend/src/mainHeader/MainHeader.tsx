@@ -39,7 +39,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onLogout }) => {
       </div>
 
       <div className="header-pong">
-        <Link to="/Pong">
+        <Link to="/pong">
           <button className="header-Pong-button">
             Pong
           </button>
