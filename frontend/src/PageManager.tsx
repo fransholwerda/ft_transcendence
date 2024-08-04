@@ -27,15 +27,11 @@ const PageManager: React.FC = () => {
     setCurrentPage('login');
   };
 
-  const goToProfile = () => {
-    setCurrentPage('profile');
-  };
-
   return (
     <div>
       {currentPage === 'login' && <LoginPage onLogin={handleLogin} />}
       {currentPage === 'main' && user && (
-        <MainGrid user={user} onProfile={goToProfile} onLogout={handleLogout} />
+        <MainGrid user={user} onLogout={handleLogout} />
       )}
     </div>
   );

@@ -12,14 +12,13 @@ import Tabs from '../chat/Tabs';
 
 interface MainGridProps {
   user: User;
-  onProfile: () => void;
   onLogout: () => void;
 }
 
-const MainGrid: React.FC<MainGridProps> = ({ user, onProfile, onLogout }) => {
+const MainGrid: React.FC<MainGridProps> = ({ user, onLogout }) => {
   return (
     <div className="parent">
-      <div className="header"><MainHeader user={user} onProfile={onProfile} onLogout={onLogout} /></div>
+      <div className="header"><MainHeader user={user} onLogout={onLogout} /></div>
       <div className="content"><Pong /></div>
       <div className="chat"><Tabs /></div>
     </div>

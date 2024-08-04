@@ -5,11 +5,10 @@ import { User } from '../PageManager.tsx';
 
 interface MainHeaderProps {
   user: User;
-  onProfile: () => void;
   onLogout: () => void;
 }
 
-const MainHeader: React.FC<MainHeaderProps> = ({ user, onProfile, onLogout }) => {
+const MainHeader: React.FC<MainHeaderProps> = ({ user, onLogout }) => {
   return (
     <div className="main-header">
       <div className="header-content">
@@ -22,7 +21,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onProfile, onLogout }) =>
         </div>
       </div>
       <div className="header-profile">
-        <button className="header-profile-button" onClick={onProfile}>
+        <button className="header-profile-button">
           Profile
         </button>
       </div>
