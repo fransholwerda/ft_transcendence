@@ -2,6 +2,7 @@ import React from 'react';
 import './MainHeader.css';
 import mainHeaderImage from './mainheader.png';
 import { User } from '../PageManager.tsx';
+import { Link } from 'react-router-dom';
 
 interface MainHeaderProps {
   user: User;
@@ -22,16 +23,35 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onLogout }) => {
       </div>
 
       <div className="header-profile">
-        <button className="header-profile-button">
-          Profile
-        </button>
+        <Link to="/profile">
+          <button className="header-profile-button">
+            Profile
+          </button>
+        </Link>
       </div>
-      
+
+      <div className="header-settings">
+        <Link to="/settings">
+          <button className="header-settings-button">
+            Settings
+          </button>
+        </Link>
+      </div>
+
+      <div className="header-pong">
+        <Link to="/Pong">
+          <button className="header-Pong-button">
+            Pong
+          </button>
+        </Link>
+      </div>
+
       <div className="header-logout">
         <button className="header-logout-button" onClick={onLogout}>
           Logout
         </button>
       </div>
+
     </div>
   );
 };

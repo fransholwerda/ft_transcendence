@@ -29,16 +29,20 @@ const PageManager: React.FC = () => {
   return (
     <Router>
       <Switch>
-        <Route path="/" exact component={LoginPage onLogin={handleLogin}} />
+        <Route path="/" exact render={(props: RouteComponentProps) => <LoginPage {...props} onLogin={handleLogin} />} />
+        
         <Route path="/pong" exact>
-          <MainGrid initialComponent="Pong" user={user} onLogout={handleLogout} />
+          {user ? <MainGrid initialComponent="Pong" user={user} onLogout={handleLogout} /> : <Redirect to="/" />}
         </Route>
+
         <Route path="/settings" exact>
-          <MainGrid initialComponent="SettingsPage" user={user} onLogout={handleLogout} />
+          {user ? <MainGrid initialComponent="SettingsPage" user={user} onLogout={handleLogout} /> : <Redirect to="/" />}
         </Route>
+
         <Route path="/profile" exact>
-          <MainGrid initialComponent="ProfilePage" user={user} onLogout={handleLogout} />
+          {user ? <MainGrid initialComponent="ProfilePage" user={user} onLogout={handleLogout} /> : <Redirect to="/" />}
         </Route>
+        
         <Redirect to="/" />
       </Switch>
     </Router>
@@ -46,32 +50,3 @@ const PageManager: React.FC = () => {
 };
 
 export default PageManager;
-
-/*
-<div>
-  {currentPage === 'login' && <LoginPage onLogin={handleLogin} />}
-  {currentPage === 'main' && user && (
-    <MainGrid user={user} onLogout={handleLogout} />
-  )}
-</div>
-*/
-
-/*
-<div>
-  <Route path="/" exact>
-    <LoginPage onLogin={handleLogin} />
-  </Route>
-  <Route path="/main">
-    {user && <MainGrid user={user} onLogout={handleLogout} />}
-  </Route>
-  <Route path="/pong">
-    {user && <Pong />}
-  </Route>
-  <Route path="/profile">
-    {user && <ProfilePage user={user} />}
-  </Route>
-  <Route path="/settings">
-    {user && <SettingsPage />}
-  </Route>
-</div>
-*/

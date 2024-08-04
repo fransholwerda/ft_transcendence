@@ -9,16 +9,16 @@ import Tabs from '../chat/Tabs';
 // <Connections />
 
 // components for routing
-import MainHeader from './mainHeader/MainHeader'
-import Pong from './pong/Pong'
-import ProfilePage from './ProfilePage/ProfilePage'
-import SettingsPage from './SettingsPage/SettingsPage'
+import MainHeader from '../mainHeader/MainHeader'
+import Pong from '../pong/Pong'
+import ProfilePage from '../ProfilePage/ProfilePage'
+import SettingsPage from '../SettingsPage/SettingsPage'
 
 // and their styles
-import './mainHeader/MainHeader.css'
-import './pong/Pong.css'
-import './ProfilePage/ProfilePage.css'
-import './SettingsPage/SettingsPage.css'
+import '../mainHeader/MainHeader.css'
+import '../pong/Pong.css'
+import '../ProfilePage/ProfilePage.css'
+import '../SettingsPage/SettingsPage.css'
 
 interface MainGridProps {
   user: User;
