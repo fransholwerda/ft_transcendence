@@ -31,11 +31,11 @@ const PageManager: React.FC = () => {
       <Routes>
         <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
         
-        <Route path="/pong" element={user ? <MainGrid initialComponent="Pong" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
+        <Route path="/pong" element={user ? <MainGrid contentComponent="Pong" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         
-        <Route path="/settings" element={user ? <MainGrid initialComponent="SettingsPage" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
+        <Route path="/settings" element={user ? <MainGrid contentComponent="SettingsPage" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         
-        <Route path="/profile" element={user ? <MainGrid initialComponent="ProfilePage" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
+        <Route path="/profile" element={user ? <MainGrid contentComponent="ProfilePage" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>

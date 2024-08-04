@@ -25,9 +25,9 @@ interface MainGridProps {
   onLogout: () => void;
 }
 
-const MainGrid: React.FC<MainGridProps & { initialComponent: string }> = ({ user, onLogout, initialComponent }) => {
+const MainGrid: React.FC<MainGridProps & { contentComponent: string }> = ({ user, onLogout, contentComponent }) => {
   const renderComponent = () => {
-    switch (initialComponent) {
+    switch (contentComponent) {
       case 'Pong':
         return <Pong />;
       case 'SettingsPage':
