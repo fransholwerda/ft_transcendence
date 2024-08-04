@@ -20,11 +20,13 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onLogout }) => {
           <p>Welcome, {user.display_name}</p>
         </div>
       </div>
+
       <div className="header-profile">
         <button className="header-profile-button">
           Profile
         </button>
       </div>
+      
       <div className="header-logout">
         <button className="header-logout-button" onClick={onLogout}>
           Logout
