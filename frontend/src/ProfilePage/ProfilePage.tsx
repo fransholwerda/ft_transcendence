@@ -4,18 +4,14 @@ import { User } from '../PageManager.tsx';
 
 interface ProfilePageProps {
   user: User;
-  onMainPage: () => void;
-  onLogout: () => void;
 }
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ user, onMainPage, onLogout }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   return (
     <div className="parent_profile">
       <div className="profile_header">
         <h2>Profile Page</h2>
         <p>Username: {user.display_name}</p>
-        <button onClick={onMainPage}>Back to Main</button>
-        <button onClick={onLogout}>Log Out</button>
       </div>
       <div className="profile_friends">
         <h2>Profile Friends</h2>
