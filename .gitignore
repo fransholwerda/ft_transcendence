@@ -2,7 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,linux,macos,xcode,dotenv,visualstudiocode,svelte
 
 ### dotenv ###
-.env
+*.env
 
 ### Linux ###
 *~

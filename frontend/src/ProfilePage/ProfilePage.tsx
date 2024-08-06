@@ -1,18 +1,17 @@
 import React from 'react';
 import './ProfilePage.css';
+import { User } from '../PageManager.tsx';
 
 interface ProfilePageProps {
-  user: string;
-  onLogout: () => void;
+  user: User;
 }
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ user, onLogout }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   return (
     <div className="parent_profile">
       <div className="profile_header">
         <h2>Profile Page</h2>
-        <p>Username: {user}</p>
-        <button onClick={onLogout}>Log Out</button>
+        <p>Username: {user.display_name}</p>
       </div>
       <div className="profile_friends">
         <h2>Profile Friends</h2>

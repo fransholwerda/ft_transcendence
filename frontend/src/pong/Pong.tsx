@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import './Pong.css';
+import { Constants } from '../../shared/constants';
 
-const ptSock = io('http://localhost:3003/pongtest', {
+const ptSock = io(`${Constants.BACKEND_HOST_URL}/pongtest`, {
 	transports: ['websocket'],
 });
 
