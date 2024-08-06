@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import './Pong.css';
 import { Constants } from '../../shared/constants';
+import { useLocation } from 'react-router-dom';
 
 const ptSock = io(`${Constants.BACKEND_HOST_URL}/pongtest`, {
 	transports: ['websocket'],
@@ -12,6 +13,7 @@ const Pong: React.FC = () => {
 	const [inGame, setInGame] = useState(false);
 	const [opponent, setOpponent] = useState<string | null>(null);
 	const [roomId, setRoomId] = useState<string | null>(null);
+	const location = useLocation();
 
 	useEffect(() => {
 		ptSock.on('gameStart', ({ roomId, opponent }) => {
@@ -27,12 +29,20 @@ const Pong: React.FC = () => {
 			setRoomId(null);
 		});
 
+		const curUrlPath = location.pathname;
+		const areAtPongpage = curUrlPath.includes('/pong');
+
+		if (!areAtPongpage) {
+			console.log('Not at pong page');
+			leaveQueue();
+		}
+
 		return () => {
 			console.log('Pong component unmounted');
 			ptSock.off('gameStart');
 			ptSock.off('opponentLeft');			
 		};
-	}, []);
+	}, [location.pathname]);
 
 	const joinQueue = () => {
 		console.log('Joining queue');

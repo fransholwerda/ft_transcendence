@@ -33,6 +33,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('joinQueue')
 	handleJoinQueue(client: Socket) {
+		console.log(`trying to join queue, now is at ${this.queue.length}`);
 		if (!this.queue.includes(client.id)) {
 			this.queue.push(client.id);
 			this.checkQueue();
