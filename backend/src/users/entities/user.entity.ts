@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('Users')
 export class User {
 	//this SHOULD automatically generate IDs for the database table
 	@PrimaryGeneratedColumn()
