@@ -45,8 +45,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('leaveQueue')
 	handleLeaveQueue(client: Socket) {
-		this.removeFromQueue(client.id);
 		console.log(`Pong Client: ${client.id} left queue`);
+		this.removeFromQueue(client.id);
 	}
 
 	private checkQueue() {

@@ -29,20 +29,19 @@ const Pong: React.FC = () => {
 
 		return () => {
 			console.log('Pong component unmounted');
-			if (inQueue) {
-				ptSock.emit('leaveQueue');
-			}
 			ptSock.off('gameStart');
 			ptSock.off('opponentLeft');			
 		};
-	}, [inQueue]);
+	}, []);
 
 	const joinQueue = () => {
+		console.log('Joining queue');
 		ptSock.emit('joinQueue');
 		setInQueue(true);
 	};
 
 	const leaveQueue = () => {
+		console.log('Leaving queue');
 		ptSock.emit('leaveQueue');
 		setInQueue(false);
 	};
