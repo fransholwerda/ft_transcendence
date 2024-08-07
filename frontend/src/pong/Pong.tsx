@@ -8,6 +8,9 @@ const ptSock = io(`${Constants.BACKEND_HOST_URL}/pongtest`, {
 	transports: ['websocket'],
 });
 
+// add user to this and use it to display the user's name in the game
+// make it that you cant play against yourself
+// and make it that you cant be in queue for multiple games at once
 const Pong: React.FC = () => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
