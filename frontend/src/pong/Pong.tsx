@@ -5,7 +5,7 @@ import { Constants } from '../../shared/constants';
 import { useLocation } from 'react-router-dom';
 import { User } from '../PageManager';
 
-const ptSock = io(`${Constants.BACKEND_HOST_URL}/pongtest`, {
+const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
 	transports: ['websocket'],
 });
 
@@ -24,10 +24,10 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 	const location = useLocation();
 
 	useEffect(() => {
-		ptSock.on('gameStart', ({ roomId, opponent }) => {
+		pSock.on('gameStart', ({ roomId, opponent }) => {
 			console.log('Game started');
 			console.log('Room ID:', roomId);
-			console.log('Me:', ptSock.id);
+			console.log('Me:', pSock.id);
 			console.log('Opponent:', opponent);
 			setInQueue(false);
 			setInGame(true);
@@ -35,7 +35,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			setRoomId(roomId);
 		});
 
-		ptSock.on('opponentLeft', () => {
+		pSock.on('opponentLeft', () => {
 			setInGame(false);
 			setOpponent(null);
 			setRoomId(null);
@@ -55,20 +55,20 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			if (location.pathname.includes('/pong')) {
 				leaveQueue();
 			}
-			ptSock.off('gameStart');
-			ptSock.off('opponentLeft');			
+			pSock.off('gameStart');
+			pSock.off('opponentLeft');			
 		};
 	}, [location.pathname]);
 
 	const joinQueue = () => {
 		console.log('Joining queue');
-		ptSock.emit('joinQueue');
+		pSock.emit('joinQueue');
 		setInQueue(true);
 	};
 
 	const leaveQueue = () => {
 		console.log('Leaving queue');
-		ptSock.emit('leaveQueue');
+		pSock.emit('leaveQueue');
 		setInQueue(false);
 	};
 
