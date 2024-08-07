@@ -30,6 +30,7 @@ const Pong: React.FC = () => {
 		});
 
 		const curUrlPath = location.pathname;
+		console.log('Current URL path:', curUrlPath);
 		const areAtPongpage = curUrlPath.includes('/pong');
 
 		if (!areAtPongpage) {
@@ -39,6 +40,9 @@ const Pong: React.FC = () => {
 
 		return () => {
 			console.log('Pong component unmounted');
+			if (location.pathname.includes('/pong')) {
+				leaveQueue();
+			}
 			ptSock.off('gameStart');
 			ptSock.off('opponentLeft');			
 		};
