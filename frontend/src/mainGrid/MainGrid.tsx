@@ -23,13 +23,13 @@ const MainGrid: React.FC<MainGridProps & { contentComponent: string }> = ({ user
   const renderComponent = () => {
     switch (contentComponent) {
       case 'Pong':
-        return <Pong />;
+        return <Pong user={user} />;
       case 'SettingsPage':
         return <SettingsPage />;
       case 'ProfilePage':
         return <ProfilePage user={user} />;
       default:
-        return <Pong />;
+        return <Pong user={user} />;
     }
   }
   

@@ -3,15 +3,20 @@ import io from 'socket.io-client';
 import './Pong.css';
 import { Constants } from '../../shared/constants';
 import { useLocation } from 'react-router-dom';
+import { User } from '../PageManager';
 
 const ptSock = io(`${Constants.BACKEND_HOST_URL}/pongtest`, {
 	transports: ['websocket'],
 });
 
+interface PongProps {
+	user: User;
+}
+
 // add user to this and use it to display the user's name in the game
 // make it that you cant play against yourself
 // and make it that you cant be in queue for multiple games at once
-const Pong: React.FC = () => {
+const Pong: React.FC<PongProps> = ({ user }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
 	const [opponent, setOpponent] = useState<string | null>(null);
@@ -87,7 +92,7 @@ const Pong: React.FC = () => {
 						<p>Game started!</p>
 						<p>Room ID: {roomId}</p>
 						<p>Opponent: {opponent}</p>
-						{/* Add your game component here */}
+						<p>Your Name: {user.display_name}</p>
 					</div>
 				)}
 			</div>
