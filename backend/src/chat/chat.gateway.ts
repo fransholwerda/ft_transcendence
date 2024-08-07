@@ -9,6 +9,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   private clients = new Set<string>();
 
   afterInit(server: Server) {
+    this.server = server;
     console.log('ChatInit');
   }
 
@@ -41,11 +42,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // DOES CHANNEL EXIST WITH PASSWORD?
     // DOES CHANNEL EXIST AS PRIVATE AND INVITE ONLY?
     if (this.channels.has(channel)) {
-      client.join(channel);
-      client.emit('channelJoined', { channel: "#" + channel });
+      if (client.rooms.has(channel))   {
+        console.log('Already joined channel');
+        client.emit('channelError', { message: 'Already joined channel' });
+      } else {
+        client.join(channel);
+        client.emit('channelJoined', { channel: channel });
+      }
     } else {
       client.join(channel);
-      client.emit('channelCreated', { channel: "#" + channel });
+      this.channels.add(channel);
+      client.emit('channelCreated', { channel: channel });
       // client.emit('channelError', { message: 'Channel does not exist' });
     }
   }

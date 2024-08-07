@@ -215,7 +215,7 @@ const Tabs: React.FC = () => {
 
   const joinChannel = () => {
     if (!newChannelName.trim()) return;
-    socket.emit('joinChannel', { channel: newChannelName });
+    socket.emit('joinChannel', { channel: '#' + newChannelName });
     setNewChannelName('');
   };
 
@@ -232,8 +232,9 @@ const Tabs: React.FC = () => {
     }
   };
 
-  const deleteTab = (id: number, type: 'channel' | 'dm') => {
+  const deleteTab = (id: number, type: 'channel' | 'dm', title: string) => {
         if (type === 'channel') {
+          socket.emit('leaveChannel', { channel: title })
           const newChannels = channels.filter(channel => channel.id !== id);
           setChannels(newChannels);
           if (activeTabId === id && newChannels.length) {
@@ -282,7 +283,7 @@ const Tabs: React.FC = () => {
                   onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
                 >
                   {channel.title}
-                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel'); }}>×</span>
+                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>×</span>
                 </button>
               ))}
             </div>
