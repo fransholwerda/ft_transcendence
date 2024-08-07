@@ -17,6 +17,10 @@ const Pong: React.FC = () => {
 
 	useEffect(() => {
 		ptSock.on('gameStart', ({ roomId, opponent }) => {
+			console.log('Game started');
+			console.log('Room ID:', roomId);
+			console.log('Me:', ptSock.id);
+			console.log('Opponent:', opponent);
 			setInQueue(false);
 			setInGame(true);
 			setOpponent(opponent);

@@ -7,10 +7,6 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import LoginPage from './LoginPage/LoginPage'
 import MainGrid from './mainGrid/MainGrid'
 
-// and their styles
-import './LoginPage/LoginPage.css'
-import './mainGrid/MainGrid.css'
-
 export interface User {
   display_name: string;
 }
