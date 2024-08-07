@@ -143,6 +143,7 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import './Tabs.css';
 import { Constants } from '../../shared/constants';
+// import Popup from 'reactjs-popup';
 
 const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
   transports: ['websocket']
@@ -212,12 +213,6 @@ const Tabs: React.FC = () => {
     };
   }, [channels, dms]);
 
-  // const createChannel = () => {
-  //   if (!newChannelName.trim()) return;
-  //   socket.emit('createChannel', { channel: newChannelName });
-  //   setNewChannelName('');
-  // };
-
   const joinChannel = () => {
     if (!newChannelName.trim()) return;
     socket.emit('joinChannel', { channel: newChannelName });
@@ -237,7 +232,33 @@ const Tabs: React.FC = () => {
     }
   };
 
-  socket.emit('username', {username});
+  const deleteTab = (id: number, type: 'channel' | 'dm') => {
+        if (type === 'channel') {
+          const newChannels = channels.filter(channel => channel.id !== id);
+          setChannels(newChannels);
+          if (activeTabId === id && newChannels.length) {
+            setActiveTabId(newChannels[0].id);
+            setActiveType('channel');
+          } else if (!newChannels.length && dms.length) {
+            setActiveTabId(dms[0].id);
+            setActiveType('dm');
+          } else if (!newChannels.length) {
+            setActiveTabId(0);
+          }
+        } else {
+          const newDms = dms.filter(dm => dm.id !== id);
+          setDms(newDms);
+          if (activeTabId === id && newDms.length) {
+            setActiveTabId(newDms[0].id);
+            setActiveType('dm');
+          } else if (!newDms.length && channels.length) {
+            setActiveTabId(channels[0].id);
+            setActiveType('channel');
+          } else if (!newDms.length) {
+            setActiveTabId(0);
+          }
+        }
+      };
 
   return (
     <div className="Tabs">
@@ -261,18 +282,18 @@ const Tabs: React.FC = () => {
                   onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
                 >
                   {channel.title}
-                  <span className="close-button" onClick={(e) => { e.stopPropagation(); /* Implement delete logic */ }}>×</span>
+                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel'); }}>×</span>
                 </button>
               ))}
-              <div className="add-tab-form">
-                <input 
-                  type="text" 
-                  value={newChannelName} 
-                  onChange={(e) => setNewChannelName(e.target.value)} 
-                  placeholder="New channel name" 
-                />
-                <button className="add-tab-button" onClick={joinChannel}>+</button>
-              </div>
+            </div>
+            <div className="add-tab-form">
+              <input 
+                type="text" 
+                value={newChannelName} 
+                onChange={(e) => setNewChannelName(e.target.value)} 
+                placeholder="New channel name" 
+              />
+              <button className="add-tab-button" onClick={joinChannel}>+</button>
             </div>
           </div>
           <div className="tab-section">

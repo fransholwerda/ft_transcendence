@@ -1,17 +1,3 @@
-// import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-// import { Server } from 'socket.io';
-
-// @WebSocketGateway({ namespace: '/chat', cors: { origin: '*' } })
-// export class ChatGateway {
-//   @WebSocketServer()
-//   server: Server;
-
-//   @SubscribeMessage('message')
-//   handleMessage(@MessageBody() message: string): void {
-//     this.server.emit('message', message);
-//   }
-// }
-
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
@@ -35,12 +21,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleDisconnect(client: Socket) {
     this.clients.delete(client.id);
     console.log(`ChatClient disconnected: ${client.id}`);
-  }
-
-  @SubscribeMessage('username')
-  handleUserName(client: Socket, payload: { username: string }) {
-    const { username } = payload;
-    console.log(username);
   }
 
   @SubscribeMessage('createChannel')
@@ -67,6 +47,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.join(channel);
       client.emit('channelCreated', { channel: "#" + channel });
       // client.emit('channelError', { message: 'Channel does not exist' });
+    }
+  }
+
+  @SubscribeMessage('leaveChannel')
+  handleLeaveChannel(client: Socket, payload: {channel: string }) {
+    const { channel } = payload;
+    // IS THE CHANNEL EMPTY? -> DELETE CHANNEL
+    if (this.channels.has(channel)) {
+      client.leave(channel);
     }
   }
 
