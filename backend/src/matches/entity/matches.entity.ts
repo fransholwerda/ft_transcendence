@@ -7,13 +7,13 @@ export class Match {
 	@PrimaryGeneratedColumn()
 	id: number
 
-	@Column({ type: 'varchar', length: 20 })
+	@Column({ type: 'varchar', length: 30 })
 		player1: string;
 
 	@Column({ type: 'int'})
 		player1Score: number;
 
-	@Column({ type: 'varchar', length: 20})
+	@Column({ type: 'varchar', length: 30})
 		player2: string;
 	
 	@Column({ type: 'int'})

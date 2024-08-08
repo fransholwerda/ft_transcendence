@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -8,6 +9,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false, // check if header is allowed
   });
+  useContainer(app.select(AppModule), { fallbackOnErrors: true});
   await app.listen(3003, '0.0.0.0');
 }
 bootstrap();

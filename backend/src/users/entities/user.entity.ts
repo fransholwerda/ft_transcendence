@@ -1,12 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('Users')
 export class User {
 	//this SHOULD automatically generate IDs for the database table
-	@Column()
+	@PrimaryColumn()
 	id: number;
 
-	@Column({ type: 'varchar', length: 30 })
+	@Column({ type: 'varchar', length: 30, unique: true})
 	username: string;
 
 	@Column({ type: 'varchar'})
@@ -20,4 +20,7 @@ export class User {
 
 	@Column({ type: 'varchar'})
 	TwoFactorSecret: string;
+
+	@Column({ type: 'int' })
+	matchesWon: number;
 }
