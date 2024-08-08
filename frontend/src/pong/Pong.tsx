@@ -23,6 +23,10 @@ interface PongProps {
 // add user to this and use it to display the user's name in the game
 // make it that you cant play against yourself
 // and make it that you cant be in queue for multiple games at once
+
+// why does the user not get sent back to the !inQueue && !inGame when they receive 'opponentLeft'?
+
+
 const Pong: React.FC<PongProps> = ({ user }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
@@ -44,6 +48,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 		});
 
 		pSock.on('opponentLeft', () => {
+			setInQueue(false);
 			setInGame(false);
 			setOpponent(null);
 			setRoomId(null);
@@ -80,6 +85,15 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 		setInQueue(false);
 	};
 
+	const leaveGame = () => {
+		console.log('Leaving game');
+		pSock.emit('leaveGame');
+		setInQueue(false);
+		setInGame(false);
+		setOpponent(null);
+		setRoomId(null);
+	};
+
 	return (
 		<div className="pong-container">
 			<h2>Pong Game</h2>
@@ -87,7 +101,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			<h3>Username: {user.display_name}</h3>
 			<div className="pong-card">
 				{!inQueue && !inGame && (
-					<button onClick={joinQueue}>Join Queue</button>
+					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
 				)}
 				{inQueue && (
 					<>
@@ -103,6 +117,9 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 						<p>Room ID: {roomId}</p>
 						<p>Opponent: {opponent}</p>
 						<p>Your Name: {user.display_name}</p>
+						<button className="leave-game-btn" onClick={leaveGame}>
+							Leave Game
+						</button>
 					</div>
 				)}
 			</div>

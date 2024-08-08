@@ -49,20 +49,20 @@
 	transition: background-color 0.3s ease;
 }
 
-.pong-container button:hover {
+.join-queue-btn:hover {
 	background-color: #45a049;
 }
 
-.pong-container button:disabled {
+.join-queue-btn:disabled {
 	background-color: #cccccc;
 	cursor: not-allowed;
 }
 
-.leave-queue-btn {
+.leave-queue-btn, .leave-game-btn {
 	background-color: #f44336;
 }
 
-.leave-queue-btn:hover {
+.leave-queue-btn:hover, .leave-game-btn:hover{
 	background-color: #da190b;
 }
 

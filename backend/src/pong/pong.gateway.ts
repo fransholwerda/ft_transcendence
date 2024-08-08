@@ -49,6 +49,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.removeFromQueue(client.id);
 	}
 
+	@SubscribeMessage('leaveGame')
+	handleLeaveGame(client: Socket) {
+		console.log(`Pong Client: ${client.id} left game`);
+		const roomId = this.getRoomIdByClientId(client.id);
+		if (roomId) {
+			this.server.to(roomId).emit('opponentLeft');
+			this.removeFromRoom(client.id);
+		}
+	}
+
 	private checkQueue() {
 		console.log(`Queue length: ${this.queue.length}`);
 		if (this.queue.length >= 2) {
@@ -87,5 +97,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				break;
 			}
 		}
+	}
+
+	private getRoomIdByClientId(clientId: string): string | null {
+		for (const [roomId, players] of this.rooms.entries()) {
+			if (players.includes(clientId)) {
+				return roomId;
+			}
+		}
+		return null;
 	}
 }
