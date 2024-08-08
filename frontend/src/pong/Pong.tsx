@@ -14,6 +14,11 @@ interface PongProps {
 }
 
 // at the top display username and client id
+// add a gameover screen
+// add a check for if username is already in queue or game
+// if so, dont let them join queue or trigger inQueue
+
+// just use socket on and emit to communicate
 
 // add user to this and use it to display the user's name in the game
 // make it that you cant play against yourself
