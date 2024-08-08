@@ -26,6 +26,12 @@ interface PongProps {
 
 // why does the user not get sent back to the !inQueue && !inGame when they receive 'opponentLeft'?
 
+// in gameover window, it shows both names and their scores points under their names
+// prob have winner in green and loser in red
+// and have winner, loser under their names
+// the names, userids, scores will be saved in an object
+// that object is sent to the backend to save the game data
+// add a queue button to go to the inQueue screen
 
 const Pong: React.FC<PongProps> = ({ user }) => {
 	const [inQueue, setInQueue] = useState(false);
