@@ -100,6 +100,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private getRoomIdByClientId(clientId: string): string | null {
+		console.log(`getRoomIdByClientId: ${clientId}`);
 		for (const [roomId, players] of this.rooms.entries()) {
 			if (players.includes(clientId)) {
 				return roomId;

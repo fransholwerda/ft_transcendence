@@ -48,6 +48,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 		});
 
 		pSock.on('opponentLeft', () => {
+			console.log('Opponent left');
 			setInQueue(false);
 			setInGame(false);
 			setOpponent(null);
@@ -61,12 +62,14 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 		if (!areAtPongpage) {
 			console.log('Not at pong page');
 			leaveQueue();
+			leaveGame();
 		}
 
 		return () => {
 			console.log('Pong component unmounted');
 			if (location.pathname.includes('/pong')) {
 				leaveQueue();
+				leaveGame();
 			}
 			pSock.off('gameStart');
 			pSock.off('opponentLeft');			
