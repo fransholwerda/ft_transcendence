@@ -46,15 +46,13 @@
 	color: #ffffff;
 }
 
-.header-profile,
-.header-logout {
+.header-item {
 	display: flex;
 	align-items: center; /* Centers items vertically */
 	/* margin-right: 10vw; */
 }
 
-.header-profile-button,
-.header-logout-button {
+.header-button {
 	/* padding: 10px 15px; */
 	/* margin-left: 10px; */
 	/* margin-top: 10px; */
@@ -67,7 +65,6 @@
 	transition: background-color 0.3s ease;
 }
 
-.header-profile-button:hover,
-.header-logout-button:hover {
+.header-button:hover {
 	background-color: #0056b3;
 }

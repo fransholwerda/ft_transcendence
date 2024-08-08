@@ -1,4 +1,4 @@
-.game canvas {
+.content canvas {
 	width: 100%;
 	object-fit: contain;
 	min-width: 80px;
