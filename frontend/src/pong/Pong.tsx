@@ -13,6 +13,8 @@ interface PongProps {
 	user: User;
 }
 
+// at the top display username and client id
+
 // add user to this and use it to display the user's name in the game
 // make it that you cant play against yourself
 // and make it that you cant be in queue for multiple games at once
@@ -27,7 +29,8 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 		pSock.on('gameStart', ({ roomId, opponent }) => {
 			console.log('Game started');
 			console.log('Room ID:', roomId);
-			console.log('Me:', pSock.id);
+			console.log('My Client ID:', pSock.id);
+			console.log('My Username:', user.display_name);
 			console.log('Opponent:', opponent);
 			setInQueue(false);
 			setInGame(true);
@@ -62,7 +65,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 
 	const joinQueue = () => {
 		console.log('Joining queue');
-		pSock.emit('joinQueue');
+		pSock.emit('joinQueue', { username: user.display_name });
 		setInQueue(true);
 	};
 
@@ -73,9 +76,11 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 	};
 
 	return (
-		<div className="pongs-container">
+		<div className="pong-container">
+			<h2>Pong Game</h2>
+			<h3>Client ID: {pSock.id}</h3>
+			<h3>Username: {user.display_name}</h3>
 			<div className="pong-card">
-				<h2>Pong Game</h2>
 				{!inQueue && !inGame && (
 					<button onClick={joinQueue}>Join Queue</button>
 				)}

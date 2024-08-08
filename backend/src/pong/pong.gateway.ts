@@ -18,7 +18,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	private queue: string[] = [];
+	private queue: { clientId: string, username: string }[] = [];
 	private rooms: Map<string, string[]> = new Map();
 
 	handleConnection(client: Socket) {
@@ -32,15 +32,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('joinQueue')
-	handleJoinQueue(client: Socket) {
-		console.log(`trying to join queue, now is at ${this.queue.length}`);
-		if (!this.queue.includes(client.id)) {
-			this.queue.push(client.id);
+	handleJoinQueue(client: Socket, data: { username: string }) {
+		console.log(`Trying to join queue, now is at ${this.queue.length}`);
+		if (!this.queue.find((q) => q.username === data.username)) {
+			this.queue.push({ clientId: client.id, username: data.username });
 			this.checkQueue();
-			console.log(`Pong Client: ${client.id} joined queue`);
-		}
-		else {
-			console.log(`Pong Client: ${client.id} is already in queue`);
+			console.log(`Pong Client: ${client.id} with name ${data.username} joined queue`);
+		} else {
+			console.log(`Pong Client: ${data.username} is already in queue`);
 		}
 	}
 
@@ -55,23 +54,24 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (this.queue.length >= 2) {
 			const p1 = this.queue.shift();
 			const p2 = this.queue.shift();
-			const roomId = `pong_${p1}_${p2}`;
+			if (!p1 || !p2) return; // Safety check
+			const roomId = `pong_${p1.clientId}_${p2.clientId}`;
 
-			this.rooms.set(roomId, [p1, p2]);
+			this.rooms.set(roomId, [p1.clientId, p2.clientId]);
 
-			this.server.to(p1).emit('gameStart', { roomId, opponent: p2 });
-			this.server.to(p2).emit('gameStart', { roomId, opponent: p1 });
+			this.server.to(p1.clientId).emit('gameStart', { roomId, opponent: p2.username });
+			this.server.to(p2.clientId).emit('gameStart', { roomId, opponent: p1.username });
 
-			this.server.in(p1).socketsJoin(roomId);
-			this.server.in(p2).socketsJoin(roomId);
+			this.server.in(p1.clientId).socketsJoin(roomId);
+			this.server.in(p2.clientId).socketsJoin(roomId);
 			console.log(`Pong Game started: ${roomId}`);
-			console.log(`Pong Game players: ${p1} vs ${p2}`);
+			console.log(`Pong Game players: ${p1.username} vs ${p2.username}`);
 		}
 	}
 
 	private removeFromQueue(clientId: string) {
 		console.log(`removeFromQueue: ${clientId}`);
-		this.queue = this.queue.filter(id => id !== clientId);
+		this.queue = this.queue.filter((q) => q.clientId !== clientId);
 	}
 
 	private removeFromRoom(clientId: string) {
