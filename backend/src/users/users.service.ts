@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserData } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 
@@ -14,9 +13,12 @@ export class UsersService {
 	//of type createUserData where we have already defined what we are expecting.
   async createNewUser(createUserData: CreateUserData): Promise<User>{
 	const user: User = new User();
-	user.name = createUserData.name;
+	user.id = createUserData.id
 	user.username = createUserData.username;
-	user.password = createUserData.password;
+	user.avatarURL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png'
+	user.isOnline = true;
+	user.TwoFactorEnabled = false;
+	user.TwoFactorSecret = '';
     return await this.userRepository.save(user);
   }
 
@@ -28,16 +30,7 @@ export class UsersService {
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
-  //This function will update a specific user, selected by which ID is pased via parameter
-  updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-	const user: User = new User();
-	user.name = updateUserDto.name;
-	user.username = updateUserDto.username;
-	user.password = updateUserDto.password;
-	user.id = id;
-    return this.userRepository.save(user);
-  }
-  
+
   //This function yeets and deletes a passed user from the database.
   removeUser(id: number): Promise< { affected?: number }> {
     return this.userRepository.delete(id);
