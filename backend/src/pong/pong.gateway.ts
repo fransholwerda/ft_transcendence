@@ -65,7 +65,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const p1 = this.queue.shift();
 			const p2 = this.queue.shift();
 			if (!p1 || !p2) return; // Safety check
-			const roomId = `pong_${p1.clientId}_${p2.clientId}`;
+			const roomId = `pong_${p1.username}_${p2.username}`;
 
 			this.rooms.set(roomId, [p1.clientId, p2.clientId]);
 
