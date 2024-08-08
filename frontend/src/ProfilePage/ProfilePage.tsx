@@ -16,7 +16,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
         <div className="profile_section profile_friends">
             <h2>Profile Friends</h2>
             <div className="friend_item">
-              {/* <span className={`status_circle ${user.status === 'online' ? 'online' : 'offline'}`}></span> */}
+              {/* <span className={`status_circle ${user.status === 'online' ? 'online' : 'offline'}`}></span>  */}
               <span className="status_circle offline"></span>
               <h3>Friend_1</h3>
             </div>
