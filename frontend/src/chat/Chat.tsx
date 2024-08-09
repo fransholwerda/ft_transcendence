@@ -4,7 +4,9 @@ import './Chat.css';
 import MessageInput from './MessageInput';
 import Messages from './Messages';
 
-const chatSocket = io('http://localhost:3003/chat', {
+import { Constants } from '../../shared/constants';
+
+const chatSocket = io(`${Constants.FRONTEND_HOST_URL}/chat`, {
   transports: ['websocket'],
 });
 

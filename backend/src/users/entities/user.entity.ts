@@ -1,20 +1,26 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity()
+@Entity('Users')
 export class User {
 	//this SHOULD automatically generate IDs for the database table
-	@PrimaryGeneratedColumn()
+	@PrimaryColumn()
 	id: number;
 
-	@Column({ type: 'varchar', length: 30 })
-	name: string;
-
-	@Column({ type: 'varchar', length: 20})
+	@Column({ type: 'varchar', length: 30, unique: true})
 	username: string;
 
 	@Column({ type: 'varchar'})
-	password:string;
+	avatarURL: string;
 
-	@Column({ type: 'boolean', default: 1,})
-	isActive: boolean;
+	@Column({ type: 'boolean', default: 1})
+	isOnline: boolean;
+
+	@Column({ type: 'boolean', default: 0})
+	TwoFactorEnabled: boolean;
+
+	@Column({ type: 'varchar'})
+	TwoFactorSecret: string;
+
+	@Column({ type: 'int' })
+	matchesWon: number;
 }

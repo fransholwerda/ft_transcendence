@@ -3,20 +3,29 @@ import {
 	IsNotEmpty,
 	IsString,
 	Length,
+	Validate
 } from 'class-validator';
+import { IsUnique } from 'src/validation/is-unique';
 
 export class CreateUserData {
-	@IsString()
-	@Length(2, 20, {message: 'Name must be between 3 and 20 characters'})
-	@IsNotEmpty({message: 'A name is required.'})
-	name: string;
 
-	@IsNotEmpty({message: 'username is required'})
+	id: number;
+
+	@IsString()
+	@Length(2, 30, {message: 'Name must be between 3 and 30 characters'})
 	@IsAlphanumeric()
-	@Length(3, 50, {message: 'username must be between 3 and 50 characters'})
+	@Validate(IsUnique)
+	@IsNotEmpty({message: 'A name is required.'})
 	username: string;
 
-	@IsNotEmpty()
-	@Length(4, 50, { message: 'Password must consist of at least 4 characters.'})
-	password: string;
+	avatarURL: string;
+
+	isOnline: boolean;
+
+	matchesWon: number;
+
+	TwoFactorEnabled: boolean;
+
+	TwoFactorSecret: string;
+
 }

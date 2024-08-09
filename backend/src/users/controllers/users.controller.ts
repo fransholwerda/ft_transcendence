@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from '../users.service';
 import { CreateUserData } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Controller('user')
 export class UsersController {
@@ -11,7 +10,7 @@ export class UsersController {
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   async createUser(@Body() userData: CreateUserData) {
-    return {userData};
+    return await this.usersService.createNewUser(userData);
   }
 
   @Get('/')
@@ -22,11 +21,6 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
