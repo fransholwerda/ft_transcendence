@@ -1,144 +1,3 @@
-// import React, { useState } from 'react';
-// import './Tabs.css';
-
-// interface Tab {
-//   id: number;
-//   title: string;
-//   content: string;
-// }
-
-// const Tabs: React.FC = () => {
-//   const [channels, setChannels] = useState<Tab[]>([
-//     { id: 1, title: 'General Chat', content: 'Content of General Chat' },
-//   ]);
-//   const [dms, setDms] = useState<Tab[]>([
-//     // { id: 101, title: 'DM 1', content: 'Content of DM 1' },
-//   ]);
-//   const [activeTabId, setActiveTabId] = useState<number>(1);
-//   const [activeType, setActiveType] = useState<'channel' | 'dm'>('channel');
-//   const [newChannelName, setNewChannelName] = useState<string>('');
-//   const [newDmName, setNewDmName] = useState<string>('');
-
-//   const addChannel = () => {
-//     if (!newChannelName.trim()) return;
-//     const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
-//     setChannels([...channels, { id: newId, title: newChannelName, content: `Content of ${newChannelName}` }]);
-//     setActiveTabId(newId);
-//     setActiveType('channel');
-//     setNewChannelName('');
-//   };
-
-//   const addDm = () => {
-//     if (!newDmName.trim()) return;
-//     const newId = dms.length ? dms[dms.length - 1].id + 1 : 101;
-//     setDms([...dms, { id: newId, title: newDmName, content: `Content of ${newDmName}` }]);
-//     setActiveTabId(newId);
-//     setActiveType('dm');
-//     setNewDmName('');
-//   };
-
-//   const deleteTab = (id: number, type: 'channel' | 'dm') => {
-//     if (type === 'channel') {
-//       const newChannels = channels.filter(channel => channel.id !== id);
-//       setChannels(newChannels);
-//       if (activeTabId === id && newChannels.length) {
-//         setActiveTabId(newChannels[0].id);
-//         setActiveType('channel');
-//       } else if (!newChannels.length && dms.length) {
-//         setActiveTabId(dms[0].id);
-//         setActiveType('dm');
-//       } else if (!newChannels.length) {
-//         setActiveTabId(0);
-//       }
-//     } else {
-//       const newDms = dms.filter(dm => dm.id !== id);
-//       setDms(newDms);
-//       if (activeTabId === id && newDms.length) {
-//         setActiveTabId(newDms[0].id);
-//         setActiveType('dm');
-//       } else if (!newDms.length && channels.length) {
-//         setActiveTabId(channels[0].id);
-//         setActiveType('channel');
-//       } else if (!newDms.length) {
-//         setActiveTabId(0);
-//       }
-//     }
-//   };
-
-//   const handleTabClick = (id: number, type: 'channel' | 'dm') => {
-//     setActiveTabId(id);
-//     setActiveType(type);
-//   };
-
-//   return (
-//     <div className="Tabs">
-//       <div className="tab-container">
-//         <div className="tab-sections">
-//           <div className="tab-section">
-//             <div className="tab-header">Channels</div>
-//             <div className="tab-buttons">
-//               {channels.map(channel => (
-//                 <button
-//                   key={channel.id}
-//                   className={`tab-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
-//                   onClick={() => handleTabClick(channel.id, 'channel')}
-//                 >
-//                   {channel.title}
-//                   <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel'); }}>×</span>
-//                 </button>
-//               ))}
-//             </div>
-//             <div className="add-tab-form">
-//               <input 
-//                 type="text" 
-//                 value={newChannelName} 
-//                 onChange={(e) => setNewChannelName(e.target.value)} 
-//                 placeholder="New channel name" 
-//               />
-//               <button onClick={addChannel}>+</button>
-//             </div>
-//           </div>
-//           <div className="tab-section">
-//             <div className="tab-header">DMs</div>
-//             <div className="tab-buttons">
-//               {dms.map(dm => (
-//                 <button
-//                   key={dm.id}
-//                   className={`tab-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
-//                   onClick={() => handleTabClick(dm.id, 'dm')}
-//                 >
-//                   {dm.title}
-//                   <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm'); }}>×</span>
-//                 </button>
-//               ))}
-//             </div>
-//             <div className="add-tab-form">
-//               <input
-//                 type="text" 
-//                 value={newDmName} 
-//                 onChange={(e) => setNewDmName(e.target.value)} 
-//                 placeholder="New DM name" 
-//               />
-//               <button onClick={addDm}>+</button>
-//             </div>
-//           </div>
-//         </div>
-//         <div className="tab-content">
-//           {activeType === 'channel' && channels.map(channel => (
-//             channel.id === activeTabId && <div key={channel.id}>{channel.content}</div>
-//           ))}
-//           {activeType === 'dm' && dms.map(dm => (
-//             dm.id === activeTabId && <div key={dm.id}>{dm.content}</div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Tabs;
-
-
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import './Tabs.css';
@@ -220,7 +79,9 @@ const Tabs: React.FC = () => {
   };
 
   const joinDM = () => {
+    if (!newDmName.trim()) return;
     socket.emit('joinDM', { user: username, targetUser: newDmName})
+    setNewDmName('');
   }
 
   const sendMessage = () => {
@@ -233,33 +94,34 @@ const Tabs: React.FC = () => {
   };
 
   const deleteTab = (id: number, type: 'channel' | 'dm', title: string) => {
-        if (type === 'channel') {
-          socket.emit('leaveChannel', { channel: title })
-          const newChannels = channels.filter(channel => channel.id !== id);
-          setChannels(newChannels);
-          if (activeTabId === id && newChannels.length) {
-            setActiveTabId(newChannels[0].id);
-            setActiveType('channel');
-          } else if (!newChannels.length && dms.length) {
-            setActiveTabId(dms[0].id);
-            setActiveType('dm');
-          } else if (!newChannels.length) {
-            setActiveTabId(0);
-          }
-        } else {
-          const newDms = dms.filter(dm => dm.id !== id);
-          setDms(newDms);
-          if (activeTabId === id && newDms.length) {
-            setActiveTabId(newDms[0].id);
-            setActiveType('dm');
-          } else if (!newDms.length && channels.length) {
-            setActiveTabId(channels[0].id);
-            setActiveType('channel');
-          } else if (!newDms.length) {
-            setActiveTabId(0);
-          }
-        }
-      };
+    if (type === 'channel') {
+      socket.emit('leaveChannel', { channel: title })
+      const newChannels = channels.filter(channel => channel.id !== id);
+      setChannels(newChannels);
+      if (activeTabId === id && newChannels.length) {
+        setActiveTabId(newChannels[0].id);
+        setActiveType('channel');
+      } else if (!newChannels.length && dms.length) {
+        setActiveTabId(dms[0].id);
+        setActiveType('dm');
+      } else if (!newChannels.length) {
+        setActiveTabId(0);
+      }
+    } else {
+      socket.emit('leaveDM', { dm: title })
+      const newDms = dms.filter(dm => dm.id !== id);
+      setDms(newDms);
+      if (activeTabId === id && newDms.length) {
+        setActiveTabId(newDms[0].id);
+        setActiveType('dm');
+      } else if (!newDms.length && channels.length) {
+        setActiveTabId(channels[0].id);
+        setActiveType('channel');
+      } else if (!newDms.length) {
+        setActiveTabId(0);
+      }
+    }
+  };
 
   return (
     <div className="Tabs">
@@ -307,18 +169,18 @@ const Tabs: React.FC = () => {
                   onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
                 >
                   {dm.title}
-                  <span className="close-button" onClick={(e) => { e.stopPropagation(); /* Implement delete logic */ }}>×</span>
+                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>×</span>
                 </button>
               ))}
-              <div className="add-tab-form">
-                <input 
-                  type="text" 
-                  value={newDmName} 
-                  onChange={(e) => setNewDmName(e.target.value)} 
-                  placeholder="New DM name" 
-                />
-                <button className="add-tab-button" onClick={() => joinDM}>+</button>
-              </div>
+            </div>
+            <div className="add-tab-form">
+              <input 
+                type="text" 
+                value={newDmName} 
+                onChange={(e) => setNewDmName(e.target.value)} 
+                placeholder="New DM name" 
+              />
+              <button className="add-tab-button" onClick={() => joinDM}>+</button>
             </div>
           </div>
         </div>
@@ -329,18 +191,18 @@ const Tabs: React.FC = () => {
           {dms.map(dm => (
             dm.id === activeTabId && <div key={dm.id}>{dm.content}</div>
           ))}
-        </div>
-      </div>
-      <div className="chat-container">
-        <div className="messages">
-          {messages.filter(msg => {
-            const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
-            return activeTab && msg.channel === activeTab.title;
-          }).map((msg, index) => (
-            <div key={index} className="message">
-              <strong>{msg.username}:</strong> {msg.message}
+          <div className="chat-container">
+            <div className="messages">
+              {messages.filter(msg => {
+                const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
+                return activeTab && msg.channel === activeTab.title;
+              }).map((msg, index) => (
+              <div key={index} className="message">
+                <strong>{msg.username}:</strong> {msg.message}
+              </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
         <div className="message-input">
           <input 
