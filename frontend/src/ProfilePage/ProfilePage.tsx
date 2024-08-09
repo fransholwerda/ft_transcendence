@@ -10,7 +10,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   return (
     <div className="profile_container">
       <div className="profile_header">
-        <h1>Welcome to profile page of "{user.display_name}"</h1>
+        <h1>Welcome to profile page of "{user.username}"</h1>
       </div>
       <div className="profile_content">
         <div className="profile_section profile_friends">

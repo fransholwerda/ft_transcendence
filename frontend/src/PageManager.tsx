@@ -12,14 +12,38 @@ import './LoginPage/LoginPage.css'
 import './mainGrid/MainGrid.css'
 
 export interface User {
-  display_name: string;
+  id:  string,
+  username: string,
+  avatarURL: string
 }
 
 const PageManager: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
-  const handleLogin = async (user_id: number) => {
-    setUser({display_name: user_id.toString()});
+  const handleLogin = async (intraUser: any) => {
+    const response = await fetch(`http://localhost:3003/user/get/${intraUser.id}`, {
+      method:  'GET'
+    });
+    let user = await response.json();
+    if (user.statusCode == 404) {
+      const response = await fetch('http://localhost:3003/user/create', {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json'
+        },
+        body: JSON.stringify({
+          id:  intraUser.id,
+	  username:  intraUser.login,
+	  avatarURL:  intraUser.image.link
+        })
+      });
+      user = await response.json();
+    }
+    setUser({
+      id: user.id,
+      username: user.username,
+      avatarURL:  user.avatarURL
+    });
   };
 
   const handleLogout = () => {

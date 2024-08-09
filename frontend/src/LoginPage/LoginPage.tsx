@@ -51,7 +51,7 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
     const access_token = await requestToken("authorization_code", client_id, url_params.get("code") || "", redirect_uri);
     const intra_user = await requestIntraUser(access_token);
     window.history.pushState({}, document.title, "/");
-    onLogin(intra_user.id);
+    onLogin(intra_user);
     navigate('/pong');
   }
 

@@ -18,7 +18,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onLogout }) => {
         </div>
         <div className="header-title">
           <h1>FT Transcendence</h1>
-          <p>Welcome, {user.display_name}</p>
+          <p>Welcome, {user.username}</p>
         </div>
       </div>
 
