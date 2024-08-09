@@ -185,13 +185,13 @@ const Tabs: React.FC = () => {
           </div>
         </div>
         <div className="tab-content">
-          {channels.map(channel => (
-            channel.id === activeTabId && <div key={channel.id}>{channel.content}</div>
-          ))}
-          {dms.map(dm => (
-            dm.id === activeTabId && <div key={dm.id}>{dm.content}</div>
-          ))}
           <div className="chat-container">
+            {channels.map(channel => (
+              channel.id === activeTabId && <div key={channel.id}>{channel.content}</div>
+            ))}
+            {dms.map(dm => (
+              dm.id === activeTabId && <div key={dm.id}>{dm.content}</div>
+            ))}
             <div className="messages">
               {messages.filter(msg => {
                 const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
@@ -203,15 +203,15 @@ const Tabs: React.FC = () => {
               ))}
             </div>
           </div>
-        </div>
-        <div className="message-input">
-          <input 
-            type="text" 
-            value={currentMessage} 
-            onChange={(e) => setCurrentMessage(e.target.value)} 
-            placeholder="Type a message" 
-          />
-          <button onClick={sendMessage}>Send</button>
+          <div className="message-input">
+            <input className="message-input-textbox"
+              type="text" 
+              value={currentMessage} 
+              onChange={(e) => setCurrentMessage(e.target.value)} 
+              placeholder="Type a message" 
+            />
+            <button onClick={sendMessage}>Send</button>
+          </div>
         </div>
       </div>
     </div>
