@@ -57,7 +57,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('leaveGame')
 	handleLeaveGame(client: Socket) {
+		console.log(`Pong Client: ${client.id} left the game`);
 		const roomId = this.getRoomIdByClientId(client.id);
+		console.log(`Room ID: ${roomId}`);
 		if (roomId) {
 			this.server.to(roomId).emit('opponentLeft');
 			this.removeFromRoom(client.id);
