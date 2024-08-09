@@ -1,69 +1,83 @@
-/* ProfilePage.css */
+.profile_container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr;
+  height: 85vh;
+  /* padding: 20px; */
+  background-color: #656565;
 
-.parent_profile {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: #656565;
-    padding: 5px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    gap:20px;
-    /* max-width: 800px; */
-    margin: 0 auto;
-  }
-  
-  .profile_header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .profile_header h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .profile_header p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    color: #666;
-  }
-  
-  .profile_header button {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .profile_header button:hover {
-    background-color: #0056b3;
-  }
-  
-  .profile_friends, .profile_av, .profile_game_history {
-    height: 90vh;
-    width: 25vw;
-    background-color: #c0c0c0;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .profile_friends h2, .profile_av h2, .profile_game_history h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .profile_friends h3, .profile_av h3, .profile_game_history h3 {
-    font-size: 1.2rem;
-    color: #6c6c6c;
-  }
-  
+}
+
+.profile_header {
+  height: 5vh;
+  text-align: center;
+  justify-content: center;
+  /* padding-bottom: 20px;
+  margin-bottom: 10px; */
+  margin-top: 10px;
+  font-size: 1rem;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* line-height: 1.5;
+  font-weight: 400; */
+  color: #000000;
+}
+
+/* .profile_header p {
+} */
+
+.profile_content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile_section {
+  background-color: #c0c0c0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: top;
+  align-items: center;
+}
+
+.profile_section p1 {
+  font-size: 1.0rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+.profile_section h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.profile_section h3 {
+  font-size: 1.2rem;
+  color: #6c6c6c;
+}
+
+.friend_item {
+  display: flex;
+  align-items: center;
+}
+
+.status_circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background-color: #f00; /* Default to red */
+}
+
+.status_circle.online {
+  background-color: #00ff00;
+}
+
+.status_circle.offline {
+  background-color: #ff0000;
+}
