@@ -13,16 +13,9 @@ interface PongProps {
 	user: User;
 }
 
-// at the top display username and client id
 // add a gameover screen
-// add a check for if username is already in queue or game
-// if so, dont let them join queue or trigger inQueue
-
-// just use socket on and emit to communicate
 
 // add user to this and use it to display the user's name in the game
-// make it that you cant play against yourself
-// and make it that you cant be in queue for multiple games at once
 
 // why does the user not get sent back to the !inQueue && !inGame when they receive 'opponentLeft'?
 
@@ -66,6 +59,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 				console.log('Successfully joined queue', user.display_name);
 				setInQueue(true);
 			} else {
+				console.log('Failed to join queue', user.display_name);
 				alert(message);
 			}
 		});
