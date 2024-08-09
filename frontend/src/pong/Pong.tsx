@@ -38,7 +38,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			console.log('Game started');
 			console.log('Room ID:', roomId);
 			console.log('My Client ID:', pSock.id);
-			console.log('My Username:', user.display_name);
+			console.log('My Username:', user.username);
 			console.log('Opponent:', opponent);
 			setInQueue(false);
 			setInGame(true);
@@ -56,10 +56,10 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 	
 		pSock.on('queueStatus', ({ success, message }) => {
 			if (success) {
-				console.log('Successfully joined queue', user.display_name);
+				console.log('Successfully joined queue', user.username);
 				setInQueue(true);
 			} else {
-				console.log('Failed to join queue', user.display_name);
+				console.log('Failed to join queue', user.username);
 				alert(message);
 			}
 		});
@@ -89,10 +89,10 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 	const joinQueue = () => {
 		console.log('Trying to join queue');
 		if (!inQueue && !inGame) {
-			console.log('Asking server to join queue: ', user.display_name);
-			pSock.emit('joinQueue', { username: user.display_name });
+			console.log('Asking server to join queue: ', user.username);
+			pSock.emit('joinQueue', { username: user.username });
 		} else {
-			console.log('Already in queue or game: ', user.display_name);
+			console.log('Already in queue or game: ', user.username);
 			alert('You are already in the queue or game');
 		}
 	};
@@ -116,7 +116,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 		<div className="pong-container">
 			<h2>Pong Game</h2>
 			<h3>Client ID: {pSock.id}</h3>
-			<h3>Username: {user.display_name}</h3>
+			<h3>Username: {user.username}</h3>
 			<div className="pong-card">
 				{!inQueue && !inGame && (
 					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
@@ -134,7 +134,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 						<p>Game started!</p>
 						<p>Room ID: {roomId}</p>
 						<p>Opponent: {opponent}</p>
-						<p>Your Name: {user.display_name}</p>
+						<p>Your Name: {user.username}</p>
 						<button className="leave-game-btn" onClick={leaveGame}>
 							Leave Game
 						</button>
