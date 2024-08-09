@@ -61,6 +61,15 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			setRoomId(null);
 		});
 
+		pSock.on('queueStatus', ({ success, message }) => {
+			if (success) {
+				console.log('Successfully joined queue', user.display_name);
+				setInQueue(true);
+			} else {
+				alert(message);
+			}
+		});
+
 		const curUrlPath = location.pathname;
 		console.log('Current URL path:', curUrlPath);
 		const areAtPongpage = curUrlPath.includes('/pong');
@@ -78,14 +87,20 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 				leaveGame();
 			}
 			pSock.off('gameStart');
-			pSock.off('opponentLeft');			
+			pSock.off('opponentLeft');
+			pSock.off('queueStatus');
 		};
 	}, [location.pathname]);
 
 	const joinQueue = () => {
-		console.log('Joining queue');
-		pSock.emit('joinQueue', { username: user.display_name });
-		setInQueue(true);
+		console.log('Trying to join queue');
+		if (!inQueue && !inGame) {
+			console.log('Asking server to join queue: ', user.display_name);
+			pSock.emit('joinQueue', { username: user.display_name });
+		} else {
+			console.log('Already in queue or game: ', user.display_name);
+			alert('You are already in the queue or game');
+		}
 	};
 
 	const leaveQueue = () => {

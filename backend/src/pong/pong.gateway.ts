@@ -38,8 +38,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.queue.push({ clientId: client.id, username: data.username });
 			this.checkQueue();
 			console.log(`Pong Client: ${client.id} with name ${data.username} joined queue`);
+			client.emit('queueStatus', { success: true });
 		} else {
 			console.log(`Pong Client: ${data.username} is already in queue`);
+			client.emit('queueStatus', { success: false, message: 'You are already in the queue.' });
 		}
 	}
 
