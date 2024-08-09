@@ -34,11 +34,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('joinQueue')
 	handleJoinQueue(client: Socket, data: { username: string }) {
 		console.log(`Trying to join queue, now is at ${this.queue.length}`);
-		if (this.isUserInGame(data.username)) {
-			console.log(`Pong Client: ${client.id} is already in a game`);
-			client.emit('queueStatus', { success: false, message: 'You are already in a game.' });
-			return;
-		}
+		// if (this.isUserInGame(data.username)) {
+		// 	console.log(`Pong Client: ${client.id} is already in a game`);
+		// 	client.emit('queueStatus', { success: false, message: 'You are already in a game.' });
+		// 	return;
+		// }
 		if (!this.queue.find((q) => q.username === data.username)) {
 			this.queue.push({ clientId: client.id, username: data.username });
 			this.checkQueue();
@@ -116,12 +116,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return null;
 	}
 
-	private isUserInGame(username: string): boolean {
-		for (const players of this.rooms.values()) {
-			if (players.some(player => player.username === username)) {
-				return true;
-			}
-		}
-		return false;
-	}
+	// private isUserInGame(username: string): boolean {
+	// 	for (const players of this.rooms.values()) {
+	// 		if (players.some(player => player.username === username)) {
+	// 			return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
 }
