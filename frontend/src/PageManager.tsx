@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import LoginPage from './LoginPage/LoginPage'
 import MainGrid from './mainGrid/MainGrid'
 
-import { Constants } from './shared/constants';
+import { Constants } from '../shared/constants';
 
 export interface User {
   id:  string,
