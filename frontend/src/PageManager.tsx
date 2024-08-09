@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import LoginPage from './LoginPage/LoginPage'
 import MainGrid from './mainGrid/MainGrid'
 
+import { Constants } from './shared/constants';
+
 export interface User {
   id:  string,
   username: string,
@@ -17,12 +19,12 @@ const PageManager: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const handleLogin = async (intraUser: any) => {
-    const response = await fetch(`http://localhost:3003/user/get/${intraUser.id}`, {
+    const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/get/${intraUser.id}`, {
       method:  'GET'
     });
     let user = await response.json();
     if (user.statusCode == 404) {
-      const response = await fetch('http://localhost:3003/user/create', {
+      const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/create`, {
         method:  'POST',
         headers: {
           'Content-Type':  'application/json'
