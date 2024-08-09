@@ -3,8 +3,12 @@
   grid-template-rows: auto 1fr;
   grid-template-columns: 1fr;
   height: 85vh;
-  /* padding: 20px; */
-  background-color: #656565;
+  padding: 20px;
+  background-color: #ffffff;
+  background-image: url('bg.jpg');
+  background-size: 100%;
+
+
 
 }
 
@@ -35,7 +39,7 @@
 }
 
 .profile_section {
-  background-color: #c0c0c0;
+  background-color: #efefef;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;

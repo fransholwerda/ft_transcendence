@@ -6,7 +6,9 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-color: #656565;
+    background-color: #ffffff;
+    background-size: 100%;
+    background-image: url('bg.jpg');
   }
   
   .login-container h2 {
