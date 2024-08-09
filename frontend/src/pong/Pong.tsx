@@ -52,7 +52,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			setOpponent(opponent);
 			setRoomId(roomId);
 		});
-
+	
 		pSock.on('opponentLeft', () => {
 			console.log('Opponent left');
 			setInQueue(false);
@@ -60,7 +60,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			setOpponent(null);
 			setRoomId(null);
 		});
-
+	
 		pSock.on('queueStatus', ({ success, message }) => {
 			if (success) {
 				console.log('Successfully joined queue', user.display_name);
@@ -69,17 +69,17 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 				alert(message);
 			}
 		});
-
+	
 		const curUrlPath = location.pathname;
 		console.log('Current URL path:', curUrlPath);
 		const areAtPongpage = curUrlPath.includes('/pong');
-
+	
 		if (!areAtPongpage) {
 			console.log('Not at pong page');
 			leaveQueue();
 			leaveGame();
 		}
-
+	
 		return () => {
 			console.log('Pong component unmounted');
 			if (location.pathname.includes('/pong')) {
@@ -127,7 +127,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 				{!inQueue && !inGame && (
 					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
 				)}
-				{inQueue && (
+				{inQueue && !inGame && (
 					<>
 						<p>Waiting for opponent...</p>
 						<button className="leave-queue-btn" onClick={leaveQueue}>

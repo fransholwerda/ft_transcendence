@@ -68,12 +68,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const p2 = this.queue.shift();
 			if (!p1 || !p2) return; // Safety check
 			const roomId = `pong_${p1.username}_${p2.username}`;
-
+	
 			this.rooms.set(roomId, [p1.clientId, p2.clientId]);
-
+	
 			this.server.to(p1.clientId).emit('gameStart', { roomId, opponent: p2.username });
 			this.server.to(p2.clientId).emit('gameStart', { roomId, opponent: p1.username });
-
+	
 			this.server.in(p1.clientId).socketsJoin(roomId);
 			this.server.in(p2.clientId).socketsJoin(roomId);
 			console.log(`Pong Game started: ${roomId}`);
