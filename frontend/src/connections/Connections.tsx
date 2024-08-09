@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import './Connections.css';
 
+import { Constants } from '../../shared/constants';
+
 interface Connection {
   id: string;
   order: number;
 }
 
-const connectionsSocket = io('http://localhost:3003/connections', {
+const connectionsSocket = io(`${Constants.FRONTEND_HOST_URL}/connections`, {
   transports: ['websocket'],
 });
 
