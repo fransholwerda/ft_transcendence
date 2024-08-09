@@ -14,28 +14,22 @@ import Pong from '../pong/Pong'
 import ProfilePage from '../ProfilePage/ProfilePage'
 import SettingsPage from '../SettingsPage/SettingsPage'
 
-// and their styles
-import '../mainHeader/MainHeader.css'
-import '../pong/Pong.css'
-import '../ProfilePage/ProfilePage.css'
-import '../SettingsPage/SettingsPage.css'
-
 interface MainGridProps {
   user: User;
   onLogout: () => void;
 }
 
-const MainGrid: React.FC<MainGridProps & { initialComponent: string }> = ({ user, onLogout, initialComponent }) => {
+const MainGrid: React.FC<MainGridProps & { contentComponent: string }> = ({ user, onLogout, contentComponent }) => {
   const renderComponent = () => {
-    switch (initialComponent) {
+    switch (contentComponent) {
       case 'Pong':
-        return <Pong />;
+        return <Pong user={user} />;
       case 'SettingsPage':
         return <SettingsPage />;
       case 'ProfilePage':
         return <ProfilePage user={user} />;
       default:
-        return <Pong />;
+        return <Pong user={user} />;
     }
   }
   

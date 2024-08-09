@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 
 import './LoginPage.css';
 
+import { Constants } from '../../shared/constants';
+
 interface LoginProps {
   onLogin: (user_id: number) => void;
 }
@@ -13,7 +15,7 @@ function authorize(client_id: string, redirect_uri: string, scope: string, respo
 }
 
 async function requestToken(grant_type: string, client_id: string, auth_code: string, redirect_uri: string) {
-  const response = await fetch('http://localhost:3003/auth/token', {
+  const response = await fetch(`${Constants.FRONTEND_HOST_URL}/auth/token`, {
     method:  'POST',
     headers:
     {
@@ -26,7 +28,7 @@ async function requestToken(grant_type: string, client_id: string, auth_code: st
 }
 
 async function requestIntraUser(access_token: object) {
-  const response = await fetch('http://localhost:3003/auth/intra_user', {
+  const response = await fetch(`${Constants.FRONTEND_HOST_URL}/auth/intra_user`, {
     method:  'POST',
     headers: {
       'Content-Type':  'application/json'
@@ -41,7 +43,7 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
   const navigate = useNavigate();
 
   const client_id = "u-s4t2ud-d65b8708fe160cee8d25bff3aadbe733bd913f884d1fc2ad79cf4091132d661f";
-  const redirect_uri = "http%3A%2F%2Flocalhost%3A8080";
+  const redirect_uri = "http%3A%2F%2F10.11.3.19%3A8080";
   const scope = "profile public";
   const response_type = "code";
 
