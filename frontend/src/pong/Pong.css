@@ -9,6 +9,8 @@
 	max-height: var(--maingrid_content_height);
 	background-color: #f0f0f0;
 	font-family: Arial, sans-serif;
+	background-size: 100%;
+    background-image: url('bg.jpg');
 }
 
 .pong-card {
