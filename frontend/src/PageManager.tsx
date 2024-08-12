@@ -31,8 +31,8 @@ const PageManager: React.FC = () => {
         },
         body: JSON.stringify({
           id:  intraUser.id,
-	  username:  intraUser.login,
-	  avatarURL:  intraUser.image.link
+          username:  intraUser.login,
+          avatarURL:  intraUser.image.link
         })
       });
       user = await response.json();
