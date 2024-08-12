@@ -34,6 +34,17 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 	const location = useLocation();
 
 	useEffect(() => {
+		const curUrlPath = location.pathname;
+		console.log('Current URL Path:', curUrlPath);
+		const areAtPongpage = curUrlPath.includes('/pong');
+
+		if (!areAtPongpage) {
+			console.log('Not at pong page', user.username);
+			leaveQueue();
+			leaveGame();
+			return ;
+		}
+
 		pSock.on('gameStart', ({ roomId, opponent }) => {
 			console.log('Game started');
 			console.log(`Username: ${user.username} Room ID: ${roomId}, Opponent: ${opponent}`);
@@ -53,6 +64,10 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 		});
 
 		pSock.on('queueStatus', ({ success, message }) => {
+			if (inGame) {
+				// Ignore queueStatus if already in a game
+				return;
+			}
 			console.log('Queue status:', success, message, user.username);
 			if (success) {
 				console.log('Successfully joined queue', user.id);
@@ -63,18 +78,8 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			}
 		});
 
-		const curUrlPath = location.pathname;
-		console.log('Current URL Path:', curUrlPath);
-		const areAtPongpage = curUrlPath.includes('/pong');
-
-		if (!areAtPongpage) {
-			console.log('not at pong page', user.username);
-			leaveQueue();
-			leaveGame();
-		}
-
 		return () => {
-			if (location.pathname.includes('/pong')) {
+			if (!location.pathname.includes('/pong')) {
 				console.log('Leaving pong page', user.username);
 				leaveQueue();
 				leaveGame();
@@ -83,7 +88,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			pSock.off('opponentLeft');
 			pSock.off('queueStatus');
 		};
-	}, [location.pathname]);
+	}, [location.pathname, inGame]);
 
 	const joinQueue = () => {
 		if (!inQueue && !inGame) {

@@ -64,6 +64,21 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.server.to(roomId).emit('opponentLeft');
 			this.removeFromRoom(client.id);
 		}
+		// Ensure the user is removed from the userRoomMap
+		const userId = this.getUserIdByClientId(client.id);
+		if (userId) {
+			this.userRoomMap.delete(userId);
+		}
+	}
+
+	private getUserIdByClientId(clientId: string): string | null {
+		for (const [userId, roomId] of this.userRoomMap.entries()) {
+			const players = this.rooms.get(roomId);
+			if (players && players.includes(clientId)) {
+				return userId;
+			}
+		}
+		return null;
 	}
 
 	private checkQueue() {
@@ -125,6 +140,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private isUserInGame(userId: string): boolean {
-		return this.userRoomMap.has(userId);
+		// get the room
+		const roomId = this.userRoomMap.get(userId);
+		// check how many players are in the room
+		const players = this.rooms.get(roomId);
+		// if there are two players in the room, the user is in a game
+		return players && players.length === 2;
 	}
 }
