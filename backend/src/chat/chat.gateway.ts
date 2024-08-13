@@ -10,18 +10,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(server: Server) {
     this.server = server;
-    console.log('ChatInit');
+    console.log('Chat Init');
   }
 
   handleConnection(client: Socket, ...args: any[]) {
     this.clients.add(client.id);
-    console.log(`ChatClient connected: ${client.id}`);
+    console.log(`Chat Client connected: ${client.id}`);
     console.log(args[1]);
   }
 
   handleDisconnect(client: Socket) {
     this.clients.delete(client.id);
-    console.log(`ChatClient disconnected: ${client.id}`);
+    console.log(`Chat Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('createChannel')
@@ -43,7 +43,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // DOES CHANNEL EXIST AS PRIVATE AND INVITE ONLY?
     if (this.channels.has(channel)) {
       if (client.rooms.has(channel))   {
-        console.log('Already joined channel');
         client.emit('channelError', { message: 'Already joined channel' });
       } else {
         client.join(channel);

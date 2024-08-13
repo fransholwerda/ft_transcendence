@@ -32,7 +32,7 @@
 	flex-direction: column;
 	height: var(--tabs_sections_height);
 	max-height: var(--tabs_sections_height);
-	width: 250px;
+	width:7.5vw;
 	overflow-y: auto;
 }
 
@@ -87,13 +87,16 @@
 }
 
 .add-tab-form input {
-	grid-column: 1/2;
 	height: var(--tabs_add_height);
 	min-height: var(--tabs_add_height);
 	max-height: var(--tabs_add_height);
+	width: 7vw;
+	margin-left: 0.25vw;
+	margin-right: 0.25vw;
+	padding-left: 0.25vw;
 }
 
-.add-tab-form button {
+/* .add-tab-form button {
 	grid-column: 2/3;
 	cursor: pointer;
 	border: 1px solid #ccc;
@@ -101,15 +104,15 @@
 	height: var(--tabs_add_height);
 	min-height: var(--tabs_add_height);
 	max-height: var(--tabs_add_height);
-}
+} */
 
 .tab-content {
 	border: 1px solid #ccc;
-	padding: 20px;
 	height: var(--tabs_content_height);
 	min-height: var(--tabs_content_height);
 	max-height: var(--tabs_content_height);
 	background-color: #000000;
+	width: 17.5vw;
 }
 
 .chat-container {
@@ -119,6 +122,7 @@
 	max-height: var(--tabs_chat_container_height);
 	text-align: left;
 	overflow-y: auto;
+	padding-left: 5px;
 }
 
 .message-input {
@@ -131,4 +135,8 @@
 	height: 100%;
 	min-height: 100%;
 	max-height: 100%;
+	width: 17vw;
+	margin-left: 0.25vw;
+	margin-right: 0.25vw;
+	padding-left: 0.25vw;
 }

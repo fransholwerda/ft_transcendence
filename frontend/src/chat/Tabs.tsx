@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import './Tabs.css';
 import { Constants } from '../../shared/constants';
+import { User } from '../PageManager';
 // import Popup from 'reactjs-popup';
 
 const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
@@ -14,7 +15,11 @@ interface Tab {
   content: string;
 }
 
-const Tabs: React.FC = () => {
+interface ChatProps {
+  user: User;
+}
+
+const Tabs: React.FC<ChatProps> = ({ user }) => {
   const [channels, setChannels] = useState<Tab[]>([]);
   const [dms, setDms] = useState<Tab[]>([]);
   const [activeTabId, setActiveTabId] = useState<number>(0);
@@ -23,7 +28,7 @@ const Tabs: React.FC = () => {
   const [newDmName, setNewDmName] = useState<string>('');
   const [messages, setMessages] = useState<{ channel: string, message: string, username: string }[]>([]);
   const [currentMessage, setCurrentMessage] = useState<string>('');
-  const [username, setUsername] = useState<string>('User');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     socket.on('channelCreated', ({ channel }: { channel: string }) => {
@@ -62,6 +67,10 @@ const Tabs: React.FC = () => {
       setMessages(prevMessages => [...prevMessages, { channel, message, username }]);
     });
 
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+
     return () => {
       socket.off('channelCreated');
       socket.off('channelJoined');
@@ -72,15 +81,32 @@ const Tabs: React.FC = () => {
     };
   }, [channels, dms]);
 
+  const handleKeyDown = (inputType: string, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (inputType === 'message') {
+        sendMessage();
+      } else if (inputType === 'channel') {
+        joinChannel();
+      } else if (inputType === 'DM') {
+        joinDM();
+      }
+    }
+  }
+
   const joinChannel = () => {
+    const validChannelName = /^[a-zA-Z0-9-_]+$/;
     if (!newChannelName.trim()) return;
+    if (!validChannelName.test(newChannelName)) {
+      alert('Channel name can only contain alphanumeric characters, dashes (-), and underscores (_).');
+      return;
+    }
     socket.emit('joinChannel', { channel: '#' + newChannelName });
     setNewChannelName('');
   };
 
   const joinDM = () => {
     if (!newDmName.trim()) return;
-    socket.emit('joinDM', { user: username, targetUser: newDmName})
+    socket.emit('joinDM', { user: user.username, targetUser: newDmName})
     setNewDmName('');
   }
 
@@ -88,7 +114,7 @@ const Tabs: React.FC = () => {
     if (!currentMessage.trim()) return;
     const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
     if (activeTab) {
-      socket.emit('sendMessage', { channel: activeTab.title, message: currentMessage, username });
+      socket.emit('sendMessage', { channel: activeTab.title, message: currentMessage, username: user.username });
       setCurrentMessage('');
     }
   };
@@ -125,14 +151,6 @@ const Tabs: React.FC = () => {
 
   return (
     <div className="Tabs">
-      <div className="username">
-        <input 
-          type="text" 
-          value={username} 
-          onChange={(e) => setUsername(e.target.value)} 
-          placeholder="Username" 
-        />
-      </div>
       <div className="tab-container">
         <div className="tab-sections">
           <div className="tab-section">
@@ -154,9 +172,9 @@ const Tabs: React.FC = () => {
                 type="text" 
                 value={newChannelName} 
                 onChange={(e) => setNewChannelName(e.target.value)} 
+                onKeyDown={(e) => handleKeyDown('channel', e)} 
                 placeholder="New channel name" 
               />
-              <button className="add-tab-button" onClick={joinChannel}>+</button>
             </div>
           </div>
           <div className="tab-section">
@@ -178,9 +196,9 @@ const Tabs: React.FC = () => {
                 type="text" 
                 value={newDmName} 
                 onChange={(e) => setNewDmName(e.target.value)} 
+                onKeyDown={(e) => handleKeyDown('DM', e)} 
                 placeholder="New DM name" 
               />
-              <button className="add-tab-button" onClick={() => joinDM}>+</button>
             </div>
           </div>
         </div>
@@ -192,7 +210,8 @@ const Tabs: React.FC = () => {
             {dms.map(dm => (
               dm.id === activeTabId && <div key={dm.id}>{dm.content}</div>
             ))}
-            <div className="messages">
+            <div className="messages"
+              ref={scrollRef}>
               {messages.filter(msg => {
                 const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
                 return activeTab && msg.channel === activeTab.title;
@@ -208,9 +227,9 @@ const Tabs: React.FC = () => {
               type="text" 
               value={currentMessage} 
               onChange={(e) => setCurrentMessage(e.target.value)} 
+              onKeyDown={(e) => handleKeyDown('message', e)} 
               placeholder="Type a message" 
             />
-            <button onClick={sendMessage}>Send</button>
           </div>
         </div>
       </div>
