@@ -33,14 +33,14 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
   useEffect(() => {
     socket.on('channelCreated', ({ channel }: { channel: string }) => {
       const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
-      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `Content of ${channel}` }]);
+      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
       setActiveTabId(newId);
       setActiveType('channel');
     });
 
     socket.on('channelJoined', ({ channel }: { channel: string }) => {
       const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
-      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `Content of ${channel}` }]);
+      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
       setActiveTabId(newId);
       setActiveType('channel');
     });
