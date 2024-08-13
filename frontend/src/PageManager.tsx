@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 import LoginPage from './LoginPage/LoginPage';
 import MainGrid from './mainGrid/MainGrid';
@@ -49,6 +49,11 @@ const PageManager: React.FC = () => {
     setUser(null);
   };
 
+  const leaveQueue = () => {
+    console.log('Leaving queue');
+    pSock.emit('leaveQueue');
+  };
+
   useEffect(() => {
     return () => {
       console.log('Disconnecting socket:', pSock, user?.username);
@@ -56,8 +61,21 @@ const PageManager: React.FC = () => {
     };
   }, []);
 
+  const LocationHandler: React.FC = () => {
+    const location = useLocation();
+
+    useEffect(() => {
+      if (!location.pathname.includes('/pong')) {
+        leaveQueue();
+      }
+    }, [location.pathname]);
+
+    return null;
+  };
+
   return (
     <Router>
+      <LocationHandler />
       <Routes>
         <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
         
