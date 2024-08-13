@@ -8,7 +8,7 @@ import { QueryFailedError} from 'typeorm/error/QueryFailedError'
 
 @Injectable()
 export class UsersService {
-	constructor( private readonly userRepository: UserRepository){}
+	constructor( public userRepository: UserRepository){}
 
 	//This function should create a User in User Entity. the createUserData paramater will create an object
 	//of type createUserData where we have already defined what we are expecting.
