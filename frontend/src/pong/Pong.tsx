@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
 import './Pong.css';
-import { Constants } from '../../shared/constants';
 import { useLocation } from 'react-router-dom';
 import { User } from '../PageManager';
-
-const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
-	transports: ['websocket'],
-});
+import { Socket } from 'socket.io-client';
 
 interface PongProps {
 	user: User;
+	pSock: Socket;
 }
 
 // add a gameover screen
@@ -26,7 +22,7 @@ interface PongProps {
 // that object is sent to the backend to save the game data
 // add a queue button to go to the inQueue screen
 
-const Pong: React.FC<PongProps> = ({ user }) => {
+const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
 	const [opponent, setOpponent] = useState<string | null>(null);
@@ -34,18 +30,27 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 	const location = useLocation();
 
 	useEffect(() => {
+		const curUrlPath = location.pathname;
+		console.log('Current URL Path:', curUrlPath);
+		const areAtPongpage = curUrlPath.includes('/pong');
+
+		if (!areAtPongpage) {
+			console.log('Not at pong page', user.username);
+			leaveQueue();
+			leaveGame();
+			return ;
+		}
+
 		pSock.on('gameStart', ({ roomId, opponent }) => {
 			console.log('Game started');
-			console.log('Room ID:', roomId);
-			console.log('My Client ID:', pSock.id);
-			console.log('My Username:', user.username);
-			console.log('Opponent:', opponent);
+			console.log(`Username: ${user.username} Room ID: ${roomId}, Opponent: ${opponent}`);
+
 			setInQueue(false);
 			setInGame(true);
 			setOpponent(opponent);
 			setRoomId(roomId);
 		});
-	
+
 		pSock.on('opponentLeft', () => {
 			console.log('Opponent left');
 			setInQueue(false);
@@ -53,30 +58,25 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			setOpponent(null);
 			setRoomId(null);
 		});
-	
+
 		pSock.on('queueStatus', ({ success, message }) => {
+			if (inGame) {
+				// Ignore queueStatus if already in a game
+				return;
+			}
+			console.log('Queue status:', success, message, user.username);
 			if (success) {
-				console.log('Successfully joined queue', user.username);
+				console.log('Successfully joined queue', user.id);
 				setInQueue(true);
 			} else {
-				console.log('Failed to join queue', user.username);
+				console.log('Failed to join queue', user.id);
 				alert(message);
 			}
 		});
-	
-		const curUrlPath = location.pathname;
-		console.log('Current URL path:', curUrlPath);
-		const areAtPongpage = curUrlPath.includes('/pong');
-	
-		if (!areAtPongpage) {
-			console.log('Not at pong page');
-			leaveQueue();
-			leaveGame();
-		}
-	
+
 		return () => {
-			console.log('Pong component unmounted');
-			if (location.pathname.includes('/pong')) {
+			if (!location.pathname.includes('/pong')) {
+				console.log('Leaving pong page', user.username);
 				leaveQueue();
 				leaveGame();
 			}
@@ -84,27 +84,26 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 			pSock.off('opponentLeft');
 			pSock.off('queueStatus');
 		};
-	}, [location.pathname]);
+	}, [location.pathname, inGame]);
 
 	const joinQueue = () => {
-		console.log('Trying to join queue');
 		if (!inQueue && !inGame) {
-			console.log('Asking server to join queue: ', user.username);
-			pSock.emit('joinQueue', { username: user.username });
+			console.log('Asking server to join queue: ', user.id);
+			pSock.emit('joinQueue', { userId: user.id });
 		} else {
-			console.log('Already in queue or game: ', user.username);
+			console.log('Already in queue or game:', user.username);
 			alert('You are already in the queue or game');
 		}
 	};
 
 	const leaveQueue = () => {
-		console.log('Leaving queue');
+		console.log(`${user.username} Leaving queue ${roomId}`);
 		pSock.emit('leaveQueue');
 		setInQueue(false);
 	};
 
 	const leaveGame = () => {
-		console.log('Leaving game');
+		console.log(`${user.username} Leaving game ${roomId}`);
 		pSock.emit('leaveGame');
 		setInQueue(false);
 		setInGame(false);
@@ -116,7 +115,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 		<div className="pong-container">
 			<h2>Pong Game</h2>
 			<h3>Client ID: {pSock.id}</h3>
-			<h3>Username: {user.username}</h3>
+			<h3>User ID: {user.id}</h3>
 			<div className="pong-card">
 				{!inQueue && !inGame && (
 					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
@@ -134,7 +133,7 @@ const Pong: React.FC<PongProps> = ({ user }) => {
 						<p>Game started!</p>
 						<p>Room ID: {roomId}</p>
 						<p>Opponent: {opponent}</p>
-						<p>Your Name: {user.username}</p>
+						<p>Your User ID: {user.id}</p>
 						<button className="leave-game-btn" onClick={leaveGame}>
 							Leave Game
 						</button>
