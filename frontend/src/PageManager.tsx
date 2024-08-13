@@ -51,6 +51,7 @@ const PageManager: React.FC = () => {
 
   useEffect(() => {
     return () => {
+      console.log('Disconnecting socket:', pSock, user?.username);
       pSock.disconnect();
     };
   }, []);
