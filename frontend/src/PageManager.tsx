@@ -54,6 +54,11 @@ const PageManager: React.FC = () => {
     pSock.emit('leaveQueue');
   };
 
+  const leaveGame = () => {
+    console.log('Leaving Game');
+    pSock.emit('leaveGame');
+  };
+
   useEffect(() => {
     return () => {
       console.log('Disconnecting socket:', pSock, user?.username);
@@ -67,6 +72,7 @@ const PageManager: React.FC = () => {
     useEffect(() => {
       if (!location.pathname.includes('/pong')) {
         leaveQueue();
+        leaveGame();
       }
     }, [location.pathname]);
 
