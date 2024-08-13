@@ -235,4 +235,8 @@ xcuserdata/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 
+temp_all.txt
+context_script.sh
+temp_all.tsx
+
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,xcode,dotenv,visualstudiocode,svelte
