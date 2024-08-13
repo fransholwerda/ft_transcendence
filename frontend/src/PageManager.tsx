@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import './index.css'
-
+import React, { useState, useEffect } from 'react';
+import './index.css';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-
-// components for routing
-import LoginPage from './LoginPage/LoginPage'
-import MainGrid from './mainGrid/MainGrid'
-
+import io from 'socket.io-client';
+import LoginPage from './LoginPage/LoginPage';
+import MainGrid from './mainGrid/MainGrid';
 import { Constants } from '../shared/constants';
+
+const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
+  transports: ['websocket'],
+});
 
 export interface User {
   id:  string,
@@ -48,16 +49,22 @@ const PageManager: React.FC = () => {
     setUser(null);
   };
 
+  useEffect(() => {
+    return () => {
+      pSock.disconnect();
+    };
+  }, []);
+
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
         
-        <Route path="/pong" element={user ? <MainGrid contentComponent="Pong" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
+        <Route path="/pong" element={user ? <MainGrid contentComponent="Pong" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         
-        <Route path="/settings" element={user ? <MainGrid contentComponent="SettingsPage" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
+        <Route path="/settings" element={user ? <MainGrid contentComponent="SettingsPage" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         
-        <Route path="/profile" element={user ? <MainGrid contentComponent="ProfilePage" user={user} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
+        <Route path="/profile" element={user ? <MainGrid contentComponent="ProfilePage" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>

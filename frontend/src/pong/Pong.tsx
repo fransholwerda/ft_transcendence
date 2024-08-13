@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
 import './Pong.css';
-import { Constants } from '../../shared/constants';
 import { useLocation } from 'react-router-dom';
 import { User } from '../PageManager';
-
-const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
-	transports: ['websocket'],
-});
+import { Socket } from 'socket.io-client';
 
 interface PongProps {
 	user: User;
+	pSock: Socket;
 }
 
 // add a gameover screen
@@ -26,7 +22,7 @@ interface PongProps {
 // that object is sent to the backend to save the game data
 // add a queue button to go to the inQueue screen
 
-const Pong: React.FC<PongProps> = ({ user }) => {
+const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
 	const [opponent, setOpponent] = useState<string | null>(null);
