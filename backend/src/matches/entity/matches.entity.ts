@@ -4,8 +4,10 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export class Match {
 
+	//CHANGE PLAYER 1 AND 2 TO UUIDS INSTEAD OF USERNAME STRINGS
+
 	@PrimaryGeneratedColumn()
-	id: number
+		id: number
 
 	@Column({ type: 'varchar', length: 30 })
 		player1: string;
