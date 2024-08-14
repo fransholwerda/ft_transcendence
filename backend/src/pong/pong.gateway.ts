@@ -131,6 +131,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private getRoomIdByClientId(clientId: string): string | null {
+		console.log(`Getting room ID for client ${clientId}`);
 		for (const [roomId, players] of this.rooms.entries()) {
 			if (players.includes(clientId)) {
 				return roomId;
@@ -140,6 +141,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private isUserInGame(userId: string): boolean {
+		console.log(`Checking if user ${userId} is in a game`);
 		// get the room
 		const roomId = this.userRoomMap.get(userId);
 		// check how many players are in the room
