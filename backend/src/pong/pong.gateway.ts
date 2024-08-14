@@ -1,17 +1,5 @@
-// SubcribeMessage functionalilty: https://docs.nestjs.com/websockets/gateways#subscribing-to-messages
-import { SubscribeMessage } from '@nestjs/websockets';
-// WebSocketGateway functionality: https://docs.nestjs.com/websockets/gateways
-import { WebSocketGateway } from '@nestjs/websockets';
-// WebSocketServer functionality: https://docs.nestjs.com/websockets/gateways#server
-import { WebSocketServer } from '@nestjs/websockets';
-// OnGatewayConnection functionality: https://docs.nestjs.com/websockets/gateways#onconnection
-import { OnGatewayConnection } from '@nestjs/websockets';
-// OnGatewayDisconnect functionality: https://docs.nestjs.com/websockets/gateways#ondisconnect
-import { OnGatewayDisconnect } from '@nestjs/websockets';
-// Server functionality: https://socket.io/docs/v4/server-api/#Server
-import { Server } from 'socket.io';
-// Socket functionality: https://socket.io/docs/v4/server-api/#Socket
-import { Socket } from 'socket.io';
+import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
