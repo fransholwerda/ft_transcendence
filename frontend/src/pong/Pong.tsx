@@ -9,12 +9,17 @@ interface PongProps {
 	pSock: Socket;
 }
 
-interface GameSession {
-	p1: string;
-	p2: string;
-	s1: number;
-	s2: number;
-}
+// interface player {
+// 	clientid: string;
+// 	userid: string;
+// 	username: string;
+// 	score: number;
+// }
+
+// interface GameSession {
+// 	p1: player;
+// 	p2: player;
+// }
 
 const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);

@@ -1,6 +1,18 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
+// interface player {
+// 	clientid: string;
+// 	userid: string;
+// 	username: string;
+// 	score: number;
+// }
+
+// interface GameSession {
+// 	p1: player;
+// 	p2: player;
+// }
+
 @WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
@@ -10,9 +22,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private rooms: Map<string, string[]> = new Map();
 	// Maps userId to roomId
 	private userRoomMap: Map<string, string> = new Map();
-
+	
 	// array of active games
-	// private games: { p1: string, p2: string, s1: number, s2: number }[] = [];
+	// private games: GameSession[] = [];
 
 	handleConnection(client: Socket) {
 		console.log(`NestJS pong: connected: ${client.id}`);
