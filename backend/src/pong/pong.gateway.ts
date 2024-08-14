@@ -13,6 +13,12 @@ import { Server, Socket } from 'socket.io';
 // 	p2: player;
 // }
 
+interface User {
+	id:  string,
+	username: string,
+	avatarURL: string
+}
+
 @WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
@@ -37,20 +43,20 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('joinQueue')
-	handleJoinQueue(client: Socket, data: { userId: string }) {
-		console.log(`NestJS pong: ${client.id} : ${data.userId} trying to join queue`);
-		if (this.isUserInGame(data.userId)) {
-			console.log(`NestJS pong:: ${client.id} : ${data.userId} is already in a game`);
+	handleJoinQueue(client: Socket, data: { user: User }) {
+		console.log(`NestJS pong: ${client.id} : ${data.user.id} trying to join queue`);
+		if (this.isUserInGame(data.user.id)) {
+			console.log(`NestJS pong:: ${client.id} : ${data.user.id} is already in a game`);
 			client.emit('queueStatus', { success: false, message: 'You are already in a game.' });
 		}
-		else if (!this.queue.find((q) => q.userId === data.userId)) {
-			console.log(`NestJS pong:: ${client.id} : ${data.userId} could not find in queue`);
-			this.queue.push({ clientId: client.id, userId: data.userId });
+		else if (!this.queue.find((q) => q.userId === data.user.id)) {
+			console.log(`NestJS pong:: ${client.id} : ${data.user.id} could not find in queue`);
+			this.queue.push({ clientId: client.id, userId: data.user.id });
 			this.checkQueue();
-			client.emit('queueStatus', { success: true });
+			client.emit('queueStatus', { success: true, message: 'Successfully joined the queue.' });
 		}
 		else {
-			console.log(`NestJS pong: ${client.id} : ${data.userId} is already in the queue`);
+			console.log(`NestJS pong: ${client.id} : ${data.user.id} is already in the queue`);
 			client.emit('queueStatus', { success: false, message: 'You are already in the queue.' });
 		}
 	}

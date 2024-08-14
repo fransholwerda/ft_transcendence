@@ -94,7 +94,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const joinQueue = () => {
 		if (!inQueue && !inGame) {
 			console.log('pong.tsx: Asking server to join queue: ', user.id);
-			pSock.emit('joinQueue', { userId: user.id });
+			pSock.emit('joinQueue', { user: user });
 		} else {
 			console.log('pong.tsx: Already in queue or game:', user.username);
 			alert('You are already in the queue or game');
