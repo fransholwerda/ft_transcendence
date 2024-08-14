@@ -11,6 +11,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// Maps userId to roomId
 	private userRoomMap: Map<string, string> = new Map();
 
+	// array of active games
+	// private games: { p1: string, p2: string, s1: number, s2: number }[] = [];
+
 	handleConnection(client: Socket) {
 		console.log(`NestJS pong: connected: ${client.id}`);
 	}
@@ -93,6 +96,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.userRoomMap.set(p1.userId, roomId);
 			this.userRoomMap.set(p2.userId, roomId);
 
+			// update games array here
+			// give them the stuff for the game session
 			this.server.to(p1.clientId).emit('gameStart', { roomId, opponent: p2.userId });
 			this.server.to(p2.clientId).emit('gameStart', { roomId, opponent: p1.userId });
 

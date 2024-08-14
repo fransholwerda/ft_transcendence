@@ -9,12 +9,24 @@ interface PongProps {
 	pSock: Socket;
 }
 
+interface GameSession {
+	p1: string;
+	p2: string;
+	s1: number;
+	s2: number;
+}
+
 const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
 	const [opponent, setOpponent] = useState<string | null>(null);
 	const [roomId, setRoomId] = useState<string | null>(null);
 	const location = useLocation();
+
+	// add a gamesession thing here
+	// knowing if they are left or right
+	// and know if they are still in a game
+	// const [gameSession, setGameSession] = useState<GameSession | null>(null);
 
 	useEffect(() => {
 		const curUrlPath = location.pathname;
