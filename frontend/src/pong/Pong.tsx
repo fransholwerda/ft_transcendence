@@ -9,19 +9,6 @@ interface PongProps {
 	pSock: Socket;
 }
 
-// add a gameover screen
-
-// add user to this and use it to display the user's name in the game
-
-// why does the user not get sent back to the !inQueue && !inGame when they receive 'opponentLeft'?
-
-// in gameover window, it shows both names and their scores points under their names
-// prob have winner in green and loser in red
-// and have winner, loser under their names
-// the names, userids, scores will be saved in an object
-// that object is sent to the backend to save the game data
-// add a queue button to go to the inQueue screen
-
 const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
@@ -60,21 +47,22 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		});
 
 		pSock.on('queueStatus', ({ success, message }) => {
-			if (inGame) {
-				// Ignore queueStatus if already in a game
-				return;
-			}
 			console.log('Queue status:', success, message, user.username);
-			if (success) {
+			if (inGame) {
+				console.log('Already in game', user.username);
+			}
+			else if (success) {
 				console.log('Successfully joined queue', user.id);
 				setInQueue(true);
-			} else {
+			}
+			else {
 				console.log('Failed to join queue', user.id);
 				alert(message);
 			}
 		});
 
 		return () => {
+			console.log('useEffect return', user.username);
 			if (!location.pathname.includes('/pong')) {
 				console.log('Leaving pong page', user.username);
 				leaveQueue();

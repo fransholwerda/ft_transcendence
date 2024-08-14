@@ -46,36 +46,40 @@ const PageManager: React.FC = () => {
   };
 
   const handleLogout = () => {
+    console.log('PageManager: Logging out');
     setUser(null);
   };
 
   const leaveQueue = () => {
-    console.log('Leaving queue');
+    console.log('PageManager: Leaving Queue');
     pSock.emit('leaveQueue');
   };
 
   const leaveGame = () => {
-    console.log('Leaving Game');
+    console.log('PageManager: Leaving Game');
     pSock.emit('leaveGame');
   };
 
   useEffect(() => {
     return () => {
+      console.log('PageManager: standalone useEffect return');
       console.log('Disconnecting socket:', pSock, user?.username);
       pSock.disconnect();
     };
   }, []);
 
   const LocationHandler: React.FC = () => {
+    console.log('PageManager: LocationHandler');
     const location = useLocation();
 
     useEffect(() => {
+      console.log('PageManager: LocationHandler useEffect');
       if (!location.pathname.includes('/pong')) {
+        console.log('PageManager: Not at pong page', user?.username);
         leaveQueue();
         leaveGame();
       }
     }, [location.pathname]);
-
     return null;
   };
 
