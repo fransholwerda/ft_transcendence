@@ -47,7 +47,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('queueStatus', { success: true });
 		}
 		else {
-			console.log(`NestJS pong:: ${client.id} : ${data.userId} is already in the queue`);
+			console.log(`NestJS pong: ${client.id} : ${data.userId} is already in the queue`);
 			client.emit('queueStatus', { success: false, message: 'You are already in the queue.' });
 		}
 	}
