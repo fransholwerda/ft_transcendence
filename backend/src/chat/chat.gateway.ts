@@ -14,7 +14,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleConnection(client: Socket, ...args: any[]) {
+    const username = client.handshake.query.username as string;
+
+    console.log(`Username is: ${username}`);
     this.clients.add(client.id);
+    client.join('@' + username);
     console.log(`Chat Client connected: ${client.id}`);
     console.log(args[1]);
   }
@@ -72,7 +76,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // IS TARGETUSER BLOCKED?
     // DID TARGETUSER BLOCK YOU?
     // IS TARGETUSER ONLINE?
-    client.emit('dmCreated', { dm: targetUser });
+    client.emit('dmCreated', { dm: '@' + user + '@' + targetUser });
     // SEND EMIT TO OTHER USER USING THEIR USER ID
   }
 

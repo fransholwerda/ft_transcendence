@@ -5,10 +5,6 @@ import { Constants } from '../../shared/constants';
 import { User } from '../PageManager';
 // import Popup from 'reactjs-popup';
 
-const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
-  transports: ['websocket']
-});
-
 interface Tab {
   id: number;
   title: string;
@@ -29,6 +25,12 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
   const [messages, setMessages] = useState<{ channel: string, message: string, username: string }[]>([]);
   const [currentMessage, setCurrentMessage] = useState<string>('');
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const username = user.username;
+  const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
+    transports: ['websocket'],
+    query: { username },
+  });
 
   useEffect(() => {
     socket.on('channelCreated', ({ channel }: { channel: string }) => {
