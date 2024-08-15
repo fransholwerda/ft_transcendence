@@ -15,6 +15,10 @@ interface ChatProps {
   user: User;
 }
 
+const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
+  transports: ['websocket'],
+});
+
 const Tabs: React.FC<ChatProps> = ({ user }) => {
   const [channels, setChannels] = useState<Tab[]>([]);
   const [dms, setDms] = useState<Tab[]>([]);
@@ -26,13 +30,17 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
   const [currentMessage, setCurrentMessage] = useState<string>('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const username = user.username;
-  const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
-    transports: ['websocket'],
-    query: { username },
-  });
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Update with user validation from backend?
+    socket.on('chatJoined', () => {
+      setIsConnected(true);
+      setLoading(false);
+    })
+
     socket.on('channelCreated', ({ channel }: { channel: string }) => {
       const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
       setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
@@ -74,6 +82,7 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
     }
 
     return () => {
+      socket.off('chatJoined');
       socket.off('channelCreated');
       socket.off('channelJoined');
       socket.off('dmCreated');
@@ -82,6 +91,13 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
       socket.off('message');
     };
   }, [channels, dms]);
+
+  const handleConnect = async () => {
+    setLoading(true);
+    setError(null);
+    
+    socket.emit('joinChat', { username: user.username });
+  };
 
   const handleKeyDown = (inputType: string, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -152,89 +168,118 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
   };
 
   return (
-    <div className="Tabs">
-      <div className="tab-container">
-        <div className="tab-sections">
-          <div className="tab-section">
-            <div className="tab-header">Channels</div>
-            <div className="tab-buttons">
-              {channels.map(channel => (
-                <button
-                  key={channel.id}
-                  className={`tab-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
-                  onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
-                >
-                  {channel.title}
-                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>×</span>
-                </button>
-              ))}
-            </div>
-            <div className="add-tab-form">
-              <input 
-                type="text" 
-                value={newChannelName} 
-                onChange={(e) => setNewChannelName(e.target.value)} 
-                onKeyDown={(e) => handleKeyDown('channel', e)} 
-                placeholder="New channel name" 
-              />
-            </div>
-          </div>
-          <div className="tab-section">
-            <div className="tab-header">DMs</div>
-            <div className="tab-buttons">
-              {dms.map(dm => (
-                <button
-                  key={dm.id}
-                  className={`tab-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
-                  onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
-                >
-                  {dm.title}
-                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>×</span>
-                </button>
-              ))}
-            </div>
-            <div className="add-tab-form">
-              <input 
-                type="text" 
-                value={newDmName} 
-                onChange={(e) => setNewDmName(e.target.value)} 
-                onKeyDown={(e) => handleKeyDown('DM', e)} 
-                placeholder="New DM name" 
-              />
-            </div>
-          </div>
+    <div style={{ position: 'relative', height: '100%' }}>
+      {!isConnected && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          color: 'white',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+          zIndex: 1000,
+        }}>
+          <button onClick={handleConnect} disabled={loading} style={{
+            padding: '10px 20px',
+            fontSize: '16px',
+            cursor: 'pointer',
+          }}>
+            {loading ? 'Connecting...' : 'Connect to Chat'}
+          </button>
+          {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
         </div>
-        <div className="tab-content">
-          <div className="chat-container">
-            {channels.map(channel => (
-              channel.id === activeTabId && <div key={channel.id}>{channel.content}</div>
-            ))}
-            {dms.map(dm => (
-              dm.id === activeTabId && <div key={dm.id}>{dm.content}</div>
-            ))}
-            <div className="messages"
-              ref={scrollRef}>
-              {messages.filter(msg => {
-                const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
-                return activeTab && msg.channel === activeTab.title;
-              }).map((msg, index) => (
-              <div key={index} className="message">
-                <strong>{msg.username}:</strong> {msg.message}
+      )}
+      {isConnected && (
+        <div className="Tabs">
+          <div className="tab-container">
+            <div className="tab-sections">
+              <div className="tab-section">
+                <div className="tab-header">Channels</div>
+                <div className="tab-buttons">
+                  {channels.map(channel => (
+                    <button
+                      key={channel.id}
+                      className={`tab-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
+                      onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
+                    >
+                      {channel.title}
+                      <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>×</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="add-tab-form">
+                  <input 
+                    type="text" 
+                    value={newChannelName} 
+                    onChange={(e) => setNewChannelName(e.target.value)} 
+                    onKeyDown={(e) => handleKeyDown('channel', e)} 
+                    placeholder="New channel name" 
+                  />
+                </div>
               </div>
-              ))}
+              <div className="tab-section">
+                <div className="tab-header">DMs</div>
+                <div className="tab-buttons">
+                  {dms.map(dm => (
+                    <button
+                      key={dm.id}
+                      className={`tab-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
+                      onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
+                    >
+                      {dm.title}
+                      <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>×</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="add-tab-form">
+                  <input 
+                    type="text" 
+                    value={newDmName} 
+                    onChange={(e) => setNewDmName(e.target.value)} 
+                    onKeyDown={(e) => handleKeyDown('DM', e)} 
+                    placeholder="New DM name" 
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="tab-content">
+              <div className="chat-container">
+                {channels.map(channel => (
+                  channel.id === activeTabId && <div key={channel.id}>{channel.content}</div>
+                ))}
+                {dms.map(dm => (
+                  dm.id === activeTabId && <div key={dm.id}>{dm.content}</div>
+                ))}
+                <div className="messages"
+                  ref={scrollRef}>
+                  {messages.filter(msg => {
+                    const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
+                    return activeTab && msg.channel === activeTab.title;
+                  }).map((msg, index) => (
+                  <div key={index} className="message">
+                    <strong>{msg.username}:</strong> {msg.message}
+                  </div>
+                  ))}
+                </div>
+              </div>
+              <div className="message-input">
+                <input className="message-input-textbox"
+                  type="text" 
+                  value={currentMessage} 
+                  onChange={(e) => setCurrentMessage(e.target.value)} 
+                  onKeyDown={(e) => handleKeyDown('message', e)} 
+                  placeholder="Type a message" 
+                />
+              </div>
             </div>
           </div>
-          <div className="message-input">
-            <input className="message-input-textbox"
-              type="text" 
-              value={currentMessage} 
-              onChange={(e) => setCurrentMessage(e.target.value)} 
-              onKeyDown={(e) => handleKeyDown('message', e)} 
-              placeholder="Type a message" 
-            />
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

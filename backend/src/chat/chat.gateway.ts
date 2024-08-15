@@ -28,6 +28,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log(`Chat Client disconnected: ${client.id}`);
   }
 
+  @SubscribeMessage('joinChat')
+  handleJoinChat(client: Socket, payload: { username: string }) {
+    // Username validation?
+    const { username } = payload;
+    client.join('@' + username);
+    client.emit('chatJoined');
+  }
+
   @SubscribeMessage('createChannel')
   handleCreateChannel(client: Socket, payload: { channel: string }) {
     const { channel } = payload;
