@@ -20,6 +20,7 @@ const PageManager: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const handleLogin = async (intraUser: any) => {
+    console.log('PageManager: Logging in', intraUser);
     const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/get/${intraUser.id}`, {
       method:  'GET'
     });
@@ -37,6 +38,12 @@ const PageManager: React.FC = () => {
         })
       });
       user = await response.json();
+      // ----------------------------------------------------------------
+      // RANDOM USER CREATION
+      user.id = randomUserId();
+      user.username = randomUsername();
+      console.log('PageManager: User created', user);
+      // ----------------------------------------------------------------
     }
     setUser({
       id: user.id,
@@ -44,6 +51,14 @@ const PageManager: React.FC = () => {
       avatarURL:  user.avatarURL
     });
   };
+
+  const randomUserId = (): string => {
+    return Math.floor(Math.random() * 1000000).toString();
+  }
+
+  const randomUsername = (): string => {
+    return Math.random().toString(36).substring(7);
+  }
 
   const handleLogout = () => {
     console.log('PageManager: Logging out');
