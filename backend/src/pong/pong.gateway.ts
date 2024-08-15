@@ -24,7 +24,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	private queue: { clientId: string, userId: string }[] = [];
+	private queue: { clientId: string, user: User }[] = [];
 	private rooms: Map<string, string[]> = new Map();
 	// Maps userId to roomId
 	private userRoomMap: Map<string, string> = new Map();
@@ -46,12 +46,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	handleJoinQueue(client: Socket, data: { user: User }) {
 		console.log(`NestJS pong: ${client.id} : ${data.user.id} trying to join queue`);
 		if (this.isUserInGame(data.user.id)) {
-			console.log(`NestJS pong:: ${client.id} : ${data.user.id} is already in a game`);
+			console.log(`NestJS pong: ${client.id} : ${data.user.id} is already in a game`);
 			client.emit('queueStatus', { success: false, message: 'You are already in a game.' });
 		}
-		else if (!this.queue.find((q) => q.userId === data.user.id)) {
-			console.log(`NestJS pong:: ${client.id} : ${data.user.id} could not find in queue`);
-			this.queue.push({ clientId: client.id, userId: data.user.id });
+		else if (!this.queue.find((q) => q.user.id === data.user.id)) {
+			console.log(`NestJS pong: ${client.id} : ${data.user.id} could not find in queue`);
+			this.queue.push({ clientId: client.id, user: data.user });
 			this.checkQueue();
 			client.emit('queueStatus', { success: true, message: 'Successfully joined the queue.' });
 		}
@@ -108,20 +108,20 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				console.log('NestJS pong: Could not find both players in queue');	
 				return;
 			}
-			const roomId = `pong_${p1.userId}_${p2.userId}`;
+			const roomId = `pong_${p1.user.id}_${p2.user.id}`;
 
 			this.rooms.set(roomId, [p1.clientId, p2.clientId]);
-			this.userRoomMap.set(p1.userId, roomId);
-			this.userRoomMap.set(p2.userId, roomId);
+			this.userRoomMap.set(p1.user.id, roomId);
+			this.userRoomMap.set(p2.user.id, roomId);
 
 			// update games array here
 			// give them the stuff for the game session
-			this.server.to(p1.clientId).emit('gameStart', { roomId, opponent: p2.userId });
-			this.server.to(p2.clientId).emit('gameStart', { roomId, opponent: p1.userId });
+			this.server.to(p1.clientId).emit('gameStart', { roomId, opponent: p2.user.id });
+			this.server.to(p2.clientId).emit('gameStart', { roomId, opponent: p1.user.id });
 
 			this.server.in(p1.clientId).socketsJoin(roomId);
 			this.server.in(p2.clientId).socketsJoin(roomId);
-			console.log(`NestJS pong: Created room ${roomId} for players ${p1.userId} and ${p2.userId}`);
+			console.log(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		}
 	}
 
