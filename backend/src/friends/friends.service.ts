@@ -15,7 +15,24 @@ export class FriendService {
 		return await this.friendRepository.save(friend);
 	}
 
-	findUserFriends(): Promise<Friend[]> {
-		
+	findUserFriends(userID: number): Promise<Friend[]> {
+		return this.friendRepository.find({where: {user: userID}});
+	}
+
+	async deleteFriend(userID: number, friendID: number): Promise<void> {
+		try {
+			const queryBuilder = this.friendRepository.createQueryBuilder();
+
+			await queryBuilder
+				.delete()
+				.from(Friend)
+				.where("user = :userID AND friend = :friendID", { userID, friendID })
+				.execute();
+			
+			console.log('friend link between ${userID} and ${friendID} removed.');
+		} catch (error) {
+			console.log('friend link removal between ${userID} and ${friendID} failed.');
+			throw error;
+		}
 	}
 }
