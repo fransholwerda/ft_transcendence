@@ -57,16 +57,28 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
 
     socket.on('dmCreated', ({ dm }: { dm: string }) => {
       const newId = dms.length ? dms[dms.length - 1].id + 1 : 101;
-      setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `Content of ${dm}` }]);
+      setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `` }]);
       setActiveTabId(newId);
       setActiveType('dm');
     });
 
     socket.on('dmJoined', ({ dm }: { dm: string }) => {
-      const newId = dms.length ? dms[dms.length - 1].id + 1 : 101;
-      setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `Content of ${dm}` }]);
-      setActiveTabId(newId);
-      setActiveType('dm');
+      let newId: number | undefined;
+      setDms(prevDms => {
+        const dmExists = prevDms.some(existingDm => existingDm.title === dm);
+
+        if (dmExists) {
+          return prevDms;
+        }
+        newId = prevDms.length ? prevDms[prevDms.length - 1].id + 1 : 101;
+        const newDm = { id: newId, title: dm, content: `` };
+
+        return [...prevDms, newDm];
+      });
+      if (newId !== undefined) {
+        setActiveTabId(newId);
+        setActiveType('dm');
+      }
     });
 
     socket.on('channelError', ({ message }: { message: string }) => {
@@ -124,6 +136,10 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
 
   const joinDM = () => {
     if (!newDmName.trim()) return;
+    if (newDmName === user.username) {
+      alert(`You can't create a DM with yourself.`);
+      return;
+    }
     socket.emit('joinDM', { user: user.username, targetUser: newDmName})
     setNewDmName('');
   }
@@ -207,8 +223,8 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
                       className={`tab-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
                       onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
                     >
-                      {channel.title}
                       <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>×</span>
+                      {channel.title}
                     </button>
                   ))}
                 </div>
@@ -231,8 +247,8 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
                       className={`tab-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
                       onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
                     >
-                      {dm.title}
                       <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>×</span>
+                      {dm.title}
                     </button>
                   ))}
                 </div>

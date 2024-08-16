@@ -5,7 +5,7 @@ import { Server, Socket } from 'socket.io';
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
-  private channels = new Set<string>();
+  private rooms = new Set<string>();
   private clients = new Set<string>();
 
   afterInit(server: Server) {
@@ -19,6 +19,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log(`Username is: ${username}`);
     this.clients.add(client.id);
     client.join('@' + username);
+    if (!this.rooms.has('@' + username))
+      this.rooms.add('@' + username);
     console.log(`Chat Client connected: ${client.id}`);
     console.log(args[1]);
   }
@@ -39,10 +41,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('createChannel')
   handleCreateChannel(client: Socket, payload: { channel: string }) {
     const { channel } = payload;
-    if (this.channels.has(channel)) {
+    if (this.rooms.has(channel)) {
       client.emit('channelError', { message: 'Channel already exists' });
     } else {
-      this.channels.add(channel);
+      this.rooms.add(channel);
       client.join(channel);
       client.emit('channelCreated', { channel });
     }
@@ -53,7 +55,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { channel } = payload;
     // DOES CHANNEL EXIST WITH PASSWORD?
     // DOES CHANNEL EXIST AS PRIVATE AND INVITE ONLY?
-    if (this.channels.has(channel)) {
+    if (this.rooms.has(channel)) {
       if (client.rooms.has(channel))   {
         client.emit('channelError', { message: 'Already joined channel' });
       } else {
@@ -62,17 +64,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       }
     } else {
       client.join(channel);
-      this.channels.add(channel);
+      this.rooms.add(channel);
       client.emit('channelCreated', { channel: channel });
       // client.emit('channelError', { message: 'Channel does not exist' });
     }
   }
 
   @SubscribeMessage('leaveChannel')
-  handleLeaveChannel(client: Socket, payload: {channel: string }) {
+  handleLeaveChannel(client: Socket, payload: { channel: string }) {
     const { channel } = payload;
     // IS THE CHANNEL EMPTY? -> DELETE CHANNEL
-    if (this.channels.has(channel)) {
+    if (this.rooms.has(channel)) {
       client.leave(channel);
     }
   }
@@ -84,14 +86,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // IS TARGETUSER BLOCKED?
     // DID TARGETUSER BLOCK YOU?
     // IS TARGETUSER ONLINE?
-    client.emit('dmCreated', { dm: '@' + user + '@' + targetUser });
+    // if (this.server.sockets.adapter.rooms.has('@' + targetUser)) {
+    this.server.to('@' + user).emit('dmCreated', { dm: '@' + targetUser });
     // SEND EMIT TO OTHER USER USING THEIR USER ID
   }
 
   @SubscribeMessage('sendMessage')
   handleMessage(client: Socket, payload: { channel: string, message: string, username: string }) {
     const { channel, message, username } = payload;
-    this.server.to(channel).emit('message', { channel, message, username });
+    if ( channel[0] === '@' ) {
+      this.server.to('@' + username).emit('dmJoined', { dm: channel });
+      this.server.to('@' + username).emit('message', { channel, message, username });
+      this.server.to(channel).emit('dmJoined', { dm: '@' + username });
+      this.server.to(channel).emit('message', { channel: '@' + username, message, username })
+    } else {
+      this.server.to(channel).emit('message', { channel, message, username })
+    }
   }
 }
 
