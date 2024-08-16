@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from "../users/entities/user.entity";
+import { Match } from 'src/matches/entity/matches.entity';
 
 @Module({
 	imports: [
@@ -20,6 +21,7 @@ import { User } from "../users/entities/user.entity";
 				//all entites need to be represented in the database. ad stuff onto here like channels, matches, etc.
 				entities: [
 					User,
+					Match,
 				]
 			}),
 		}),
