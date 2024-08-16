@@ -4,6 +4,9 @@ import { useLocation } from 'react-router-dom';
 import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
 
+// max score
+const MAX_SCORE = 5;
+
 interface PongProps {
 	user: User;
 	pSock: Socket;
@@ -48,6 +51,11 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		}
 
 		pSock.on('gameStart', ({ sesh }) => {
+			console.log(`pong.tsx: ${sesh ?? 'N/A'}`);
+			if (!sesh) {
+				console.log('pong.tsx: No game session found');
+				return ;
+			}
 			console.log('pong.tsx: Game started');
 			console.log(`pong.tsx: Username: ${user.username} Room ID: ${sesh.roomId}`);
 
@@ -58,9 +66,24 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 		pSock.on('gameUpdate', ({ sesh }) => {
 			console.log('pong.tsx: game update received from server');
-			
-			setInGame(false);
-			setGameSession(null);
+			if (!sesh) {
+				console.log('pong.tsx: No game session found');
+				return ;
+			}
+			console.log(`pong.tsx: ${sesh.p1.username} vs ${sesh.p2.username}`);
+			console.log(`pong.tsx: ${sesh.p1.score} vs ${sesh.p2.score}`);
+			if (sesh.p1.score === MAX_SCORE
+				|| sesh.p2.score === MAX_SCORE
+				|| sesh.p1.status === 'GameOver'
+				|| sesh.p2.status === 'GameOver'
+				|| sesh.p1.status === 'disconnected'
+				|| sesh.p2.status === 'disconnected') {
+				alert('Game Over');
+				alert(`${sesh.p1.username} ${sesh.p1.score} vs ${sesh.p2.username} ${sesh.p2.score}`);
+				setInGame(false);
+				setGameSession(null);
+				return ;
+			}
 		});
 
 		pSock.on('queueStatus', ({ success, message }) => {
@@ -90,6 +113,35 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			pSock.off('queueStatus');
 		};
 	}, [location.pathname, inGame]);
+
+	// const findUserInGame = (sesh: GameSession, clientId: string): player | null => {
+	// 	if (sesh.p1.clientid === clientId) {
+	// 		return sesh.p1;
+	// 	}
+	// 	else if (sesh.p2.clientid === clientId) {
+	// 		return sesh.p2;
+	// 	}
+	// 	return null;
+	// }
+
+	// const findEnemyInGame = (sesh: GameSession, clientId: string): player | null => {
+	// 	if (sesh.p1.clientid === clientId) {
+	// 		return sesh.p2;
+	// 	}
+	// 	else if (sesh.p2.clientid === clientId) {
+	// 		return sesh.p1;
+	// 	}
+	// 	return null;
+	// }
+
+	// const findGameSessionByClientId = (clientId: string): GameSession | null => {
+	// 	if (gameSession) {
+	// 		if (gameSession.p1.clientid === clientId || gameSession.p2.clientid === clientId) {
+	// 			return gameSession;
+	// 		}
+	// 	}
+	// 	return null;
+	// }
 
 	const joinQueue = () => {
 		if (!inQueue && !inGame) {
