@@ -25,7 +25,6 @@ interface GameSession {
 const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
-	const [roomId, setRoomId] = useState<string | null>(null);
 	const location = useLocation();
 
 	// add a gamesession thing here
@@ -45,14 +44,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			return ;
 		}
 
-		pSock.on('gameStart', ({ roomId, gameSession }) => {
+		pSock.on('gameStart', ({ gameSession }) => {
 			console.log('pong.tsx: Game started');
-			console.log(`pong.tsx: Username: ${user.username} Room ID: ${roomId}`);
+			console.log(`pong.tsx: Username: ${user.username} Room ID: ${gameSession.roomId}`);
 
 			setInQueue(false);
 			setInGame(true);
 			setGameSession(gameSession);
-			setRoomId(roomId);
 		});
 
 		pSock.on('opponentLeft', () => {
@@ -60,7 +58,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setInQueue(false);
 			setInGame(false);
 			setGameSession(null);
-			setRoomId(null);
 		});
 
 		pSock.on('queueStatus', ({ success, message }) => {
@@ -102,18 +99,17 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	};
 
 	const leaveQueue = () => {
-		console.log(`pong.tsx: ${user.username} Leaving queue ${roomId}`);
+		console.log(`pong.tsx: ${user.username} Leaving queue ${gameSession?.roomId ?? 'N/A'}`);
 		pSock.emit('leaveQueue');
 		setInQueue(false);
 	};
 
 	const leaveGame = () => {
-		console.log(`pong.tsx: ${user.username} Leaving game ${roomId}`);
+		console.log(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
 		pSock.emit('leaveGame');
 		setInQueue(false);
 		setInGame(false);
 		setGameSession(null);
-		setRoomId(null);
 	};
 
 	return (
@@ -137,7 +133,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 						<p>userid: {gameSession?.p1.userid ?? 'N/A'} | {gameSession?.p2.userid ?? 'N/A'}</p>
 						<p>username: {gameSession?.p1.username ?? 'N/A'} | {gameSession?.p2.username ?? 'N/A'}</p>
 						<p>score: {gameSession?.p1.score ?? 0} | {gameSession?.p2.score ?? 'N/A'}</p>
-						<p>Room ID: {roomId}</p>
+						<p>Room ID: {gameSession?.roomId ?? 'N/A'}</p>
 						<button className="leave-game-btn" onClick={leaveGame}>
 							Leave Game
 						</button>
