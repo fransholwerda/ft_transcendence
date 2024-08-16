@@ -2,13 +2,14 @@ import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserData } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import { QueryFailedError} from 'typeorm/error/QueryFailedError'
 
 @Injectable()
 export class UsersService {
-	constructor( private readonly userRepository: UserRepository){}
+	constructor( public userRepository: UserRepository){}
 
 	//This function should create a User in User Entity. the createUserData paramater will create an object
 	//of type createUserData where we have already defined what we are expecting.
@@ -39,11 +40,17 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.userRepository.findOne({where: {id: id}});
   }
 
   //This function yeets and deletes a passed user from the database.
   removeUser(id: number): Promise< { affected?: number }> {
     return this.userRepository.delete(id);
+  }
+
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+	const existingUser =  await this.findOne(id);
+	const updatedUserData = this.userRepository.merge(existingUser, updateUserDto);
+	return await this.userRepository.save(updatedUserData);
   }
 }

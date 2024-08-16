@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('Users')
 export class User {
-	//this SHOULD automatically generate IDs for the database table
+	
 	@PrimaryColumn()
 	id: number;
 

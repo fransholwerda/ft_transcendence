@@ -20,6 +20,7 @@ const PageManager: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const handleLogin = async (intraUser: any) => {
+    console.log('PageManager: Logging in', intraUser);
     const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/get/${intraUser.id}`, {
       method:  'GET'
     });
@@ -37,6 +38,12 @@ const PageManager: React.FC = () => {
         })
       });
       user = await response.json();
+      // ----------------------------------------------------------------
+      // RANDOM USER CREATION
+      user.id = randomUserId();
+      user.username = randomUsername();
+      console.log('PageManager: User created', user);
+      // ----------------------------------------------------------------
     }
     setUser({
       id: user.id,
@@ -45,37 +52,49 @@ const PageManager: React.FC = () => {
     });
   };
 
+  const randomUserId = (): string => {
+    return Math.floor(Math.random() * 1000000).toString();
+  }
+
+  const randomUsername = (): string => {
+    return Math.random().toString(36).substring(7);
+  }
+
   const handleLogout = () => {
+    console.log('PageManager: Logging out');
     setUser(null);
   };
 
   const leaveQueue = () => {
-    console.log('Leaving queue');
+    console.log('PageManager: Leaving Queue');
     pSock.emit('leaveQueue');
   };
 
   const leaveGame = () => {
-    console.log('Leaving Game');
+    console.log('PageManager: Leaving Game');
     pSock.emit('leaveGame');
   };
 
   useEffect(() => {
     return () => {
+      console.log('PageManager: standalone useEffect return');
       console.log('Disconnecting socket:', pSock, user?.username);
       pSock.disconnect();
     };
   }, []);
 
   const LocationHandler: React.FC = () => {
+    console.log('PageManager: LocationHandler');
     const location = useLocation();
 
     useEffect(() => {
+      console.log('PageManager: LocationHandler useEffect');
       if (!location.pathname.includes('/pong')) {
+        console.log('PageManager: Not at pong page', user?.username);
         leaveQueue();
         leaveGame();
       }
     }, [location.pathname]);
-
     return null;
   };
 
