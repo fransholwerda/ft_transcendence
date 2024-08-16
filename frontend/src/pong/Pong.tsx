@@ -9,11 +9,14 @@ interface PongProps {
 	pSock: Socket;
 }
 
+type pstatus = 'inGame' | 'disconnected' | 'GameOver';
+
 interface player {
 	clientid: string;
 	userid: string;
 	username: string;
 	score: number;
+	status: pstatus;
 }
 
 interface GameSession {
@@ -44,18 +47,18 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			return ;
 		}
 
-		pSock.on('gameStart', ({ gameSession }) => {
+		pSock.on('gameStart', ({ sesh }) => {
 			console.log('pong.tsx: Game started');
-			console.log(`pong.tsx: Username: ${user.username} Room ID: ${gameSession.roomId}`);
+			console.log(`pong.tsx: Username: ${user.username} Room ID: ${sesh.roomId}`);
 
 			setInQueue(false);
 			setInGame(true);
-			setGameSession(gameSession);
+			setGameSession(sesh);
 		});
 
-		pSock.on('opponentLeft', () => {
-			console.log('pong.tsx: Opponent left');
-			setInQueue(false);
+		pSock.on('gameUpdate', ({ sesh }) => {
+			console.log('pong.tsx: game update received from server');
+			
 			setInGame(false);
 			setGameSession(null);
 		});
