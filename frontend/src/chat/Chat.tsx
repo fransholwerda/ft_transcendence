@@ -26,13 +26,13 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
       setLoading(false);
     })
 
-    socket.on('channelError', ({ message }: { message: string }) => {
+    socket.on('chatError', ({ message }: { message: string }) => {
       alert(message);
     });
 
     return () => {
       socket.off('chatJoined');
-      socket.off('channelError');
+      socket.off('chatError');
     };
   });
 

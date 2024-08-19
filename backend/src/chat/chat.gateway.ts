@@ -41,7 +41,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleCreateChannel(client: Socket, payload: { channel: string }) {
     const { channel } = payload;
     if (this.rooms.has(channel)) {
-      client.emit('channelError', { message: 'Channel already exists' });
+      client.emit('chatError', { message: 'Channel already exists' });
     } else {
       this.rooms.add(channel);
       client.join(channel);
@@ -56,7 +56,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // DOES CHANNEL EXIST AS PRIVATE AND INVITE ONLY?
     if (this.rooms.has(channel)) {
       if (client.rooms.has(channel))   {
-        client.emit('channelError', { message: 'Already joined channel' });
+        client.emit('chatError', { message: 'Already joined channel' });
       } else {
         client.join(channel);
         client.emit('channelJoined', { channel: channel });
@@ -65,7 +65,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.join(channel);
       this.rooms.add(channel);
       client.emit('channelCreated', { channel: channel });
-      // client.emit('channelError', { message: 'Channel does not exist' });
     }
   }
 
