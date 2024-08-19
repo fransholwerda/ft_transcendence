@@ -67,10 +67,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       }
     });
 
-    socket.on('channelError', ({ message }: { message: string }) => {
-      alert(message);
-    });
-
     socket.on('message', ({ channel, message, username }: { channel: string, message: string, username: string }) => {
       setMessages(prevMessages => [...prevMessages, { channel, message, username }]);
     });
@@ -84,7 +80,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       socket.off('channelJoined');
       socket.off('dmCreated');
       socket.off('dmJoined');
-      socket.off('channelError');
       socket.off('message');
     };
   }, [channels, dms]);
