@@ -1,16 +1,16 @@
 @import url('../maincssroot.css');
 
 :root {
-	--tabs_container_height: 100%;
-	--tabs_sections_height: 100%;
-	--tabs_sect_height: 50%;
-	--tabs_header_height: 5%;
-	--tabs_btns_height: 85%;
-	--tabs_add_height: 100%;
-	--tabs_add_tab_form: 10%;
-	--tabs_content_height: 100%;
-	--tabs_chat_container_height: 95%;
-	--tabs_message_input_height: 5%;
+	--chat_container_height: 100%;
+	--chat_sections_height: 100%;
+	--chat_sect_height: 50%;
+	--chat_header_height: 5%;
+	--chat_btns_height: 85%;
+	--chat_add_height: 100%;
+	--chat_add_tab_form: 10%;
+	--chat_content_height: 100%;
+	--chat_message_container_height: 95%;
+	--chat_message_input_height: 5%;
 }
 
 .Chat {
@@ -21,45 +21,45 @@
 	max-height: var(--maingrid_content_height);
 }
 
-.tab-container {
+.chat-container {
 	display: flex;
-	height: var(--tabs_container_height);
-	max-height: var(--tabs_container_height);
+	height: var(--chat_container_height);
+	max-height: var(--chat_container_height);
 }
 
-.tab-sections {
+.chat-sections {
 	display: flex;
 	flex-direction: column;
-	height: var(--tabs_sections_height);
-	max-height: var(--tabs_sections_height);
+	height: var(--chat_sections_height);
+	max-height: var(--chat_sections_height);
 	width:7.5vw;
 	overflow-y: auto;
 }
 
-.tab-section {
+.chat-section {
 	border: 1px solid #ccc;
-	height: var(--tabs_sect_height);
-	min-height: var(--tabs_sect_height);
-	max-height: var(--tabs_sect_height);
+	height: var(--chat_sect_height);
+	min-height: var(--chat_sect_height);
+	max-height: var(--chat_sect_height);
 }
 
-.tab-header {
+.chat-header {
 	font-weight: bold;
-	height: var(--tabs_header_height);
-	min-height: var(--tabs_header_height);
-	max-height: var(--tabs_header_height);
+	height: var(--chat_header_height);
+	min-height: var(--chat_header_height);
+	max-height: var(--chat_header_height);
 }
 
-.tab-buttons {
+.chat-buttons {
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;
-	height: var(--tabs_btns_height);
-	min-height: var(--tabs_btns_height);
-	max-height: var(--tabs_btns_height);
+	height: var(--chat_btns_height);
+	min-height: var(--chat_btns_height);
+	max-height: var(--chat_btns_height);
 }
 
-.tab-button {
+.chat-button {
 	padding: 10px 0px;
 	cursor: pointer;
 	border: 1px solid #ccc;
@@ -68,48 +68,48 @@
 	text-align: left;
 }
 
-.tab-button.active {
+.chat-button.active {
 	background-color: #ff0000;
 }
 
-.tab-button .close-button {
+.chat-button .close-button {
 	margin-left: 5px;
 	cursor: pointer;
 }
 
-.add-tab-form {
+.add-chat-form {
 	display: grid;
 	grid-template-columns: 4fr 1fr;
 	grid-template-rows: 1fr;
-	height: var(--tabs_add_tab_form);
-	min-height: var(--tabs_add_tab_form);
-	max-height: var(--tabs_add_tab_form);
+	height: var(--chat_add_tab_form);
+	min-height: var(--chat_add_tab_form);
+	max-height: var(--chat_add_tab_form);
 }
 
-.add-tab-form input {
-	height: var(--tabs_add_height);
-	min-height: var(--tabs_add_height);
-	max-height: var(--tabs_add_height);
+.add-chat-form input {
+	height: var(--chat_add_height);
+	min-height: var(--chat_add_height);
+	max-height: var(--chat_add_height);
 	width: 7vw;
 	margin-left: 0.25vw;
 	margin-right: 0.25vw;
 	padding-left: 0.25vw;
 }
 
-.tab-content {
+.chat-content {
 	border: 1px solid #ccc;
-	height: var(--tabs_content_height);
-	min-height: var(--tabs_content_height);
-	max-height: var(--tabs_content_height);
+	height: var(--chat_content_height);
+	min-height: var(--chat_content_height);
+	max-height: var(--chat_content_height);
 	background-color: #000000;
 	width: 17.5vw;
 }
 
-.chat-container {
+.chat-message-container {
 	flex-grow: 1;
-	height: var(--tabs_chat_container_height);
-	min-height: var(--tabs_chat_container_height);
-	max-height: var(--tabs_chat_container_height);
+	height: var(--chat_message_container_height);
+	min-height: var(--chat_message_container_height);
+	max-height: var(--chat_message_container_height);
 	text-align: left;
 	overflow-y: auto;
 	padding-left: 5px;
@@ -118,9 +118,9 @@
 }
 
 .message-input {
-	height: var(--tabs_message_input_height);
-	min-height: var(--tabs_message_input_height);
-	max-height: var(--tabs_message_input_height);
+	height: var(--chat_message_input_height);
+	min-height: var(--chat_message_input_height);
+	max-height: var(--chat_message_input_height);
 }
 
 .message-input-textbox {

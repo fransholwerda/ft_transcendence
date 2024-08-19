@@ -158,15 +158,15 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
 
   return (
     <div className="Chat">
-      <div className="tab-container">
-        <div className="tab-sections">
-          <div className="tab-section">
-            <div className="tab-header">Channels</div>
-            <div className="tab-buttons">
+      <div className="chat-container">
+        <div className="chat-sections">
+          <div className="chat-section">
+            <div className="chat-header">Channels</div>
+            <div className="chat-buttons">
               {channels.map(channel => (
                 <button
                   key={channel.id}
-                  className={`tab-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
+                  className={`chat-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
                 >
                   <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>×</span>
@@ -174,7 +174,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 </button>
               ))}
             </div>
-            <div className="add-tab-form">
+            <div className="add-chat-form">
               <input
                 type="text"
                 value={newChannelName}
@@ -184,13 +184,13 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
               />
             </div>
           </div>
-          <div className="tab-section">
-            <div className="tab-header">DMs</div>
-            <div className="tab-buttons">
+          <div className="chat-section">
+            <div className="chat-header">DMs</div>
+            <div className="chat-buttons">
               {dms.map(dm => (
                 <button
                   key={dm.id}
-                  className={`tab-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
+                  className={`chat-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
                 >
                   <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>×</span>
@@ -198,7 +198,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 </button>
               ))}
             </div>
-            <div className="add-tab-form">
+            <div className="add-chat-form">
               <input
                 type="text"
                 value={newDmName}
@@ -209,8 +209,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
             </div>
           </div>
         </div>
-        <div className="tab-content">
-          <div className="chat-container">
+        <div className="chat-content">
+          <div className="chat-message-container">
             {channels.map(channel => (
               channel.id === activeTabId && <div key={channel.id}>{channel.content}</div>
             ))}
