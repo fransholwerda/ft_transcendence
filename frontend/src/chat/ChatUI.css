@@ -13,7 +13,7 @@
 	--tabs_message_input_height: 5%;
 }
 
-.Tabs {
+.Chat {
 	font-family: sans-serif;
 	text-align: center;
 	height: var(--maingrid_content_height);

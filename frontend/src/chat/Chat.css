@@ -1,56 +1,30 @@
-.chat-container {
-    display: grid;
-    grid-template-rows: 1fr auto; /* Adjusted to ensure .messages-box takes remaining space and .input-box takes only the space it needs */
-    margin: 0 auto;
-    border: 1px solid #ccc;
-    border-radius: 0px;
-	height: 85vh;
-	overflow: hidden;
+.chat-container-wrapper {
+	position: relative;
+	height: 100%;
 }
 
-.messages-box {
-    grid-row: 1/2;
-    padding: 10px;
-    background-color: #273443;
-    border-bottom: 1px solid #ccc;
-	overflow-y: auto; /* Added to enable vertical scrolling */
-}
-
-.message {
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    background-color: #008069;
-    border-radius: 20px;
-    align-self: flex-start;
-}
-
-.input-box {
-    grid-row: 2/3; /* Keeps .input-box at the bottom */
-    padding: 10px;
-    background-color: #fff;
-    height: auto; /* Changed to auto to allow for dynamic height */
-	flex: 0 0 50px;
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
 	display: flex;
-	justify-content: space-around;
+	justify-content: center;
 	align-items: center;
+	flex-direction: column;
+	z-index: 1000;
 }
 
-.input-box input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    margin-right: 10px;
+.connect-button {
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
 }
-
-.input-box button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px; /* Added missing border-radius value for consistency */
-    background-color: #4caf50; /* Added background color for button */
-    color: white; /* Added text color for button */
-    cursor: pointer; /* Added cursor style for button */
-}
-
-.input-box button:hover {
-    background-color: #45a049; /* Added hover effect for button */
+  
+.error-message {
+	color: red;
+	margin-top: 10px;
 }
