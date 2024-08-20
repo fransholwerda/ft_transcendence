@@ -99,7 +99,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	}, [location.pathname, inGame]);
 
 	// const printGameSession = (sesh: any) => {
-	// 	pongPrint(`pong.tsx: Game Session:', sesh);
+	// 	console.log(`pong.tsx: Game Session:', sesh);
 	// }
 
 	const joinQueue = () => {

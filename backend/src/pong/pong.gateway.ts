@@ -23,6 +23,28 @@ interface User {
 	avatarURL: string
 }
 
+// ------------------------------
+// CUSTOM PRINTING
+const pongPrintColors = [
+    '\x1b[31m', // Red
+    '\x1b[32m', // Green
+    '\x1b[34m', // Blue
+    '\x1b[33m', // Yellow
+    '\x1b[35m', // Magenta
+    '\x1b[36m'  // Cyan
+];
+const pongPrintReset = '\x1b[0m'; // Reset to default color
+let pongPrintIndex = 0;
+const allowPongPrint = true;
+
+const pongPrint = (message: any) => {
+    if (!allowPongPrint) return;
+    const color = pongPrintColors[pongPrintIndex];
+    console.log(`${color}${message}${pongPrintReset}`);
+    pongPrintIndex = (pongPrintIndex + 1) % pongPrintColors.length;
+};
+// ------------------------------
+
 @WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
@@ -34,50 +56,50 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private games: GameSession[] = [];
 
 	handleConnection(client: Socket) {
-		console.log(`NestJS pong: connected: ${client.id}`);
+		pongPrint(`NestJS pong: connected: ${client.id}`);
 	}
 
 	handleDisconnect(client: Socket) {
-		console.log(`NestJS pong: disconnected: ${client.id}`);
+		pongPrint(`NestJS pong: disconnected: ${client.id}`);
 		this.removeFromQueue(client.id);
 		this.disconnectFromGame(client.id);
 	}
 
 	@SubscribeMessage('joinQueue')
 	handleJoinQueue(client: Socket, data: { user: User }) {
-		console.log(`NestJS pong: ${client.id} : ${data.user.id} trying to join queue`);
+		pongPrint(`NestJS pong: ${client.id} : ${data.user.id} trying to join queue`);
 		if (this.isUserInGame(data.user.id)) {
-			console.log(`NestJS pong: ${client.id} : ${data.user.id} is already in a game`);
+			pongPrint(`NestJS pong: ${client.id} : ${data.user.id} is already in a game`);
 			client.emit('queueStatus', { success: false, message: 'You are already in a game.' });
 		}
 		else if (!this.queue.find((q) => q.user.id === data.user.id)) {
-			console.log(`NestJS pong: ${client.id} : ${data.user.id} could not find in queue`);
+			pongPrint(`NestJS pong: ${client.id} : ${data.user.id} could not find in queue`);
 			this.queue.push({ clientId: client.id, user: data.user });
 			this.checkQueue();
 			client.emit('queueStatus', { success: true, message: 'Successfully joined the queue.' });
 		}
 		else {
-			console.log(`NestJS pong: ${client.id} : ${data.user.id} is already in the queue`);
+			pongPrint(`NestJS pong: ${client.id} : ${data.user.id} is already in the queue`);
 			client.emit('queueStatus', { success: false, message: 'You are already in the queue.' });
 		}
 	}
 	
 	private checkQueue() {
-		console.log(`NestJS pong: checking queue`);
+		pongPrint(`NestJS pong: checking queue`);
 		if (this.queue.length < 2) {
-			console.log('NestJS pong: Not enough players in queue');
+			pongPrint('NestJS pong: Not enough players in queue');
 			return;
 		}
 
-		console.log('NestJS pong: Found 2 players in queue');
+		pongPrint('NestJS pong: Found 2 players in queue');
 		this.printQueue();
 		const p1 = this.queue.shift();
 		const p2 = this.queue.shift();
 		if (!p1 || !p2) {
-			console.log('NestJS pong: Could not find both players in queue');
+			pongPrint('NestJS pong: Could not find both players in queue');
 			return;
 		}
-		console.log(`NestJS pong: Found players ${p1.user.username} and ${p2.user.username}`);
+		pongPrint(`NestJS pong: Found players ${p1.user.username} and ${p2.user.username}`);
 		const roomId = `pong_${p1.user.id}_${p2.user.id}`;
 
 		const gameSession = this.fillGameSession(p1, p2, roomId);
@@ -88,27 +110,27 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		this.server.in(p1.clientId).socketsJoin(roomId);
 		this.server.in(p2.clientId).socketsJoin(roomId);
-		console.log(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
+		pongPrint(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		this.printGames();
 	}
 
 	@SubscribeMessage('leaveQueue')
 	handleLeaveQueue(client: Socket) {
-		console.log(`NestJS pong: ${client.id} left the queue`);
+		pongPrint(`NestJS pong: ${client.id} left the queue`);
 		this.removeFromQueue(client.id);
 	}
 
 	@SubscribeMessage('leaveGame')
 	handleLeaveGame(client: Socket) {
-		console.log(`NestJS pong: ${client.id} leaveGame`);
+		pongPrint(`NestJS pong: ${client.id} leaveGame`);
 		const sesh = this.findGameSessionByClientId(client.id);
 		if (!sesh) {
-			console.log(`NestJS pong: ${client.id} leaveGame listener !sesh`);
+			pongPrint(`NestJS pong: ${client.id} leaveGame listener !sesh`);
 			return;
 		}
-		console.log(`Room ID: ${sesh.roomId}`);
+		pongPrint(`Room ID: ${sesh.roomId}`);
 		this.disconnectFromGame(client.id);
-		console.log(`NestJS pong: ${client.id} left the game room ${sesh.roomId}`);
+		pongPrint(`NestJS pong: ${client.id} left the game room ${sesh.roomId}`);
 		if (sesh.p1.clientid === client.id) {
 			sesh.p2.score = MAX_SCORE;
 		}
@@ -119,7 +141,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string): GameSession {
-		console.log(`NestJS pong: Filling game session for room ${roomId}`);
+		pongPrint(`NestJS pong: Filling game session for room ${roomId}`);
 		const sesh: GameSession = {
 			p1: {
 				clientid: p1.clientId,
@@ -139,76 +161,76 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 	
 	private printGameSession(sesh: GameSession) {
-		console.log(`NestJS pong: Game session ${sesh.roomId}`);
-		console.log(`NestJS pong: ${sesh.p1.username} vs ${sesh.p2.username}`);
-		console.log(`NestJS pong: ${sesh.p1.score} vs ${sesh.p2.score}`);
+		pongPrint(`NestJS pong: Game session ${sesh.roomId}`);
+		pongPrint(`NestJS pong: ${sesh.p1.username} vs ${sesh.p2.username}`);
+		pongPrint(`NestJS pong: ${sesh.p1.score} vs ${sesh.p2.score}`);
 	}
 
 	private printQueue() {
-		console.log('NestJS pong: printQueue()');
+		pongPrint('NestJS pong: printQueue()');
 		this.queue.forEach((q) => {
-			console.log(`NestJS pong: ${q.user.username}`);
+			pongPrint(`NestJS pong: ${q.user.username}`);
 		});
 	}
 
 	private printGames() {
-		console.log('NestJS pong: printGames()');
+		pongPrint('NestJS pong: printGames()');
 		this.games.forEach((game) => {
-			console.log(`NestJS pong: ${game.p1.username} vs ${game.p2.username}`);
+			pongPrint(`NestJS pong: ${game.p1.username} vs ${game.p2.username}`);
 		});
 	}
 
 	private removeFromQueue(clientId: string) {
-		console.log(`NestJS pong: ${clientId} removing client from queue`);
+		pongPrint(`NestJS pong: ${clientId} removing client from queue`);
 		this.queue = this.queue.filter((q) => q.clientId !== clientId);
 	}
 
 	private findGameSessionByClientId(clientId: string): GameSession | null {
-		console.log(`NestJS pong: findGameSessionByClientId ${clientId}`);
+		pongPrint(`NestJS pong: findGameSessionByClientId ${clientId}`);
 		const gameSession = this.games.find((game) => game.p1.clientid === clientId || game.p2.clientid === clientId);
 		if (!gameSession) {
-			console.log(`NestJS pong: Could not find game session for user ${clientId}`);
+			pongPrint(`NestJS pong: Could not find game session for user ${clientId}`);
 			return null;
 		}
 		return gameSession;
 	}
 
 	private findGameSessionByUserId(userId: string): GameSession | null {
-		console.log(`NestJS pong: findGameSessionByUserId ${userId}`);
+		pongPrint(`NestJS pong: findGameSessionByUserId ${userId}`);
 		const gameSession = this.games.find((game) => game.p1.userid === userId || game.p2.userid === userId);
 		if (!gameSession) {
-			console.log(`NestJS pong: Could not find game session for user ${userId}`);
+			pongPrint(`NestJS pong: Could not find game session for user ${userId}`);
 			return null;
 		}
 		return gameSession;
 	}
 
 	private isUserInGame(userId: string): boolean {
-		console.log(`NestJS pong: Checking if user ${userId} is in a game`);
+		pongPrint(`NestJS pong: Checking if user ${userId} is in a game`);
 		return this.findGameSessionByUserId(userId) !== null;
 	}
 
 	private getRoomIdByClientId(clientId: string): string | null {
-		console.log(`NestJS pong: Getting room ID by client ID ${clientId}`);
+		pongPrint(`NestJS pong: Getting room ID by client ID ${clientId}`);
 		const gameSession = this.findGameSessionByClientId(clientId);
 		if (!gameSession) {
-			console.log(`NestJS pong: Could not find room ID for client ${clientId}`);
+			pongPrint(`NestJS pong: Could not find room ID for client ${clientId}`);
 			return null;
 		}
 		return gameSession.roomId;
 	}
 
 	private disconnectFromGame(clientId: string) {
-		console.log(`NestJS pong: ${clientId} disconnecting from game`);
+		pongPrint(`NestJS pong: ${clientId} disconnecting from game`);
 		if (!this.findGameSessionByClientId(clientId)) {
-			console.log(`NestJS pong: disconnectFromGame: Could not find game session for client ${clientId}`);
+			pongPrint(`NestJS pong: disconnectFromGame: Could not find game session for client ${clientId}`);
 			return;
 		}
 		this.server.socketsLeave(clientId);
 	}
 
 	private removeGameSession(roomId: string) {
-		console.log(`NestJS pong: Removing game session for room ${roomId}`);
+		pongPrint(`NestJS pong: Removing game session for room ${roomId}`);
 		this.games = this.games.filter((game) => game.roomId !== roomId);
 	}
 }
