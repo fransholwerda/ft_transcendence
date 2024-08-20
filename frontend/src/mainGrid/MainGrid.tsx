@@ -2,7 +2,7 @@ import React from 'react';
 import './MainGrid.css';
 import { User } from '../PageManager.tsx';
 import { Socket } from 'socket.io-client';
-import Tabs from '../chat/Tabs';
+import Chat from '../chat/Chat.tsx';
 
 // import GameManager from '../gameManager/GameManager';
 // <GameManager />
@@ -39,7 +39,7 @@ const MainGrid: React.FC<MainGridProps & { contentComponent: string }> = ({ user
     <div className="parent">
       <div className="header"><MainHeader user={user} onLogout={onLogout} /></div>
       <div className="content">{renderComponent()}</div>
-      <div className="chat"><Tabs user={user} /></div>
+      <div className="chat"><Chat user={user} /></div>
     </div>
   );
 };

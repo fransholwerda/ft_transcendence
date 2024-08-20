@@ -10,24 +10,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(server: Server) {
     this.server = server;
-    console.log('Chat Init');
+    console.log('NestJS Chat Gateway Init');
   }
 
   handleConnection(client: Socket, ...args: any[]) {
     const username = client.handshake.query.username as string;
 
-    console.log(`Username is: ${username}`);
+    console.log(`NestJS Chat Gateway Username is: ${username}`);
     this.clients.add(client.id);
     client.join('@' + username);
     if (!this.rooms.has('@' + username))
       this.rooms.add('@' + username);
-    console.log(`Chat Client connected: ${client.id}`);
-    console.log(args[1]);
+    console.log(`NestJS Chat Gateway Client connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
     this.clients.delete(client.id);
-    console.log(`Chat Client disconnected: ${client.id}`);
+    console.log(`NestJS Chat Gateway Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('joinChat')
@@ -42,7 +41,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleCreateChannel(client: Socket, payload: { channel: string }) {
     const { channel } = payload;
     if (this.rooms.has(channel)) {
-      client.emit('channelError', { message: 'Channel already exists' });
+      client.emit('chatError', { message: 'Channel already exists' });
     } else {
       this.rooms.add(channel);
       client.join(channel);
@@ -57,7 +56,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // DOES CHANNEL EXIST AS PRIVATE AND INVITE ONLY?
     if (this.rooms.has(channel)) {
       if (client.rooms.has(channel))   {
-        client.emit('channelError', { message: 'Already joined channel' });
+        client.emit('chatError', { message: 'Already joined channel' });
       } else {
         client.join(channel);
         client.emit('channelJoined', { channel: channel });
@@ -66,7 +65,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.join(channel);
       this.rooms.add(channel);
       client.emit('channelCreated', { channel: channel });
-      // client.emit('channelError', { message: 'Channel does not exist' });
     }
   }
 
