@@ -123,7 +123,9 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	return (
 		<div className="pong-container">
-			<h1>Socket id: {pSock.id}</h1>
+			<h6>Socket id: {pSock.id}</h6>
+			<h6>User id: {user.id}</h6>
+			<h6>Username: {user.username}</h6>
 			<div className="pong-card">
 				{!inQueue && !inGame && (
 					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>

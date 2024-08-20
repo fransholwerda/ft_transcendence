@@ -41,7 +41,12 @@
 
 .pong-container p {
 	color: #666;
-	margin-bottom: 1rem;
+	/* margin-bottom: 1rem; */
+}
+
+.pong-container h6 {
+	color: lightsalmon;
+	font-size: 0.8rem;
 }
 
 .pong-container button {
