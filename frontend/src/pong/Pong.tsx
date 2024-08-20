@@ -15,6 +15,7 @@ interface PongProps {
 const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
+	const [gameSession, setGameSession] = useState<any>(null);
 	const location = useLocation();
 
 	useEffect(() => {
@@ -40,6 +41,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 			setInQueue(false);
 			setInGame(true);
+			setGameSession(sesh);
 		});
 
 		pSock.on('gameUpdate', ({ sesh }) => {
@@ -50,6 +52,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			}
 			console.log(`pong.tsx: ${sesh.p1.username} vs ${sesh.p2.username}`);
 			console.log(`pong.tsx: ${sesh.p1.score} vs ${sesh.p2.score}`);
+			setGameSession(sesh);
 			if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
 				alert('Game Over');
 				alert(`${sesh.p1.username} ${sesh.p1.score} vs ${sesh.p2.username} ${sesh.p2.score}`);
@@ -81,7 +84,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				leaveGame();
 			}
 			pSock.off('gameStart');
-			pSock.off('opponentLeft');
+			pSock.off('gameUpdate');
 			pSock.off('queueStatus');
 		};
 	}, [location.pathname, inGame]);
@@ -136,6 +139,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		pSock.emit('leaveGame');
 		setInQueue(false);
 		setInGame(false);
+		setGameSession(null);
 	};
 
 	return (
@@ -152,14 +156,14 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 						</button>
 					</>
 				)}
-				{inGame && (
+				{inGame && gameSession && (
 					<div className="game-info">
 						<p>p1 | P2</p>
-						<p>clientid: {gameSession?.p1.clientid ?? 'N/A'} | {gameSession?.p2.clientid ?? 'N/A'}</p>
-						<p>userid: {gameSession?.p1.userid ?? 'N/A'} | {gameSession?.p2.userid ?? 'N/A'}</p>
-						<p>username: {gameSession?.p1.username ?? 'N/A'} | {gameSession?.p2.username ?? 'N/A'}</p>
-						<p>score: {gameSession?.p1.score ?? 0} | {gameSession?.p2.score ?? 'N/A'}</p>
-						<p>Room ID: {gameSession?.roomId ?? 'N/A'}</p>
+						<p>clientid: {gameSession.p1.clientid ?? 'N/A'} | {gameSession.p2.clientid ?? 'N/A'}</p>
+						<p>userid: {gameSession.p1.userid ?? 'N/A'} | {gameSession.p2.userid ?? 'N/A'}</p>
+						<p>username: {gameSession.p1.username ?? 'N/A'} | {gameSession.p2.username ?? 'N/A'}</p>
+						<p>score: {gameSession.p1.score ?? 0} | {gameSession.p2.score ?? 'N/A'}</p>
+						<p>Room ID: {gameSession.roomId ?? 'N/A'}</p>
 						<button className="leave-game-btn" onClick={leaveGame}>
 							Leave Game
 						</button>

@@ -77,13 +77,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (sesh.roomId) {
 			console.log(`NestJS pong: ${client.id} left the game room ${sesh.roomId}`);
 			if (sesh.p1.clientid === client.id) {
-				sesh.p1.status = 'disconnected';
-				sesh.p2.status = 'GameOver';
 				sesh.p2.score = MAX_SCORE;
 			}
 			else if (sesh.p2.clientid === client.id) {
-				sesh.p2.status = 'disconnected';
-				sesh.p1.status = 'GameOver';
 				sesh.p1.score = MAX_SCORE;
 			}
 			this.server.to(sesh.roomId).emit('gameUpdate', { sesh });
@@ -99,15 +95,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				clientid: p1.clientId,
 				userid: p1.user.id,
 				username: p1.user.username,
-				score: 0,
-				status: 'inGame'
+				score: 0
 			},
 			p2: {
 				clientid: p2.clientId,
 				userid: p2.user.id,
 				username: p2.user.username,
-				score: 0,
-				status: 'inGame'
+				score: 0
 			},
 			roomId: roomId
 		};
@@ -191,12 +185,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (!gameSession) {
 			console.log(`NestJS pong: Could not find game session for client ${clientId}`);
 			return;
-		}
-		if (gameSession.p1.clientid === clientId) {
-			gameSession.p1.status = 'disconnected';
-		}
-		else if (gameSession.p2.clientid === clientId) {
-			gameSession.p2.status = 'disconnected';
 		}
 		this.server.socketsLeave(clientId);
 	}
