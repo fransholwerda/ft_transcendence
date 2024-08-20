@@ -70,6 +70,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 
 		console.log('NestJS pong: Found 2 players in queue');
+		this.printQueue();
 		const p1 = this.queue.shift();
 		const p2 = this.queue.shift();
 		if (!p1 || !p2) {
@@ -88,6 +89,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.in(p1.clientId).socketsJoin(roomId);
 		this.server.in(p2.clientId).socketsJoin(roomId);
 		console.log(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
+		this.printGames();
 	}
 
 	@SubscribeMessage('leaveQueue')
@@ -140,6 +142,20 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log(`NestJS pong: Game session ${sesh.roomId}`);
 		console.log(`NestJS pong: ${sesh.p1.username} vs ${sesh.p2.username}`);
 		console.log(`NestJS pong: ${sesh.p1.score} vs ${sesh.p2.score}`);
+	}
+
+	private printQueue() {
+		console.log('NestJS pong: printQueue()');
+		this.queue.forEach((q) => {
+			console.log(`NestJS pong: ${q.user.username}`);
+		});
+	}
+
+	private printGames() {
+		console.log('NestJS pong: printGames()');
+		this.games.forEach((game) => {
+			console.log(`NestJS pong: ${game.p1.username} vs ${game.p2.username}`);
+		});
 	}
 
 	private removeFromQueue(clientId: string) {
