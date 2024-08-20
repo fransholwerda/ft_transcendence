@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
-import './Tabs.css';
-import { Constants } from '../../shared/constants';
+import { Socket } from 'socket.io-client';
+import './ChatUI.css';
 import { User } from '../PageManager';
-// import Popup from 'reactjs-popup';
-
-const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
-  transports: ['websocket']
-});
 
 interface Tab {
   id: number;
@@ -15,11 +9,12 @@ interface Tab {
   content: string;
 }
 
-interface ChatProps {
+interface ChatUIProps {
+  socket: Socket;
   user: User;
 }
 
-const Tabs: React.FC<ChatProps> = ({ user }) => {
+const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
   const [channels, setChannels] = useState<Tab[]>([]);
   const [dms, setDms] = useState<Tab[]>([]);
   const [activeTabId, setActiveTabId] = useState<number>(0);
@@ -31,36 +26,45 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+
     socket.on('channelCreated', ({ channel }: { channel: string }) => {
       const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
-      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `Content of ${channel}` }]);
+      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
       setActiveTabId(newId);
       setActiveType('channel');
     });
 
     socket.on('channelJoined', ({ channel }: { channel: string }) => {
       const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
-      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `Content of ${channel}` }]);
+      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
       setActiveTabId(newId);
       setActiveType('channel');
     });
 
     socket.on('dmCreated', ({ dm }: { dm: string }) => {
       const newId = dms.length ? dms[dms.length - 1].id + 1 : 101;
-      setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `Content of ${dm}` }]);
+      setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `` }]);
       setActiveTabId(newId);
       setActiveType('dm');
     });
 
     socket.on('dmJoined', ({ dm }: { dm: string }) => {
-      const newId = dms.length ? dms[dms.length - 1].id + 1 : 101;
-      setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `Content of ${dm}` }]);
-      setActiveTabId(newId);
-      setActiveType('dm');
-    });
+      let newId: number | undefined;
+      setDms(prevDms => {
+        const dmExists = prevDms.some(existingDm => existingDm.title === dm);
 
-    socket.on('channelError', ({ message }: { message: string }) => {
-      alert(message);
+        if (dmExists) {
+          return prevDms;
+        }
+        newId = prevDms.length ? prevDms[prevDms.length - 1].id + 1 : 101;
+        const newDm = { id: newId, title: dm, content: `` };
+
+        return [...prevDms, newDm];
+      });
+      if (newId !== undefined) {
+        setActiveTabId(newId);
+        setActiveType('dm');
+      }
     });
 
     socket.on('message', ({ channel, message, username }: { channel: string, message: string, username: string }) => {
@@ -76,7 +80,6 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
       socket.off('channelJoined');
       socket.off('dmCreated');
       socket.off('dmJoined');
-      socket.off('channelError');
       socket.off('message');
     };
   }, [channels, dms]);
@@ -106,6 +109,10 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
 
   const joinDM = () => {
     if (!newDmName.trim()) return;
+    if (newDmName === user.username) {
+      alert(`You can't create a DM with yourself.`);
+      return;
+    }
     socket.emit('joinDM', { user: user.username, targetUser: newDmName})
     setNewDmName('');
   }
@@ -150,91 +157,91 @@ const Tabs: React.FC<ChatProps> = ({ user }) => {
   };
 
   return (
-    <div className="Tabs">
-      <div className="tab-container">
-        <div className="tab-sections">
-          <div className="tab-section">
-            <div className="tab-header">Channels</div>
-            <div className="tab-buttons">
+    <div className="Chat">
+      <div className="chat-container">
+        <div className="chat-sections">
+          <div className="chat-section">
+            <div className="chat-header">Channels</div>
+            <div className="chat-buttons">
               {channels.map(channel => (
                 <button
                   key={channel.id}
-                  className={`tab-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
+                  className={`chat-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
                 >
-                  {channel.title}
                   <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>×</span>
+                  {channel.title}
                 </button>
               ))}
             </div>
-            <div className="add-tab-form">
-              <input 
-                type="text" 
-                value={newChannelName} 
-                onChange={(e) => setNewChannelName(e.target.value)} 
-                onKeyDown={(e) => handleKeyDown('channel', e)} 
-                placeholder="New channel name" 
+            <div className="add-chat-form">
+              <input
+                type="text"
+                value={newChannelName}
+                onChange={(e) => setNewChannelName(e.target.value)}
+                onKeyDown={(e) => handleKeyDown('channel', e)}
+                placeholder="New channel name"
               />
             </div>
           </div>
-          <div className="tab-section">
-            <div className="tab-header">DMs</div>
-            <div className="tab-buttons">
+          <div className="chat-section">
+            <div className="chat-header">DMs</div>
+            <div className="chat-buttons">
               {dms.map(dm => (
                 <button
                   key={dm.id}
-                  className={`tab-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
+                  className={`chat-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
                 >
-                  {dm.title}
                   <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>×</span>
+                  {dm.title}
                 </button>
               ))}
             </div>
-            <div className="add-tab-form">
-              <input 
-                type="text" 
-                value={newDmName} 
-                onChange={(e) => setNewDmName(e.target.value)} 
-                onKeyDown={(e) => handleKeyDown('DM', e)} 
-                placeholder="New DM name" 
+            <div className="add-chat-form">
+              <input
+                type="text"
+                value={newDmName}
+                onChange={(e) => setNewDmName(e.target.value)}
+                onKeyDown={(e) => handleKeyDown('DM', e)}
+                placeholder="New DM name"
               />
             </div>
           </div>
         </div>
-        <div className="tab-content">
-          <div className="chat-container">
+        <div className="chat-content">
+          <div className="chat-message-container">
             {channels.map(channel => (
               channel.id === activeTabId && <div key={channel.id}>{channel.content}</div>
             ))}
             {dms.map(dm => (
               dm.id === activeTabId && <div key={dm.id}>{dm.content}</div>
             ))}
-            <div className="messages"
-              ref={scrollRef}>
+            <div className="messages" ref={scrollRef}>
               {messages.filter(msg => {
                 const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
                 return activeTab && msg.channel === activeTab.title;
               }).map((msg, index) => (
-              <div key={index} className="message">
-                <strong>{msg.username}:</strong> {msg.message}
-              </div>
+                <div key={index} className="message">
+                  <strong>{msg.username}:</strong> {msg.message}
+                </div>
               ))}
             </div>
           </div>
           <div className="message-input">
-            <input className="message-input-textbox"
-              type="text" 
-              value={currentMessage} 
-              onChange={(e) => setCurrentMessage(e.target.value)} 
-              onKeyDown={(e) => handleKeyDown('message', e)} 
-              placeholder="Type a message" 
+            <input
+              className="message-input-textbox"
+              type="text"
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyDown={(e) => handleKeyDown('message', e)}
+              placeholder="Type a message"
             />
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default Tabs;
+export default ChatUI;

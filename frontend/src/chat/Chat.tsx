@@ -1,48 +1,66 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import './Chat.css';
-import MessageInput from './MessageInput';
-import Messages from './Messages';
-
 import { Constants } from '../../shared/constants';
+import { User } from '../PageManager';
+import ChatUI from './ChatUI.tsx';
+// import Popup from 'reactjs-popup';
 
-const chatSocket = io(`${Constants.FRONTEND_HOST_URL}/chat`, {
+interface ChatProps {
+  user: User;
+}
+
+const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
   transports: ['websocket'],
 });
 
-const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+const Chat: React.FC<ChatProps> = ({ user }) => {
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    chatSocket.on('message', (message: string) => {
-      // console.log('Received message:', message);
-      setMessages((prevMessages) => [...prevMessages, message]);
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Update with user validation from backend?
+    socket.on('chatJoined', () => {
+      setIsConnected(true);
+      setLoading(false);
+    })
+
+    socket.on('chatError', ({ message }: { message: string }) => {
+      alert(message);
     });
 
     return () => {
-      chatSocket.off('message');
+      socket.off('chatJoined');
+      socket.off('chatError');
     };
-  }, []);
+  });
 
-  const sendMessage = (message: string) => {
-    if (message.trim().length > 0) {
-      chatSocket.emit('message', message);
-    }
+  const handleConnect = async () => {
+    setLoading(true);
+    setError(null);
+    
+    socket.emit('joinChat', { username: user.username });
   };
 
   return (
-    <div className="chat-container">
-      <div className="messages-box">
-        <Messages messages={messages} />
-        <div ref={messagesEndRef} />
-      </div>
-      <div className="input-box">
-        <MessageInput send={sendMessage} />
-      </div>
+    <div className="chat-container-wrapper">
+      {!isConnected && (
+        <div className="overlay">
+          <button onClick={handleConnect} disabled={loading} className="connect-button">
+            {loading ? 'Connecting...' : 'Connect to Chat'}
+          </button>
+          {error && <p className="error-message">{error}</p>}
+        </div>
+      )}
+      {isConnected && (
+        <ChatUI
+          socket={socket}
+          user={user}
+        />
+      )}
     </div>
   );
-};
+}
 
 export default Chat;
