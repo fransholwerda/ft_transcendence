@@ -190,7 +190,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private getRoomIdByClientId(clientId: string): string | null {
 		console.log(`NestJS pong: Getting room ID by client ID ${clientId}`);
-		if (!this.findGameSessionByClientId(clientId)) {
+		const gameSession = this.findGameSessionByClientId(clientId);
+		if (!gameSession) {
 			console.log(`NestJS pong: Could not find room ID for client ${clientId}`);
 			return null;
 		}
