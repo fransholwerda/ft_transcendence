@@ -45,8 +45,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 		pSock.on('gameStart', ({ sesh }) => {
 			pongPrint(`pong.tsx: game start received from server`);
-			pongPrint(sesh);
-			pongPrint(`pong.tsx: ${sesh ?? 'N/A'}`);
+			console.log(sesh);
+			console.log(`pong.tsx: ${sesh ?? 'N/A'}`);
 			if (!sesh) {
 				pongPrint(`pong.tsx: No game session found`);
 				return ;
