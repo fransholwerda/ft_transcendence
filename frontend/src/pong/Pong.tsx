@@ -68,10 +68,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 		pSock.on('queueStatus', ({ success, message }) => {
 			console.log('pong.tsx: Queue status:', success, message, user.username);
-			if (inGame) {
-				console.log('pong.tsx: Already in game', user.username);
-			}
-			else if (success) {
+			if (success) {
 				console.log('pong.tsx: Successfully joined queue', user.id);
 				setInQueue(true);
 			}
@@ -82,11 +79,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		});
 		return () => {
 			console.log('pong.tsx: useEffect return', user.username);
-			if (!location.pathname.includes('/pong')) {
-				console.log('pong.tsx: Leaving pong page', user.username);
-				leaveQueue();
-				leaveGame();
-			}
 			pSock.off('gameStart');
 			pSock.off('gameUpdate');
 			pSock.off('queueStatus');
@@ -98,13 +90,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	// }
 
 	const joinQueue = () => {
-		if (!inQueue && !inGame) {
-			console.log('pong.tsx: Asking server to join queue: ', user.id);
-			pSock.emit('joinQueue', { user: user });
-		} else {
-			console.log('pong.tsx: Already in queue or game:', user.username);
-			alert('You are already in the queue or game');
-		}
+		console.log('pong.tsx: Asking server to join queue: ', user.id);
+		pSock.emit('joinQueue', { user: user });
 	};
 
 	const leaveQueue = () => {
