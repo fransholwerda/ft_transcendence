@@ -24,6 +24,10 @@
 	width: 100%;
 }
 
+.pong-container h1 {
+	color: #333;
+}
+
 .pong-container h2 {
 	color: #333;
 	margin-bottom: 1rem;
