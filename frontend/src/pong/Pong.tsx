@@ -46,6 +46,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		});
 
 		pSock.on('gameUpdate', ({ sesh }) => {
+			//handle the leavegame seperately
+
 			console.log('pong.tsx: game update received from server');
 			if (!sesh) {
 				console.log('pong.tsx: No game session found');
@@ -76,7 +78,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				alert(message);
 			}
 		});
-
 		return () => {
 			console.log('pong.tsx: useEffect return', user.username);
 			if (!location.pathname.includes('/pong')) {

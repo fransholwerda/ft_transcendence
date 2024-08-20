@@ -64,27 +64,30 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	
 	private checkQueue() {
 		console.log(`NestJS pong: checking queue`);
-		if (this.queue.length >= 2) {
-			console.log('NestJS pong: Found 2 players in queue');
-			const p1 = this.queue.shift();
-			const p2 = this.queue.shift();
-			if (!p1 || !p2) {
-				console.log('NestJS pong: Could not find both players in queue');
-				return;
-			}
-			console.log(`NestJS pong: Found players ${p1.user.username} and ${p2.user.username}`);
-			const roomId = `pong_${p1.user.id}_${p2.user.id}`;
-
-			const gameSession = this.fillGameSession(p1, p2, roomId);
-			this.games.push(gameSession);
-			this.printGameSession(gameSession);
-			this.server.to(p1.clientId).emit('gameStart', { gameSession });
-			this.server.to(p2.clientId).emit('gameStart', { gameSession });
-
-			this.server.in(p1.clientId).socketsJoin(roomId);
-			this.server.in(p2.clientId).socketsJoin(roomId);
-			console.log(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
+		if (this.queue.length < 2) {
+			console.log('NestJS pong: Not enough players in queue');
+			return;
 		}
+
+		console.log('NestJS pong: Found 2 players in queue');
+		const p1 = this.queue.shift();
+		const p2 = this.queue.shift();
+		if (!p1 || !p2) {
+			console.log('NestJS pong: Could not find both players in queue');
+			return;
+		}
+		console.log(`NestJS pong: Found players ${p1.user.username} and ${p2.user.username}`);
+		const roomId = `pong_${p1.user.id}_${p2.user.id}`;
+
+		const gameSession = this.fillGameSession(p1, p2, roomId);
+		this.games.push(gameSession);
+		this.printGameSession(gameSession);
+		this.server.to(p1.clientId).emit('gameStart', { gameSession });
+		this.server.to(p2.clientId).emit('gameStart', { gameSession });
+
+		this.server.in(p1.clientId).socketsJoin(roomId);
+		this.server.in(p2.clientId).socketsJoin(roomId);
+		console.log(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 	}
 
 	@SubscribeMessage('leaveQueue')
@@ -102,22 +105,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 		console.log(`Room ID: ${sesh.roomId}`);
-		// this.disconnectFromGame(client.id);
-		if (sesh.roomId) {
-			console.log(`NestJS pong: ${client.id} left the game room ${sesh.roomId}`);
-			if (sesh.p1.clientid === client.id) {
-				sesh.p2.score = MAX_SCORE;
-			}
-			else if (sesh.p2.clientid === client.id) {
-				sesh.p1.score = MAX_SCORE;
-			}
-			this.server.to(sesh.roomId).emit('gameUpdate', { sesh });
-			
-			// send this to the database
+		this.disconnectFromGame(client.id);
+		console.log(`NestJS pong: ${client.id} left the game room ${sesh.roomId}`);
+		if (sesh.p1.clientid === client.id) {
+			sesh.p2.score = MAX_SCORE;
 		}
+		else if (sesh.p2.clientid === client.id) {
+			sesh.p1.score = MAX_SCORE;
+		}
+		this.server.to(sesh.roomId).emit('gameUpdate', { sesh });
 	}
 
 	private fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string): GameSession {
+		console.log(`NestJS pong: Filling game session for room ${roomId}`);
 		const sesh: GameSession = {
 			p1: {
 				clientid: p1.clientId,
@@ -174,8 +174,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private getRoomIdByClientId(clientId: string): string | null {
 		console.log(`NestJS pong: Getting room ID by client ID ${clientId}`);
-		const gameSession = this.findGameSessionByClientId(clientId);
-		if (!gameSession) {
+		if (!this.findGameSessionByClientId(clientId)) {
 			console.log(`NestJS pong: Could not find room ID for client ${clientId}`);
 			return null;
 		}
@@ -184,8 +183,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private disconnectFromGame(clientId: string) {
 		console.log(`NestJS pong: ${clientId} disconnecting from game`);
-		const gameSession = this.findGameSessionByClientId(clientId);
-		if (!gameSession) {
+		if (!this.findGameSessionByClientId(clientId)) {
 			console.log(`NestJS pong: disconnectFromGame: Could not find game session for client ${clientId}`);
 			return;
 		}
