@@ -10,13 +10,14 @@
 	/* padding: 10px 20px; */
 	/* border-bottom: 10px solid #747474; */
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	gap: 2vw;
 	/* margin-bottom: 10px; */
 	flex-wrap: wrap; /* Allows wrapping on small screens */
 	height: var(--maingrid_header_height);
 	min-height: var(--maingrid_header_height);
 	max-height: var(--maingrid_header_height);
 	background-size: 100%;
-    background-image: url('../bg_vector.jpg');
+    background-image: url('../img/bg_vector.jpg');
 }
 
 .header-content {
