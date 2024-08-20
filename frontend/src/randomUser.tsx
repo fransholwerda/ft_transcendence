@@ -5,10 +5,6 @@ export const randomDebug = true;
 // TURN ON/OFF RANDOM USER DEBUG
 
 const randomNames = [
-	'abandon', 'ability', 'able', 'abortion', 'about', 'above', 'abroad', 
-	'absence', 'absolute', 'absolutely', 'absorb', 'abuse', 'academic', 
-	'accept', 'access', 'accident', 'accompany', 'accomplish', 'according', 
-	'account', 'accurate', 'accuse', 'achieve', 'achievement', 'acid', 
 	'acknowledge', 'acquire', 'across', 'act', 'action', 'active', 'activist', 
 	'activity', 'actor', 'actress', 'actual', 'actually', 'ad', 'adapt', 'add', 
 	'addition', 'additional', 'address', 'adequate', 'adjust', 'adjustment', 
@@ -110,8 +106,8 @@ const createRandomUser = (): User => {
         username: randomNames[randomNamesIndex],
         avatarURL: ''
     };
-    randomNamesIndex = (randomNamesIndex + 1) % randomNamesLength;
     setCookie('randomNamesIndex', randomNamesIndex.toString(), 4); // Persist for 4 hours
+    randomNamesIndex = (randomNamesIndex + 1) % randomNamesLength;
     return user;
 };
 
