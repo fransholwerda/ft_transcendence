@@ -58,12 +58,10 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			console.log(`pong.tsx: ${sesh.p1.score} vs ${sesh.p2.score}`);
 			setGameSession(sesh);
 			if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
-				alert(`
-				| Player 1    | Score | Player 2    | Score |
-				|-------------|-------|-------------|-------|
-				| ${sesh.p1.username} | ${sesh.p1.score}     | ${sesh.p2.username} | ${sesh.p2.score}     |
-				`);
+				alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
 				setInGame(false);
+				setGameSession(null);
+				// leaveQueue();
 				return ;
 			}
 		});
