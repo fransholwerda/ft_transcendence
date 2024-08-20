@@ -21,11 +21,11 @@ const PageManager: React.FC = () => {
 
   const handleLogin = async (intraUser: any) => {
     console.log('PageManager: Logging in', intraUser);
-    const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/get/${intraUser.id}`, {
+    const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/${intraUser.id}`, {
       method:  'GET'
     });
     let user = await response.json();
-    if (user.statusCode == 404) {
+    if (user.statusCode === 404) {
       const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/create`, {
         method:  'POST',
         headers: {
@@ -40,9 +40,9 @@ const PageManager: React.FC = () => {
       user = await response.json();
       // ----------------------------------------------------------------
       // RANDOM USER CREATION
-      user.id = randomUserId();
-      user.username = randomUsername();
-      console.log('PageManager: User created', user);
+      // user.id = randomUserId();
+      // user.username = randomUsername();
+      // console.log('PageManager: User created', user);
       // ----------------------------------------------------------------
     }
     setUser({
@@ -52,13 +52,13 @@ const PageManager: React.FC = () => {
     });
   };
 
-  const randomUserId = (): string => {
-    return Math.floor(Math.random() * 1000000).toString();
-  }
-
-  const randomUsername = (): string => {
-    return Math.random().toString(36).substring(7);
-  }
+  // const randomUserId = (): string => {
+  //   return Math.floor(Math.random() * 1000000).toString();
+  // }
+  //
+  // const randomUsername = (): string => {
+  //   return Math.random().toString(36).substring(7);
+  // }
 
   const handleLogout = () => {
     console.log('PageManager: Logging out');
