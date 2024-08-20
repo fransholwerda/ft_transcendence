@@ -1,6 +1,9 @@
 import { User } from './PageManager';
 
+// TURN ON/OFF RANDOM USER DEBUG
 export const randomDebug = true;
+// TURN ON/OFF RANDOM USER DEBUG
+
 const randomNames = [
 	'abandon', 'ability', 'able', 'abortion', 'about', 'above', 'abroad', 
 	'absence', 'absolute', 'absolutely', 'absorb', 'abuse', 'academic', 
