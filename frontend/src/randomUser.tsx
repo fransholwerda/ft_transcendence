@@ -106,8 +106,8 @@ const createRandomUser = (): User => {
         username: randomNames[randomNamesIndex],
         avatarURL: ''
     };
-    setCookie('randomNamesIndex', randomNamesIndex.toString(), 4); // Persist for 4 hours
     randomNamesIndex = (randomNamesIndex + 1) % randomNamesLength;
+    setCookie('randomNamesIndex', randomNamesIndex.toString(), 4); // Persist for 4 hours
     return user;
 };
 
