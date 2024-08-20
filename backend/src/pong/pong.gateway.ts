@@ -83,8 +83,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const gameSession = this.fillGameSession(p1, p2, roomId);
 		this.games.push(gameSession);
 		this.printGameSession(gameSession);
-		this.server.to(p1.clientId).emit('gameStart', { gameSession });
-		this.server.to(p2.clientId).emit('gameStart', { gameSession });
+		this.server.to(p1.clientId).emit('gameStart', { sesh: gameSession });
+		this.server.to(p2.clientId).emit('gameStart', { sesh: gameSession });
 
 		this.server.in(p1.clientId).socketsJoin(roomId);
 		this.server.in(p2.clientId).socketsJoin(roomId);

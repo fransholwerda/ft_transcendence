@@ -32,6 +32,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 		pSock.on('gameStart', ({ sesh }) => {
 			console.log('pong.tsx: game start received from server');
+			console.log(sesh);
 			console.log(`pong.tsx: ${sesh ?? 'N/A'}`);
 			if (!sesh) {
 				console.log('pong.tsx: No game session found');
@@ -90,6 +91,10 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			pSock.off('queueStatus');
 		};
 	}, [location.pathname, inGame]);
+
+	// const printGameSession = (sesh: any) => {
+	// 	console.log('pong.tsx: Game Session:', sesh);
+	// }
 
 	const joinQueue = () => {
 		if (!inQueue && !inGame) {
