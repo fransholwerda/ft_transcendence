@@ -31,6 +31,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		}
 
 		pSock.on('gameStart', ({ sesh }) => {
+			console.log('pong.tsx: game start received from server');
 			console.log(`pong.tsx: ${sesh ?? 'N/A'}`);
 			if (!sesh) {
 				console.log('pong.tsx: No game session found');
@@ -89,35 +90,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [location.pathname, inGame]);
 
-	// const findUserInGame = (sesh: GameSession, clientId: string): player | null => {
-	// 	if (sesh.p1.clientid === clientId) {
-	// 		return sesh.p1;
-	// 	}
-	// 	else if (sesh.p2.clientid === clientId) {
-	// 		return sesh.p2;
-	// 	}
-	// 	return null;
-	// }
-
-	// const findEnemyInGame = (sesh: GameSession, clientId: string): player | null => {
-	// 	if (sesh.p1.clientid === clientId) {
-	// 		return sesh.p2;
-	// 	}
-	// 	else if (sesh.p2.clientid === clientId) {
-	// 		return sesh.p1;
-	// 	}
-	// 	return null;
-	// }
-
-	// const findGameSessionByClientId = (clientId: string): GameSession | null => {
-	// 	if (gameSession) {
-	// 		if (gameSession.p1.clientid === clientId || gameSession.p2.clientid === clientId) {
-	// 			return gameSession;
-	// 		}
-	// 	}
-	// 	return null;
-	// }
-
 	const joinQueue = () => {
 		if (!inQueue && !inGame) {
 			console.log('pong.tsx: Asking server to join queue: ', user.id);
@@ -175,3 +147,32 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 };
 
 export default Pong;
+
+	// const findUserInGame = (sesh: GameSession, clientId: string): player | null => {
+	// 	if (sesh.p1.clientid === clientId) {
+	// 		return sesh.p1;
+	// 	}
+	// 	else if (sesh.p2.clientid === clientId) {
+	// 		return sesh.p2;
+	// 	}
+	// 	return null;
+	// }
+
+	// const findEnemyInGame = (sesh: GameSession, clientId: string): player | null => {
+	// 	if (sesh.p1.clientid === clientId) {
+	// 		return sesh.p2;
+	// 	}
+	// 	else if (sesh.p2.clientid === clientId) {
+	// 		return sesh.p1;
+	// 	}
+	// 	return null;
+	// }
+
+	// const findGameSessionByClientId = (clientId: string): GameSession | null => {
+	// 	if (gameSession) {
+	// 		if (gameSession.p1.clientid === clientId || gameSession.p2.clientid === clientId) {
+	// 			return gameSession;
+	// 		}
+	// 	}
+	// 	return null;
+	// }
