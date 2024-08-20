@@ -12,31 +12,10 @@ interface PongProps {
 	pSock: Socket;
 }
 
-type pstatus = 'inGame' | 'disconnected' | 'GameOver';
-
-interface player {
-	clientid: string;
-	userid: string;
-	username: string;
-	score: number;
-	status: pstatus;
-}
-
-interface GameSession {
-	p1: player;
-	p2: player;
-	roomId: string;
-}
-
 const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
 	const location = useLocation();
-
-	// add a gamesession thing here
-	// knowing if they are left or right
-	// and know if they are still in a game
-	const [gameSession, setGameSession] = useState<GameSession | null>(null);
 
 	useEffect(() => {
 		const curUrlPath = location.pathname;
@@ -61,7 +40,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 			setInQueue(false);
 			setInGame(true);
-			setGameSession(sesh);
 		});
 
 		pSock.on('gameUpdate', ({ sesh }) => {
@@ -72,16 +50,10 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			}
 			console.log(`pong.tsx: ${sesh.p1.username} vs ${sesh.p2.username}`);
 			console.log(`pong.tsx: ${sesh.p1.score} vs ${sesh.p2.score}`);
-			if (sesh.p1.score === MAX_SCORE
-				|| sesh.p2.score === MAX_SCORE
-				|| sesh.p1.status === 'GameOver'
-				|| sesh.p2.status === 'GameOver'
-				|| sesh.p1.status === 'disconnected'
-				|| sesh.p2.status === 'disconnected') {
+			if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
 				alert('Game Over');
 				alert(`${sesh.p1.username} ${sesh.p1.score} vs ${sesh.p2.username} ${sesh.p2.score}`);
 				setInGame(false);
-				setGameSession(null);
 				return ;
 			}
 		});
@@ -164,7 +136,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		pSock.emit('leaveGame');
 		setInQueue(false);
 		setInGame(false);
-		setGameSession(null);
 	};
 
 	return (

@@ -4,14 +4,11 @@ import { Server, Socket } from 'socket.io';
 // max score
 const MAX_SCORE = 5;
 
-type pstatus = 'inGame' | 'disconnected' | 'GameOver';
-
 interface player {
 	clientid: string;
 	userid: string;
 	username: string;
 	score: number;
-	status: pstatus;
 }
 
 interface GameSession {
