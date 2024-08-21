@@ -5,6 +5,7 @@ FROM node:latest
 COPY package*.json ./
 
 RUN npm install
+RUN npm install speakeasy qrcode
 
 COPY . .
 

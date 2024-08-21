@@ -10,6 +10,7 @@ import { PongGateway } from './pong/pong.gateway';
 import { AuthController } from './auth/auth.controller';
 import { MatchModule } from './matches/matches.module';
 import { FriendsModule } from './friends/friends.module';
+import { TwostepController } from './twostep/twostep.controller';
 
 @Module({
 imports: [
@@ -22,7 +23,7 @@ imports: [
 		FriendsModule,
 		TypeOrmModule.forRoot(typeOrmConfig)
 	],
-controllers: [AppController, AuthController],
+controllers: [AppController, AuthController, TwostepController],
   providers: [AppService, ChatGateway, PongGateway],
 })
 export class AppModule {}
