@@ -239,7 +239,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 		pongPrint(`NestJS pong routeLeaveGame: ${sesh.roomId}`);
-		this.disconnectFromGame(client.id);
 		pongPrint(`NestJS pong routeLeaveGame: ${client.id} left room ${sesh.roomId}`);
 		if (sesh.p1.clientid === client.id) {
 			sesh.p2.score = MAX_SCORE;
@@ -247,6 +246,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		else if (sesh.p2.clientid === client.id) {
 			sesh.p1.score = MAX_SCORE;
 		}
+		this.removeGameSession(sesh.roomId);
 		this.server.to(sesh.roomId).emit('routeLeaveGame', { sesh });
 	}
 
@@ -260,7 +260,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 		pongPrint(`NestJS pong pongLeaveGame: ${sesh.roomId}`);
-		this.disconnectFromGame(client.id);
 		pongPrint(`NestJS pong pongLeaveGame: ${client.id} left room ${sesh.roomId}`);
 		if (sesh.p1.clientid === client.id) {
 			sesh.p2.score = MAX_SCORE;
@@ -268,6 +267,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		else if (sesh.p2.clientid === client.id) {
 			sesh.p1.score = MAX_SCORE;
 		}
+		this.removeGameSession(sesh.roomId);
 		this.server.to(sesh.roomId).emit('pongLeaveGame', { sesh });
 	}
 	// ------------------------------

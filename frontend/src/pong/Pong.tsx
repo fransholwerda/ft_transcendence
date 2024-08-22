@@ -5,7 +5,7 @@ import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
 
 // max score
-const MAX_SCORE = 5;
+// const MAX_SCORE = 5;
 
 interface PongProps {
 	user: User;
@@ -68,27 +68,40 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			}
 		});
 
-		// leave queue from pagemanager
-		pSock.on('routeLeaveQueue', () => {
-		});
-
 		// leave game from pagemanager
-		pSock.on('routeLeaveGame', () => {
-		});
-
-		// leave queue from pong
-		pSock.on('pongLeaveQueue', () => {
+		pSock.on('routeLeaveGame', ({ sesh }) => {
+			pongPrint(`pong.tsx routeLeaveGame: received from server`);
+			if (!sesh) {
+				pongPrint(`pong.tsx routeLeaveGame: No game session found`);
+				return ;
+			}
+			pongPrint(`pong.tsx routeLeaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			setInGame(false);
+			setInQueue(false);
+			setGameSession(null);
 		});
 
 		// leave game from pong
-		pSock.on('pongLeaveGame', () => {
+		pSock.on('pongLeaveGame', ({ sesh }) => {
+			pongPrint(`pong.tsx pongLeaveGame: received from server`);
+			if (!sesh) {
+				pongPrint(`pong.tsx pongLeaveGame: No game session found`);
+				return ;
+			}
+			pongPrint(`pong.tsx pongLeaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			setInGame(false);
+			setInQueue(false);
+			setGameSession(null);
 		});
 
 		return () => {
 			pongPrint(`pong.tsx: useEffect return ${user.username}`);
 			pSock.off('gameStart');
-			pSock.off('gameUpdate');
 			pSock.off('queueStatus');
+			pSock.off('routeLeaveGame');
+			pSock.off('pongLeaveGame');
 		};
 	}, [location.pathname, inGame]);
 
@@ -136,7 +149,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 						<p>username: {gameSession.p1.username ?? 'N/A'} | {gameSession.p2.username ?? 'N/A'}</p>
 						<p>score: {gameSession.p1.score ?? 0} | {gameSession.p2.score ?? 'N/A'}</p>
 						<p>Room ID: {gameSession.roomId ?? 'N/A'}</p>
-						<button className="leave-game-btn" onClick={leaveGame}>
+						<button className="leave-game-btn" onClick={pongLeaveGame}>
 							Leave Game
 						</button>
 					</div>
