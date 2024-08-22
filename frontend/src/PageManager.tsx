@@ -7,11 +7,10 @@ import MainGrid from './mainGrid/MainGrid';
 import { Constants } from '../shared/constants';
 
 // --- DEBUG --- //
-import createRandomUser from "./randomUser"
-import { randomDebug } from "./randomUser"
+import { randomDebug, createRandomUser } from "./randomUser"
 // --- DEBUG --- //
 
-const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
+const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
   transports: ['websocket'],
 });
 

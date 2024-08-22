@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import './Chat.css';
-import { Constants } from '../../shared/constants';
+// import { Constants } from '../../shared/constants';
 import { User } from '../PageManager';
 import ChatUI from './ChatUI.tsx';
 // import Popup from 'reactjs-popup';
 
 interface ChatProps {
   user: User;
+  socket: Socket;
 }
 
-const socket = io(`${Constants.BACKEND_HOST_URL}/chat`, {
-  transports: ['websocket'],
-});
-
-const Chat: React.FC<ChatProps> = ({ user }) => {
+const Chat: React.FC<ChatProps> = ({ user, socket }) => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

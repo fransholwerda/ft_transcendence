@@ -100,7 +100,7 @@ function setCookie(name: string, value: string, hours: number): void {
 
 let randomNamesIndex = parseInt(getCookie('randomNamesIndex') || '0', 10) || 0;
 
-const createRandomUser = (): User => {  
+export const createRandomUser = (): User => {  
     const user: User = {
         id: randomNamesIndex.toString(),
         username: randomNames[randomNamesIndex],
@@ -111,4 +111,3 @@ const createRandomUser = (): User => {
     return user;
 };
 
-export default createRandomUser;

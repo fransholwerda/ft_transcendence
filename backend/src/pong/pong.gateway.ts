@@ -16,7 +16,7 @@ import {
 	removeGameSession
 } from './pong.helpers';
 
-@WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
+@WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
