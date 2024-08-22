@@ -1,25 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MAX_SCORE, pongPrint } from './pong.constants';
-
-interface player {
-	clientid: string;
-	userid: string;
-	username: string;
-	score: number;
-}
-
-interface GameSession {
-	p1: player;
-	p2: player;
-	roomId: string;
-}
-
-interface User {
-	id:  string,
-	username: string,
-	avatarURL: string
-}
+import { GameSession, User } from './pong.types';
 
 @WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
