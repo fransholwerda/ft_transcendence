@@ -5,6 +5,7 @@ import { Socket } from 'socket.io-client';
 import { ufGameStart, ufQueueStatus, ufRouteLeaveGame, ufPongLeaveGame } from './PongUseEffect';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
+import PongGame from './PongGame';
 
 // max score
 // const MAX_SCORE = 5;
@@ -61,17 +62,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					</>
 				)}
 				{inGame && gameSession && (
-					<div className="game-info">
-						<p>p1 | P2</p>
-						<p>clientid: {gameSession.p1.clientid ?? 'N/A'} | {gameSession.p2.clientid ?? 'N/A'}</p>
-						<p>userid: {gameSession.p1.userid ?? 'N/A'} | {gameSession.p2.userid ?? 'N/A'}</p>
-						<p>username: {gameSession.p1.username ?? 'N/A'} | {gameSession.p2.username ?? 'N/A'}</p>
-						<p>score: {gameSession.p1.score ?? 0} | {gameSession.p2.score ?? 'N/A'}</p>
-						<p>Room ID: {gameSession.roomId ?? 'N/A'}</p>
-						<button className="leave-game-btn" onClick={pongLeaveGame}>
-							Leave Game
-						</button>
-					</div>
+					<PongGame gameSession={gameSession} pongLeaveGame={pongLeaveGame} />
 				)}
 			</div>
 		</div>
