@@ -29,6 +29,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	};
 	// ------------------------------
 
+	// GAMESTART
 	useEffect(() => {
 		pSock.on('gameStart', ({ sesh }) => {
 			pongPrint(`pong.tsx: game start received from server`);
@@ -44,6 +45,14 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setInGame(true);
 			setGameSession(sesh);
 		});
+		return () => {
+			pongPrint(`pong.tsx: gameStart useEffect return ${user.username}`);
+			pSock.off('gameStart');
+		};
+	}, [inGame]);
+
+	// QUEUESTATUS
+	useEffect(() => {
 		pSock.on('queueStatus', ({ success, message }) => {
 			pongPrint(`pong.tsx: Queue status: ${success}, ${message}, ${user.username}`);
 			if (success) {
@@ -55,8 +64,14 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				alert(message);
 			}
 		});
+		return () => {
+			pongPrint(`pong.tsx: queueStatus useEffect return ${user.username}`);
+			pSock.off('queueStatus');
+		};
+	}, [inGame]);
 
-		// leave game from pagemanager
+	// ROUTELEAVEGAME
+	useEffect(() => {
 		pSock.on('routeLeaveGame', ({ sesh }) => {
 			pongPrint(`pong.tsx routeLeaveGame: received from server`);
 			if (!sesh) {
@@ -69,8 +84,14 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setInQueue(false);
 			setGameSession(null);
 		});
+		return () => {
+			pongPrint(`pong.tsx: routeLeaveGame useEffect return ${user.username}`);
+			pSock.off('routeLeaveGame');
+		};
+	}, [inGame]);
 
-		// leave game from pong
+	// PONGLEAVEGAME
+	useEffect(() => {
 		pSock.on('pongLeaveGame', ({ sesh }) => {
 			pongPrint(`pong.tsx pongLeaveGame: received from server`);
 			if (!sesh) {
@@ -85,10 +106,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		});
 
 		return () => {
-			pongPrint(`pong.tsx: useEffect return ${user.username}`);
-			pSock.off('gameStart');
-			pSock.off('queueStatus');
-			pSock.off('routeLeaveGame');
+			pongPrint(`pong.tsx: pongLeaveGame useEffect return ${user.username}`);
 			pSock.off('pongLeaveGame');
 		};
 	}, [inGame]);
