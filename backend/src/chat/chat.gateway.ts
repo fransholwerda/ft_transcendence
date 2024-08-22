@@ -1,3 +1,4 @@
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
@@ -12,6 +13,47 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server = server;
     console.log('NestJS Chat Gateway Init');
   }
+
+// CHECK THIS OUT FOR PROPER SECURITY https://github.com/Bde-meij/Codam_Transcendence/blob/development/api/src/game/game.gateway.ts
+// async handleConnection(client: Socket)
+// 	{
+// 		try 
+// 		{
+// 			// console.log("Game connection: " + client.id);
+// 			var cookies = client.handshake.headers.cookie?.split('; ');
+// 			if (!cookies)
+// 				throw new NotAcceptableException();
+// 			var token: string;
+// 			for (var cookie of cookies)
+// 			{
+// 				var [key, value] = cookie.split('=');
+// 				if (key === 'access_token')
+// 				{
+// 					token = value;
+// 					break;
+// 				}
+// 			}
+// 			if (!token)
+// 				throw new NotAcceptableException();
+// 			var payload = await this.authService.verifyJwtAccessToken(token);
+// 			var user = await this.userService.findUserById(payload.id);
+// 			if (!user)
+// 				throw new NotAcceptableException();
+// 			client.data.userid = user.id;
+// 			client.data.nick = user.nickname;
+// 			client.data.key = user.roomKey;
+// 			await this.userService.updateStatus(client.data.userid, "in game");
+
+// 			client.emit("connectSignal");
+// 		}
+// 		catch
+// 		{
+// 			// console.log(client.id, "Game connection refused");
+// 			client.disconnect();
+// 			return;
+// 		}
+// 	}
+
 
   handleConnection(client: Socket, ...args: any[]) {
     const username = client.handshake.query.username as string;
@@ -89,7 +131,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // SEND EMIT TO OTHER USER USING THEIR USER ID
   }
 
+  // LOOK AT https://github.com/Bde-meij/Codam_Transcendence/blob/development/api/src/chat/chatRoom.dto.ts#L98
+  // @UseFilters(WsExceptionFilter)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @SubscribeMessage('sendMessage')
+  // @MessageBody() data: messageDto,
   handleMessage(client: Socket, payload: { channel: string, message: string, username: string }) {
     const { channel, message, username } = payload;
     if ( channel[0] === '@' ) {

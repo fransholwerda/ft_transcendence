@@ -59,6 +59,13 @@
 	max-height: var(--chat_btns_height);
 }
 
+.chat-channel-popup {
+	margin: auto;
+	/* background: rgb(0, 0, 0); */
+	background-color: #000000;
+	padding: 5px;
+}
+
 .chat-button {
 	padding: 10px 0px;
 	cursor: pointer;
