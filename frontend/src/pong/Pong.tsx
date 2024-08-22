@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './Pong.css';
 import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
+import { ufGameStart, ufQueueStatus, ufRouteLeaveGame, ufPongLeaveGame } from './PongUseEffect';
+import { GameSession } from './PongTypes';
+import { pongPrint } from './PongUtils';
 
 // max score
 // const MAX_SCORE = 5;
@@ -14,102 +17,12 @@ interface PongProps {
 const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
-	const [gameSession, setGameSession] = useState<any>(null);
+	const [gameSession, setGameSession] = useState<GameSession | null>(null);
 
-	// ------------------------------
-	//CUSTOM PRINTING
-	const pongPrintColors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
-	let pongPrintIndex = 0;
-	const allowPongPrint = true;
-	const pongPrint = (message: any) => {
-		if (!allowPongPrint) return ;
-		const color = pongPrintColors[pongPrintIndex];
-		console.log(`%c${message}`, `color: ${color};`);
-		pongPrintIndex = (pongPrintIndex + 1) % pongPrintColors.length;
-	};
-	// ------------------------------
-
-	// GAMESTART
-	useEffect(() => {
-		pSock.on('gameStart', ({ sesh }) => {
-			pongPrint(`pong.tsx: game start received from server`);
-			console.log(sesh);
-			if (!sesh) {
-				pongPrint(`pong.tsx: No game session found`);
-				return ;
-			}
-			pongPrint(`pong.tsx: Game started`);
-			pongPrint(`pong.tsx: Username: ${user.username} Room ID: ${sesh.roomId}`);
-
-			setInQueue(false);
-			setInGame(true);
-			setGameSession(sesh);
-		});
-		return () => {
-			pongPrint(`pong.tsx: gameStart useEffect return ${user.username}`);
-			pSock.off('gameStart');
-		};
-	}, [inGame]);
-
-	// QUEUESTATUS
-	useEffect(() => {
-		pSock.on('queueStatus', ({ success, message }) => {
-			pongPrint(`pong.tsx: Queue status: ${success}, ${message}, ${user.username}`);
-			if (success) {
-				pongPrint(`pong.tsx: Successfully joined queue ${user.id}`);
-				setInQueue(true);
-			}
-			else {
-				pongPrint(`pong.tsx: Failed to join queue ${user.id}`);
-				alert(message);
-			}
-		});
-		return () => {
-			pongPrint(`pong.tsx: queueStatus useEffect return ${user.username}`);
-			pSock.off('queueStatus');
-		};
-	}, [inGame]);
-
-	// ROUTELEAVEGAME
-	useEffect(() => {
-		pSock.on('routeLeaveGame', ({ sesh }) => {
-			pongPrint(`pong.tsx routeLeaveGame: received from server`);
-			if (!sesh) {
-				pongPrint(`pong.tsx routeLeaveGame: No game session found`);
-				return ;
-			}
-			pongPrint(`pong.tsx routeLeaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
-			alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
-			setInGame(false);
-			setInQueue(false);
-			setGameSession(null);
-		});
-		return () => {
-			pongPrint(`pong.tsx: routeLeaveGame useEffect return ${user.username}`);
-			pSock.off('routeLeaveGame');
-		};
-	}, [inGame]);
-
-	// PONGLEAVEGAME
-	useEffect(() => {
-		pSock.on('pongLeaveGame', ({ sesh }) => {
-			pongPrint(`pong.tsx pongLeaveGame: received from server`);
-			if (!sesh) {
-				pongPrint(`pong.tsx pongLeaveGame: No game session found`);
-				return ;
-			}
-			pongPrint(`pong.tsx pongLeaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
-			alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
-			setInGame(false);
-			setInQueue(false);
-			setGameSession(null);
-		});
-
-		return () => {
-			pongPrint(`pong.tsx: pongLeaveGame useEffect return ${user.username}`);
-			pSock.off('pongLeaveGame');
-		};
-	}, [inGame]);
+	ufGameStart(pSock, user, setInQueue, setInGame, setGameSession);
+	ufQueueStatus(pSock, user, setInQueue);
+	ufRouteLeaveGame(pSock, user, setInQueue, setInGame, setGameSession);
+	ufPongLeaveGame(pSock, user, setInQueue, setInGame, setGameSession);
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
