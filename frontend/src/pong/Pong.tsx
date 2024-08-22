@@ -38,15 +38,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 		if (!areAtPongpage) {
 			pongPrint(`pong.tsx: Not at pong page ${user.username}`);
-			leaveQueue();
-			leaveGame();
+			pongLeaveQueue();
+			pongLeaveGame();
 			return ;
 		}
-
 		pSock.on('gameStart', ({ sesh }) => {
 			pongPrint(`pong.tsx: game start received from server`);
 			console.log(sesh);
-			console.log(`pong.tsx: ${sesh ?? 'N/A'}`);
 			if (!sesh) {
 				pongPrint(`pong.tsx: No game session found`);
 				return ;
@@ -58,27 +56,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setInGame(true);
 			setGameSession(sesh);
 		});
-
-		pSock.on('gameUpdate', ({ sesh }) => {
-			//handle the leavegame seperately
-
-			pongPrint(`pong.tsx: game update received from server`);
-			if (!sesh) {
-				pongPrint(`pong.tsx: No game session found`);
-				return ;
-			}
-			pongPrint(`pong.tsx: ${sesh.p1.username} vs ${sesh.p2.username}`);
-			pongPrint(`pong.tsx: ${sesh.p1.score} vs ${sesh.p2.score}`);
-			setGameSession(sesh);
-			if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
-				alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
-				setInGame(false);
-				setGameSession(null);
-				// leaveQueue();
-				return ;
-			}
-		});
-
 		pSock.on('queueStatus', ({ success, message }) => {
 			pongPrint(`pong.tsx: Queue status: ${success}, ${message}, ${user.username}`);
 			if (success) {
@@ -90,6 +67,23 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				alert(message);
 			}
 		});
+
+		// leave queue from pagemanager
+		pSock.on('routeLeaveQueue', () => {
+		});
+
+		// leave game from pagemanager
+		pSock.on('routeLeaveGame', () => {
+		});
+
+		// leave queue from pong
+		pSock.on('pongLeaveQueue', () => {
+		});
+
+		// leave game from pong
+		pSock.on('pongLeaveGame', () => {
+		});
+
 		return () => {
 			pongPrint(`pong.tsx: useEffect return ${user.username}`);
 			pSock.off('gameStart');
@@ -107,15 +101,15 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		pSock.emit('joinQueue', { user: user });
 	};
 
-	const leaveQueue = () => {
+	const pongLeaveQueue = () => {
 		pongPrint(`pong.tsx: ${user.username} Leaving queue ${gameSession?.roomId ?? 'N/A'}`);
-		pSock.emit('leaveQueue');
+		pSock.emit('pongLeaveQueue');
 		setInQueue(false);
 	};
 
-	const leaveGame = () => {
+	const pongLeaveGame = () => {
 		pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
-		pSock.emit('leaveGame');
+		pSock.emit('pongLeaveGame');
 		setInQueue(false);
 		setInGame(false);
 		setGameSession(null);
@@ -158,31 +152,53 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 export default Pong;
 
-	// const findUserInGame = (sesh: GameSession, clientId: string): player | null => {
-	// 	if (sesh.p1.clientid === clientId) {
-	// 		return sesh.p1;
-	// 	}
-	// 	else if (sesh.p2.clientid === clientId) {
-	// 		return sesh.p2;
-	// 	}
-	// 	return null;
-	// }
+// const findUserInGame = (sesh: GameSession, clientId: string): player | null => {
+// 	if (sesh.p1.clientid === clientId) {
+// 		return sesh.p1;
+// 	}
+// 	else if (sesh.p2.clientid === clientId) {
+// 		return sesh.p2;
+// 	}
+// 	return null;
+// }
 
-	// const findEnemyInGame = (sesh: GameSession, clientId: string): player | null => {
-	// 	if (sesh.p1.clientid === clientId) {
-	// 		return sesh.p2;
-	// 	}
-	// 	else if (sesh.p2.clientid === clientId) {
-	// 		return sesh.p1;
-	// 	}
-	// 	return null;
-	// }
+// const findEnemyInGame = (sesh: GameSession, clientId: string): player | null => {
+// 	if (sesh.p1.clientid === clientId) {
+// 		return sesh.p2;
+// 	}
+// 	else if (sesh.p2.clientid === clientId) {
+// 		return sesh.p1;
+// 	}
+// 	return null;
+// }
 
-	// const findGameSessionByClientId = (clientId: string): GameSession | null => {
-	// 	if (gameSession) {
-	// 		if (gameSession.p1.clientid === clientId || gameSession.p2.clientid === clientId) {
-	// 			return gameSession;
-	// 		}
-	// 	}
-	// 	return null;
-	// }
+// const findGameSessionByClientId = (clientId: string): GameSession | null => {
+// 	if (gameSession) {
+// 		if (gameSession.p1.clientid === clientId || gameSession.p2.clientid === clientId) {
+// 			return gameSession;
+// 		}
+// 	}
+// 	return null;
+// }
+
+/*
+pSock.on('gameUpdate', ({ sesh }) => {
+	//handle the leavegame seperately
+
+	pongPrint(`pong.tsx: game update received from server`);
+	if (!sesh) {
+		pongPrint(`pong.tsx: No game session found`);
+		return ;
+	}
+	pongPrint(`pong.tsx: ${sesh.p1.username} vs ${sesh.p2.username}`);
+	pongPrint(`pong.tsx: ${sesh.p1.score} vs ${sesh.p2.score}`);
+	setGameSession(sesh);
+	if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
+		alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+		setInGame(false);
+		setGameSession(null);
+		// leaveQueue();
+		return ;
+	}
+});
+*/

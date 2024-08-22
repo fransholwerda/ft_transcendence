@@ -114,32 +114,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.printGames();
 	}
 
-	@SubscribeMessage('leaveQueue')
-	handleLeaveQueue(client: Socket) {
-		pongPrint(`NestJS pong: ${client.id} left the queue`);
-		this.removeFromQueue(client.id);
-	}
-
-	@SubscribeMessage('leaveGame')
-	handleLeaveGame(client: Socket) {
-		pongPrint(`NestJS pong: ${client.id} leaveGame`);
-		const sesh = this.findGameSessionByClientId(client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong: ${client.id} leaveGame listener !sesh`);
-			return;
-		}
-		pongPrint(`Room ID: ${sesh.roomId}`);
-		this.disconnectFromGame(client.id);
-		pongPrint(`NestJS pong: ${client.id} left the game room ${sesh.roomId}`);
-		if (sesh.p1.clientid === client.id) {
-			sesh.p2.score = MAX_SCORE;
-		}
-		else if (sesh.p2.clientid === client.id) {
-			sesh.p1.score = MAX_SCORE;
-		}
-		this.server.to(sesh.roomId).emit('gameUpdate', { sesh });
-	}
-
 	private fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string): GameSession {
 		pongPrint(`NestJS pong: Filling game session for room ${roomId}`);
 		const sesh: GameSession = {
@@ -233,15 +207,68 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		pongPrint(`NestJS pong: Removing game session for room ${roomId}`);
 		this.games = this.games.filter((game) => game.roomId !== roomId);
 	}
+
+	// ------------------------------
+	// LEAVING QUEUE
+	// ------------------------------
+	// FROM PAGEMANAGER
+	@SubscribeMessage('routeLeaveQueue')
+	handleRouteLeaveQueue(client: Socket) {
+		pongPrint(`NestJS pong: ${client.id} left the queue`);
+		this.removeFromQueue(client.id);
+	}
+
+	// FROM PONG
+	@SubscribeMessage('pongLeaveQueue')
+	handlePongLeaveQueue(client: Socket) {
+		pongPrint(`NestJS pong: ${client.id} left the queue`);
+		this.removeFromQueue(client.id);
+	}
+	// ------------------------------
+	
+	// ------------------------------
+	// LEAVING GAME
+	// ------------------------------
+	// FROM PAGEMANAGER
+	@SubscribeMessage('routeLeaveGame')
+	handleRouteLeaveGame(client: Socket) {
+		pongPrint(`NestJS pong routeLeaveGame: ${client.id}`);
+		const sesh = this.findGameSessionByClientId(client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong routeLeaveGame: ${client.id} leaveGame listener !sesh`);
+			return;
+		}
+		pongPrint(`NestJS pong routeLeaveGame: ${sesh.roomId}`);
+		this.disconnectFromGame(client.id);
+		pongPrint(`NestJS pong routeLeaveGame: ${client.id} left room ${sesh.roomId}`);
+		if (sesh.p1.clientid === client.id) {
+			sesh.p2.score = MAX_SCORE;
+		}
+		else if (sesh.p2.clientid === client.id) {
+			sesh.p1.score = MAX_SCORE;
+		}
+		this.server.to(sesh.roomId).emit('routeLeaveGame', { sesh });
+	}
+
+	// FROM PONG
+	@SubscribeMessage('pongLeaveGame')
+	handlePongLeaveGame(client: Socket) {
+		pongPrint(`NestJS pong pongLeaveGame: ${client.id}`);
+		const sesh = this.findGameSessionByClientId(client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong pongLeaveGame: ${client.id} leaveGame listener !sesh`);
+			return;
+		}
+		pongPrint(`NestJS pong pongLeaveGame: ${sesh.roomId}`);
+		this.disconnectFromGame(client.id);
+		pongPrint(`NestJS pong pongLeaveGame: ${client.id} left room ${sesh.roomId}`);
+		if (sesh.p1.clientid === client.id) {
+			sesh.p2.score = MAX_SCORE;
+		}
+		else if (sesh.p2.clientid === client.id) {
+			sesh.p1.score = MAX_SCORE;
+		}
+		this.server.to(sesh.roomId).emit('pongLeaveGame', { sesh });
+	}
+	// ------------------------------
 }
-
-/*
-loop through:
-- games to check for game over
-- games to check for double disconnect
-- games to check for signle disconnect
-- games to check for double gameOver
-
-- socket rooms to matching those cases
-this.server.socketsLeave(clientId);
-*/
