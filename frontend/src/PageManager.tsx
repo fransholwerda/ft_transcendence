@@ -6,7 +6,7 @@ import LoginPage from './LoginPage/LoginPage';
 import MainGrid from './mainGrid/MainGrid';
 import { Constants } from '../shared/constants';
 
-const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
+const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
   transports: ['websocket'],
 });
 
