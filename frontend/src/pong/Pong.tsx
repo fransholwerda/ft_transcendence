@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import './Pong.css';
-import { useLocation } from 'react-router-dom';
 import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
 
@@ -16,7 +15,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
 	const [gameSession, setGameSession] = useState<any>(null);
-	const location = useLocation();
 
 	// ------------------------------
 	//CUSTOM PRINTING
@@ -32,16 +30,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	// ------------------------------
 
 	useEffect(() => {
-		const curUrlPath = location.pathname;
-		pongPrint(`pong.tsx: Current URL Path: ${curUrlPath}`);
-		const areAtPongpage = curUrlPath.includes('/pong');
-
-		if (!areAtPongpage) {
-			pongPrint(`pong.tsx: Not at pong page ${user.username}`);
-			pongLeaveQueue();
-			pongLeaveGame();
-			return ;
-		}
 		pSock.on('gameStart', ({ sesh }) => {
 			pongPrint(`pong.tsx: game start received from server`);
 			console.log(sesh);
@@ -103,7 +91,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			pSock.off('routeLeaveGame');
 			pSock.off('pongLeaveGame');
 		};
-	}, [location.pathname, inGame]);
+	}, [inGame]);
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
