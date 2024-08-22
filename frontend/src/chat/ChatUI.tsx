@@ -170,9 +170,12 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                   className={`chat-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
                 >
-                  <Popup trigger={<button>⚙</button>}>
-                    <div className='chat-channel-popup'>
+                  <Popup className='chat-channel-popup' trigger={<button>⚙</button>}>
+                    <div className='chat-channel-popup-content'>
                       <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Close Channel</span>
+                      <span className="private-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Set Private</span>
+                      <span className="password-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Set Password</span>
+                      <input className="password-input"></input>
                     </div>
                   </Popup>
                   {channel.title}
