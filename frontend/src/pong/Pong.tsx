@@ -92,10 +92,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [location.pathname, inGame]);
 
-	// const printGameSession = (sesh: any) => {
-	// 	console.log(`pong.tsx: Game Session:', sesh);
-	// }
-
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
 		pSock.emit('joinQueue', { user: user });
@@ -127,7 +123,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				{inQueue && !inGame && (
 					<>
 						<p>Waiting for opponent...</p>
-						<button className="leave-queue-btn" onClick={leaveQueue}>
+						<button className="leave-queue-btn" onClick={pongLeaveQueue}>
 							Leave Queue
 						</button>
 					</>
@@ -179,6 +175,10 @@ export default Pong;
 // 		}
 // 	}
 // 	return null;
+// }
+
+// const printGameSession = (sesh: any) => {
+// 	console.log(`pong.tsx: Game Session:', sesh);
 // }
 
 /*
