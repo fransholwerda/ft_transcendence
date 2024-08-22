@@ -106,21 +106,21 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private checkQueue() {
-		pongPrint(`NestJS pong: checking queue`);
+		pongPrint(`NestJS pong checkQueue: checking queue`);
 		if (this.queue.length < 2) {
-			pongPrint('NestJS pong: Not enough players in queue');
+			pongPrint('NestJS pong checkQueue: Not enough players in queue');
 			return;
 		}
 	
-		pongPrint('NestJS pong: Found 2 players in queue');
+		pongPrint('NestJS pong checkQueue: Found 2 players in queue');
 		printQueue(this.queue);
 		const p1 = this.queue.shift();
 		const p2 = this.queue.shift();
 		if (!p1 || !p2) {
-			pongPrint('NestJS pong: Could not find both players in queue');
+			pongPrint('NestJS pong checkQueue: Could not find both players in queue');
 			return;
 		}
-		pongPrint(`NestJS pong: Found players ${p1.user.username} and ${p2.user.username}`);
+		pongPrint(`NestJS pong checkQueue: Found players ${p1.user.username} and ${p2.user.username}`);
 		const roomId = `pong_${p1.user.id}_${p2.user.id}`;
 	
 		const gameSession = fillGameSession(p1, p2, roomId);
@@ -131,7 +131,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	
 		this.server.in(p1.clientId).socketsJoin(roomId);
 		this.server.in(p2.clientId).socketsJoin(roomId);
-		pongPrint(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
+		pongPrint(`NestJS pong checkQueue: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		printGames(this.games);
 	}
 }
