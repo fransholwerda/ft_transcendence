@@ -1,8 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-
-// max score
-const MAX_SCORE = 5;
+import { MAX_SCORE, pongPrint } from './pong.constants';
 
 interface player {
 	clientid: string;
@@ -22,28 +20,6 @@ interface User {
 	username: string,
 	avatarURL: string
 }
-
-// ------------------------------
-// CUSTOM PRINTING
-const pongPrintColors = [
-    '\x1b[31m', // Red
-    '\x1b[32m', // Green
-    '\x1b[34m', // Blue
-    '\x1b[33m', // Yellow
-    '\x1b[35m', // Magenta
-    '\x1b[36m'  // Cyan
-];
-const pongPrintReset = '\x1b[0m'; // Reset to default color
-let pongPrintIndex = 0;
-const allowPongPrint = true;
-
-const pongPrint = (message: any) => {
-    if (!allowPongPrint) return;
-    const color = pongPrintColors[pongPrintIndex];
-    console.log(`${color}${message}${pongPrintReset}`);
-    pongPrintIndex = (pongPrintIndex + 1) % pongPrintColors.length;
-};
-// ------------------------------
 
 @WebSocketGateway({ namespace: '/pong', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
