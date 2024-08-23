@@ -127,7 +127,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // DID TARGETUSER BLOCK YOU?
     // IS TARGETUSER ONLINE?
     // if (this.server.sockets.adapter.rooms.has('@' + targetUser)) {
-    this.server.to('@' + user).emit('dmCreated', { dm: '@' + targetUser });
+    this.server.to('@' + user).emit('dmCreated', { dm: targetUser });
     // SEND EMIT TO OTHER USER USING THEIR USER ID
   }
 

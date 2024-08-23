@@ -104,7 +104,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       alert('Channel name can only contain alphanumeric characters, dashes (-), and underscores (_).');
       return;
     }
-    socket.emit('joinChannel', { channel: '#' + newChannelName });
+    socket.emit('joinChannel', { channel: newChannelName });
     setNewChannelName('');
   };
 
@@ -201,7 +201,10 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                   className={`chat-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
                 >
-                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>×</span>
+                  <Popup className='chat-channel-popup' trigger={<button>⚙</button>}>
+                    <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>Close DM</span>
+                    <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>Invite to Game</span>
+                  </Popup>
                   {dm.title}
                 </button>
               ))}
