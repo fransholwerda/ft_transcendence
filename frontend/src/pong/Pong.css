@@ -22,6 +22,11 @@
 	text-align: center;
 	/* max-width: 400px; */
 	width: 100%;
+	height: 100%;
+}
+
+.pong-container h1 {
+	color: #333;
 }
 
 .pong-container h2 {
@@ -37,7 +42,12 @@
 
 .pong-container p {
 	color: #666;
-	margin-bottom: 1rem;
+	/* margin-bottom: 1rem; */
+}
+
+.pong-container h6 {
+	color: lightsalmon;
+	font-size: 0.8rem;
 }
 
 .pong-container button {

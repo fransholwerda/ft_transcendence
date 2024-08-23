@@ -6,7 +6,11 @@ import LoginPage from './LoginPage/LoginPage';
 import MainGrid from './mainGrid/MainGrid';
 import { Constants } from '../shared/constants';
 
-const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
+// --- DEBUG --- //
+import { randomDebug, createRandomUser } from "./randomUser"
+// --- DEBUG --- //
+
+const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
   transports: ['websocket'],
 });
 
@@ -38,13 +42,15 @@ const PageManager: React.FC = () => {
         })
       });
       user = await response.json();
-      // ----------------------------------------------------------------
-      // RANDOM USER CREATION
-      // user.id = randomUserId();
-      // user.username = randomUsername();
-      // console.log('PageManager: User created', user);
-      // ----------------------------------------------------------------
     }
+
+    // --- DEBUG --- //
+    if (randomDebug) {
+      user = createRandomUser();
+      console.log('PageManager: Random User created', user);
+    }
+    // --- DEBUG --- //
+  
     setUser({
       id: user.id,
       username: user.username,
@@ -52,27 +58,20 @@ const PageManager: React.FC = () => {
     });
   };
 
-  // const randomUserId = (): string => {
-  //   return Math.floor(Math.random() * 1000000).toString();
-  // }
-  //
-  // const randomUsername = (): string => {
-  //   return Math.random().toString(36).substring(7);
-  // }
-
   const handleLogout = () => {
     console.log('PageManager: Logging out');
     setUser(null);
   };
 
-  const leaveQueue = () => {
+  // special case for switching out the content
+  const routeLeaveQueue = () => {
     console.log('PageManager: Leaving Queue');
-    pSock.emit('leaveQueue');
+    pSock.emit('routeLeaveQueue');
   };
 
-  const leaveGame = () => {
+  const routeLeaveGame = () => {
     console.log('PageManager: Leaving Game');
-    pSock.emit('leaveGame');
+    pSock.emit('routeLeaveGame');
   };
 
   useEffect(() => {
@@ -91,8 +90,8 @@ const PageManager: React.FC = () => {
       console.log('PageManager: LocationHandler useEffect');
       if (!location.pathname.includes('/pong')) {
         console.log('PageManager: Not at pong page', user?.username);
-        leaveQueue();
-        leaveGame();
+        routeLeaveQueue();
+        routeLeaveGame();
       }
     }, [location.pathname]);
     return null;
