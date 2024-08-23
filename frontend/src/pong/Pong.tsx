@@ -60,15 +60,20 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	return (
 		<div className="pong-container">
-			<h6>Socket id: {pSock.id}</h6>
-			<h6>User id: {user.id}</h6>
-			<h6>Username: {user.username}</h6>
 			<div className="pong-card">
 				{!inQueue && !inGame && (
-					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
+					<>
+						<h6>Socket id: {pSock.id}</h6>
+						<h6>User id: {user.id}</h6>
+						<h6>Username: {user.username}</h6>
+						<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
+					</>
 				)}
 				{inQueue && !inGame && (
 					<>
+						<h6>Socket id: {pSock.id}</h6>
+						<h6>User id: {user.id}</h6>
+						<h6>Username: {user.username}</h6>
 						<p>Waiting for opponent...</p>
 						<button className="leave-queue-btn" onClick={pongLeaveQueue}>
 							Leave Queue
