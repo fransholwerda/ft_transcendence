@@ -153,5 +153,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.to(sesh.roomId).emit('testIncrement', { sesh });
 	}
 	// ----------------- TEST SCORE INCREMENT -----------------
+
+	// ----------------- GAMESTATE UPDATE -----------------
+	@SubscribeMessage('gameStateUpdate')
+	handleGameStateUpdate(client: Socket, data: { sesh: GameSession }) {
+		pongPrint(`NestJS pong gameStateUpdate : emit received from ${client.id}`);
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong gameStateUpdate: ${client.id} gameStateUpdate !sesh`);
+			return;
+		}
+		sesh.ball = data.sesh.ball;
+		this.server.to(sesh.roomId).emit('gameStateUpdate', { sesh });
+	}
+	// ----------------- GAMESTATE UPDATE -----------------
 }
 

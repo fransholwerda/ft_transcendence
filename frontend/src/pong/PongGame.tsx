@@ -1,6 +1,6 @@
-import React from 'react';
-// import { GameSession } from './PongTypes';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { GameSession } from './PongTypes';
+import { Socket } from 'socket.io-client';
 import './Pong.css';
 
 // interface PongGameProps {
@@ -9,29 +9,26 @@ import './Pong.css';
 //     testIncrement: () => void;
 // }
 
+interface PongGameProps {
+    pSock: Socket;
+    gameSession: GameSession;
+}
+
 // const PongGame: React.FC<PongGameProps> = ({ gameSession, pongLeaveGame, testIncrement}) => {
-const PongGame: React.FC = () => {
+// const PongGame: React.FC = () => {
+const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [gameState, setGameState] = useState<GameSession>(gameSession);
 
-    const gameManager = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
-		const gameLoop = () => {
-            canvas.width = window.innerWidth * 0.75;
-            canvas.height = window.innerHeight * 0.85;
-            const cw = canvas.width;
-            const ch = canvas.height;
-
-			context.fillStyle = 'black';
-			context.fillRect(0, 0, cw, ch);
-
-            context.fillStyle = 'white';
-            const fontSize = ch / 10;
-            context.font = `${fontSize}px sans-serif`;
-            context.fillText('Pong', (cw / 2) - (cw / 10), (ch / 10));
-			
-            requestAnimationFrame(gameLoop);
-		};
-		gameLoop();
-	};
+    useEffect(() => {
+        const handleGameStateUpdate = (updatedGameSession: GameSession) => {
+            setGameState(updatedGameSession);
+        };
+        pSock.on('gameStateUpdate', handleGameStateUpdate);
+        return () => {
+            pSock.off('gameStateUpdate', handleGameStateUpdate);
+        };
+    }, [pSock]);
 
 	useEffect(() => {
         const canvas = canvasRef.current;
@@ -44,8 +41,26 @@ const PongGame: React.FC = () => {
             console.log(`PongGame: context is null`);
             return;
         }
-        
-        gameManager(canvas, context);
+        const gameLoop = () => {
+            canvas.width = window.innerWidth * 0.75;
+            canvas.height = window.innerHeight * 0.85;
+            const cw = canvas.width;
+            const ch = canvas.height;
+            // game area
+			context.fillStyle = 'black';
+			context.fillRect(0, 0, cw, ch);
+            // game title
+            context.fillStyle = 'white';
+            const fontSize = ch / 10;
+            context.font = `${fontSize}px sans-serif`;
+            context.fillText('Pong', (cw / 2) - (cw / 10), (ch / 10));
+            // ball
+            context.fillStyle = 'white';
+            context.fillRect(gameState.ball.x, gameState.ball.y, gameState.ball.width, gameState.ball.height);
+
+            requestAnimationFrame(gameLoop);
+		};
+		gameLoop();
 	}, []);
 
     return (
