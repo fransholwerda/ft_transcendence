@@ -4,9 +4,10 @@ import { GameSession } from './PongTypes';
 interface PongGameProps {
     gameSession: GameSession;
     pongLeaveGame: () => void;
+    testIncrement: () => void;
 }
 
-const PongGame: React.FC<PongGameProps> = ({ gameSession, pongLeaveGame }) => {
+const PongGame: React.FC<PongGameProps> = ({ gameSession, pongLeaveGame, testIncrement}) => {
     return (
         <div className="game-info">
             <p>p1 | P2</p>
@@ -17,6 +18,9 @@ const PongGame: React.FC<PongGameProps> = ({ gameSession, pongLeaveGame }) => {
             <p>Room ID: {gameSession.roomId ?? 'N/A'}</p>
             <button className="leave-game-btn" onClick={pongLeaveGame}>
                 Leave Game
+            </button>
+            <button className="test-increment-btn" onClick={testIncrement}>
+                Test Increment
             </button>
         </div>
     );

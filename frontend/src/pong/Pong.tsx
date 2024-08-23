@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import './Pong.css';
 import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
-import { ufGameStart, ufQueueStatus, ufRouteLeaveGame, ufPongLeaveGame } from './PongUseEffect';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
 import PongGame from './PongGame';
+import {
+	ufGameStart,
+	ufQueueStatus,
+	ufRouteLeaveGame,
+	ufPongLeaveGame,
+	ufTestIncrement
+} from './PongUseEffect';
 
 // max score
 // const MAX_SCORE = 5;
@@ -24,6 +30,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	ufQueueStatus(pSock, user, setInQueue);
 	ufRouteLeaveGame(pSock, user, setInQueue, setInGame, setGameSession);
 	ufPongLeaveGame(pSock, user, setInQueue, setInGame, setGameSession);
+	ufTestIncrement(pSock, setGameSession);
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
@@ -44,6 +51,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		setGameSession(null);
 	};
 
+	// ----------------- TEST SCORE INCREMENT -----------------
+	const testIncrement = () => {
+		pongPrint(`pong.tsx: testIncrement ${user.username}`);
+		pSock.emit('testIncrement');
+	};
+	// ----------------- TEST SCORE INCREMENT -----------------
+
 	return (
 		<div className="pong-container">
 			<h6>Socket id: {pSock.id}</h6>
@@ -62,7 +76,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					</>
 				)}
 				{inGame && gameSession && (
-					<PongGame gameSession={gameSession} pongLeaveGame={pongLeaveGame} />
+					<PongGame gameSession={gameSession} pongLeaveGame={pongLeaveGame}  testIncrement={testIncrement}/>
 				)}
 			</div>
 		</div>

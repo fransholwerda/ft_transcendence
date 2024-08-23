@@ -61,21 +61,17 @@
 	transition: background-color 0.3s ease;
 }
 
-.join-queue-btn:hover {
+.pong-card button {
 	background-color: #45a049;
 }
 
-.join-queue-btn:disabled {
-	background-color: #cccccc;
-	cursor: not-allowed;
-}
-
-.leave-queue-btn, .leave-game-btn {
+.pong-card button:hover {
 	background-color: #f44336;
 }
 
-.leave-queue-btn:hover, .leave-game-btn:hover{
-	background-color: #da190b;
+.pong-card button:disabled {
+	background-color: #cccccc;
+	cursor: not-allowed;
 }
 
 .game-info {
