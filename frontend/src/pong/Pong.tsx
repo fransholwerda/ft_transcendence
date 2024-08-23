@@ -5,6 +5,7 @@ import { Socket } from 'socket.io-client';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
 import PongGame from './PongGame';
+
 import {
 	ufGameStart,
 	ufQueueStatus,
@@ -43,20 +44,18 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		setInQueue(false);
 	};
 
-	const pongLeaveGame = () => {
-		pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
-		pSock.emit('pongLeaveGame');
-		setInQueue(false);
-		setInGame(false);
-		setGameSession(null);
-	};
+	// const pongLeaveGame = () => {
+	// 	pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
+	// 	pSock.emit('pongLeaveGame');
+	// 	setInQueue(false);
+	// 	setInGame(false);
+	// 	setGameSession(null);
+	// };
 
-	// ----------------- TEST SCORE INCREMENT -----------------
-	const testIncrement = () => {
-		pongPrint(`pong.tsx: testIncrement ${user.username}`);
-		pSock.emit('testIncrement');
-	};
-	// ----------------- TEST SCORE INCREMENT -----------------
+	// const testIncrement = () => {
+	// 	pongPrint(`pong.tsx: testIncrement ${user.username}`);
+	// 	pSock.emit('testIncrement');
+	// };
 
 	return (
 		<div className="pong-container">
@@ -80,7 +79,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				</>
 			)}
 			{inGame && gameSession && (
-				<PongGame gameSession={gameSession} pongLeaveGame={pongLeaveGame}  testIncrement={testIncrement}/>
+				// <PongGame gameSession={gameSession} pongLeaveGame={pongLeaveGame}  testIncrement={testIncrement}/>
+				<PongGame />
 			)}
 		</div>
 	);

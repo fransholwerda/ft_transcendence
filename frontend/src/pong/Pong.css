@@ -66,15 +66,16 @@
 
 .game-screen {
 	background-color: #e7f3fe;
-}
-
-.game-screen canvas {
-	/* border: 1px solid #333; */
-	object-fit: contain;
 	height: var(--maingrid_content_height);
 	min-height: var(--maingrid_content_height);
 	max-height: var(--maingrid_content_height);
 	width: var(--maingrid_content_width);
 	min-width: var(--maingrid_content_width);
 	max-width: var(--maingrid_content_width);
+}
+
+.game-screen canvas {
+	/* border: 1px solid #333; */
+	object-fit: contain;
+	
 }
