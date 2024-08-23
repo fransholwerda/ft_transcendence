@@ -17,9 +17,18 @@ const PongGame: React.FC = () => {
 		const gameLoop = () => {
             canvas.width = window.innerWidth * 0.75;
             canvas.height = window.innerHeight * 0.85;
+            const cw = canvas.width;
+            const ch = canvas.height;
+
 			context.fillStyle = 'black';
-			context.fillRect(0, 0, canvas.width, canvas.height);
-			requestAnimationFrame(gameLoop);
+			context.fillRect(0, 0, cw, ch);
+
+            context.fillStyle = 'white';
+            const fontSize = ch / 10;
+            context.font = `${fontSize}px sans-serif`;
+            context.fillText('Pong', (cw / 2) - (cw / 10), (ch / 10));
+			
+            requestAnimationFrame(gameLoop);
 		};
 		gameLoop();
 	};
