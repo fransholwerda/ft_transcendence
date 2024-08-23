@@ -16,7 +16,13 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             username: p2.user.username,
             score: 0
         },
-        roomId: roomId
+        roomId: roomId,
+        ball: {
+            x: 50,
+            y: 50,
+            width: 20,
+            height: 20
+        }
     };
     return sesh;
 }

@@ -21,8 +21,8 @@ const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
     const [gameState, setGameState] = useState<GameSession>(gameSession);
 
     useEffect(() => {
-        const handleGameStateUpdate = (updatedGameSession: GameSession) => {
-            setGameState(updatedGameSession);
+        const handleGameStateUpdate = (sesh: GameSession) => {
+            setGameState(sesh);
         };
         pSock.on('gameStateUpdate', handleGameStateUpdate);
         return () => {
