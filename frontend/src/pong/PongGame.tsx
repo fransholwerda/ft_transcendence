@@ -1,5 +1,6 @@
 import React from 'react';
 import { GameSession } from './PongTypes';
+// import { useEffect, useRef } from 'react';
 
 interface PongGameProps {
     gameSession: GameSession;
@@ -8,8 +9,34 @@ interface PongGameProps {
 }
 
 const PongGame: React.FC<PongGameProps> = ({ gameSession, pongLeaveGame, testIncrement}) => {
+    // const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    // const gameManager = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
+	// 	const gameLoop = () => {
+	// 		context.fillStyle = 'black';
+	// 		context.fillRect(0, 0, canvas.width, canvas.height);
+	// 		requestAnimationFrame(gameLoop);
+	// 	};
+	// 	gameLoop();
+	// };
+
+	// useEffect(() => {
+    //     const canvas = canvasRef.current;
+    //     if (!canvas) {
+    //         console.log(`PongGame: canvas is null`);
+    //         return;
+    //     }
+    //     const context = canvas.getContext('2d');
+    //     if (!context) {
+    //         console.log(`PongGame: context is null`);
+    //         return;
+    //     }
+    //     gameManager(canvas, context);
+	// }, []);
+
     return (
-        <div className="game-info">
+        <div className="game-screen">
+           {/* <canvas ref={canvasRef} width={800} height={400} /> */}
             <p>p1 | P2</p>
             <p>clientid: {gameSession.p1.clientid ?? 'N/A'} | {gameSession.p2.clientid ?? 'N/A'}</p>
             <p>userid: {gameSession.p1.userid ?? 'N/A'} | {gameSession.p2.userid ?? 'N/A'}</p>
@@ -27,3 +54,6 @@ const PongGame: React.FC<PongGameProps> = ({ gameSession, pongLeaveGame, testInc
 };
 
 export default PongGame;
+/*
+
+*/
