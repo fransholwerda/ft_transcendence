@@ -1,6 +1,7 @@
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { ChatUser, ChatRoom } from './chat.types'
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*'} })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -8,6 +9,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   private rooms = new Set<string>();
   private clients = new Set<string>();
+  private ChatUsers = new Map<string, ChatUser>();
+  private ChatRooms = new Map<string, ChatRoom>();
 
   afterInit(server: Server) {
     this.server = server;
@@ -48,12 +51,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 // 		}
 // 		catch
 // 		{
-// 			// console.log(client.id, "Game connection refused");
+// 			// console.log(client.id, "Game connection refused"); 
 // 			client.disconnect();
 // 			return;
 // 		}
 // 	}
-
 
   handleConnection(client: Socket, ...args: any[]) {
     const username = client.handshake.query.username as string;
@@ -67,14 +69,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleDisconnect(client: Socket) {
+    console.log(client.rooms.has("abc"));
     this.clients.delete(client.id);
     console.log(`NestJS Chat Gateway Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('joinChat')
-  handleJoinChat(client: Socket, payload: { username: string }) {
+  handleJoinChat(client: Socket, payload: { userId: string, username: string }) {
     // Username validation?
-    const { username } = payload;
+    const { userId, username } = payload;
+    if (!this.ChatUsers.has(userId)) {
+      // User is connecting for the first time
+      this.ChatUsers.set(userId, new ChatUser(userId, username));
+    }
+    const user = this.ChatUsers.get(userId);
+    if (user) {
+        user.addClientID(client.id);
+    }
     client.join('@' + username);
     client.emit('chatJoined');
   }
