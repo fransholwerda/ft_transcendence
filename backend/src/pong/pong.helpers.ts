@@ -23,8 +23,7 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
 
 export function printGameSession(sesh: GameSession) {
     pongPrint(`NestJS pong: Game session ${sesh.roomId}`);
-    pongPrint(`NestJS pong: ${sesh.p1.username} vs ${sesh.p2.username}`);
-    pongPrint(`NestJS pong: ${sesh.p1.score} vs ${sesh.p2.score}`);
+    pongPrint(`NestJS pong: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
 }
 
 export function printQueue(queue: { clientId: string, user: User }[]) {
