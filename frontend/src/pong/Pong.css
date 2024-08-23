@@ -10,19 +10,9 @@
 	max-height: var(--maingrid_content_height);
 	background-color: #f0f0f0;
 	font-family: Arial, sans-serif;
-	background-size: 100%;
-    background-image: url('../img/bg_vector_bg.jpg');
-}
-
-.pong-card {
-	background-color: white;
-	/* border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	padding: 2rem; */
-	text-align: center;
-	/* max-width: 400px; */
 	width: 100%;
 	height: 100%;
+	text-align: center;
 }
 
 .pong-container h1 {
@@ -61,26 +51,19 @@
 	transition: background-color 0.3s ease;
 }
 
-.pong-card button {
+.pong-container button {
 	background-color: #45a049;
 }
 
-.pong-card button:hover {
+.pong-container button:hover {
 	background-color: #f44336;
 }
 
-.pong-card button:disabled {
+.pong-container button:disabled {
 	background-color: #cccccc;
 	cursor: not-allowed;
 }
 
 .game-info {
 	background-color: #e7f3fe;
-	/* border-radius: 4px; */
-	/* padding: 1rem; */
-	/* margin-top: 1rem; */
-}
-
-.game-info p {
-	/* margin: 0.5rem 0; */
 }
