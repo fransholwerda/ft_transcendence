@@ -1,6 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MAX_SCORE, pongPrint } from './pong.constants';
+import { MAX_SCORE, pongPrint, PongC } from './pong.constants';
 import { GameSession, User } from './pong.types';
 import {
 	fillGameSession,
@@ -106,22 +106,22 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private checkQueue() {
-		pongPrint(`NestJS pong: checking queue`);
+		pongPrint(`NestJS pong checkQueue: checking queue`);
 		if (this.queue.length < 2) {
-			pongPrint('NestJS pong: Not enough players in queue');
+			pongPrint('NestJS pong checkQueue: Not enough players in queue');
 			return;
 		}
 	
-		pongPrint('NestJS pong: Found 2 players in queue');
+		pongPrint('NestJS pong checkQueue: Found 2 players in queue');
 		printQueue(this.queue);
 		const p1 = this.queue.shift();
 		const p2 = this.queue.shift();
 		if (!p1 || !p2) {
-			pongPrint('NestJS pong: Could not find both players in queue');
+			pongPrint('NestJS pong checkQueue: Could not find both players in queue');
 			return;
 		}
-		pongPrint(`NestJS pong: Found players ${p1.user.username} and ${p2.user.username}`);
-		const roomId = `pong_${p1.user.id}_${p2.user.id}`;
+		pongPrint(`NestJS pong checkQueue: Found players ${p1.user.username} and ${p2.user.username}`);
+		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
 	
 		const gameSession = fillGameSession(p1, p2, roomId);
 		this.games.push(gameSession);
@@ -131,7 +131,74 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	
 		this.server.in(p1.clientId).socketsJoin(roomId);
 		this.server.in(p2.clientId).socketsJoin(roomId);
-		pongPrint(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
+		pongPrint(`NestJS pong checkQueue: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		printGames(this.games);
+
+		// Start the game loop for the new game session
+		this.startGameLoop(gameSession);
+	}
+
+	// ----------------- TEST SCORE INCREMENT -----------------
+	@SubscribeMessage('testIncrement')
+	handleTestIncrement(client: Socket) {
+		pongPrint(`NestJS pong testIncrement : emit received from ${client.id}`);
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong testIncrement: ${client.id} testIncrement !sesh`);
+			return;
+		}
+		if (sesh.p1.clientid === client.id) {
+			sesh.p1.score += 1;
+		}
+		else if (sesh.p2.clientid === client.id) {
+			sesh.p2.score += 1;
+		}
+		this.server.to(sesh.roomId).emit('testIncrement', { sesh });
+	}
+	// ----------------- TEST SCORE INCREMENT -----------------
+
+	// ----------------- GAMESTATE UPDATE -----------------
+	@SubscribeMessage('gameStateUpdate')
+	handleGameStateUpdate(client: Socket, data: { sesh: GameSession }) {
+		pongPrint(`NestJS pong gameStateUpdate : emit received from ${client.id}`);
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong gameStateUpdate: ${client.id} gameStateUpdate !sesh`);
+			return;
+		}
+		sesh.ball = data.sesh.ball;
+
+		this.server.to(sesh.roomId).emit('gameStateUpdate', { sesh });
+	}
+	// ----------------- GAMESTATE UPDATE -----------------
+
+	private startGameLoop(gameSession: GameSession) {
+		const intervalId = setInterval(() => {
+			// Update ball position
+			gameSession.ball.x += gameSession.ball.speedX;
+			gameSession.ball.y += gameSession.ball.speedY;
+
+			// Emit the updated game state to the clients
+			this.server.to(gameSession.roomId).emit('gameStateUpdate', gameSession);
+
+			// Check for collisions with the walls and reverse direction if necessary
+			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
+				gameSession.ball.speedX *= -1;
+			}
+			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
+				gameSession.ball.speedY *= -1;
+			}
+		}, (1000 / 60));
+
+		// Store the interval ID in the game session for future reference (e.g., to clear the interval when the game ends)
+		gameSession.intervalId = intervalId;
+	}
+
+	private stopGameLoop(gameSession: GameSession) {
+		const intervalId = gameSession.intervalId;
+		if (intervalId) {
+			clearInterval(intervalId);
+		}
 	}
 }
+
