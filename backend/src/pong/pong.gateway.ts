@@ -133,6 +133,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.in(p2.clientId).socketsJoin(roomId);
 		pongPrint(`NestJS pong checkQueue: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		printGames(this.games);
+
+		// Start the game loop for the new game session
+		this.startGameLoop(gameSession);
 	}
 
 	// ----------------- TEST SCORE INCREMENT -----------------
@@ -164,6 +167,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 		sesh.ball = data.sesh.ball;
+
 		this.server.to(sesh.roomId).emit('gameStateUpdate', { sesh });
 	}
 	// ----------------- GAMESTATE UPDATE -----------------
