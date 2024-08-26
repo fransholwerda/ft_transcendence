@@ -10,6 +10,8 @@ export interface Ball {
 	y: number;
 	width: number;
 	height: number;
+	speedX: number;
+	speedY: number;
 }
 
 export interface GameSession {
@@ -17,6 +19,7 @@ export interface GameSession {
 	p2: player;
 	roomId: string;
 	ball: Ball;
+	intervalId?: NodeJS.Timeout;
 }
 
 export interface User {
