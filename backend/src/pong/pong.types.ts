@@ -5,10 +5,18 @@ export interface player {
 	score: number;
 }
 
+export interface Ball {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
+
 export interface GameSession {
 	p1: player;
 	p2: player;
 	roomId: string;
+	ball: Ball;
 }
 
 export interface User {

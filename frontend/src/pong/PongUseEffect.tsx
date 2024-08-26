@@ -120,3 +120,22 @@ export const ufPongLeaveGame = (
 		};
 	}, [pSock, user, setInQueue, setInGame, setGameSession]);
 };
+
+// ----------------- TEST SCORE INCREMENT -----------------
+export const ufTestIncrement = (
+	pSock: Socket,
+	setGameSession: React.Dispatch<React.SetStateAction<GameSession | null>>
+) => {
+	useEffect(() => {
+		const handleTestIncrement = ({ sesh }: { sesh: GameSession }) => {
+			pongPrint(`pong.tsx: testIncrement received from server`);
+			setGameSession(sesh);
+		};
+	
+		pSock.on('testIncrement', handleTestIncrement);
+		return () => {
+			pSock.off('testIncrement', handleTestIncrement);
+		};
+	}, [pSock, setGameSession]);
+};
+// ----------------- TEST SCORE INCREMENT -----------------

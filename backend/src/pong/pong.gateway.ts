@@ -106,22 +106,22 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private checkQueue() {
-		pongPrint(`NestJS pong: checking queue`);
+		pongPrint(`NestJS pong checkQueue: checking queue`);
 		if (this.queue.length < 2) {
-			pongPrint('NestJS pong: Not enough players in queue');
+			pongPrint('NestJS pong checkQueue: Not enough players in queue');
 			return;
 		}
 	
-		pongPrint('NestJS pong: Found 2 players in queue');
+		pongPrint('NestJS pong checkQueue: Found 2 players in queue');
 		printQueue(this.queue);
 		const p1 = this.queue.shift();
 		const p2 = this.queue.shift();
 		if (!p1 || !p2) {
-			pongPrint('NestJS pong: Could not find both players in queue');
+			pongPrint('NestJS pong checkQueue: Could not find both players in queue');
 			return;
 		}
-		pongPrint(`NestJS pong: Found players ${p1.user.username} and ${p2.user.username}`);
-		const roomId = `pong_${p1.user.id}_${p2.user.id}`;
+		pongPrint(`NestJS pong checkQueue: Found players ${p1.user.username} and ${p2.user.username}`);
+		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
 	
 		const gameSession = fillGameSession(p1, p2, roomId);
 		this.games.push(gameSession);
@@ -131,7 +131,41 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	
 		this.server.in(p1.clientId).socketsJoin(roomId);
 		this.server.in(p2.clientId).socketsJoin(roomId);
-		pongPrint(`NestJS pong: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
+		pongPrint(`NestJS pong checkQueue: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		printGames(this.games);
 	}
+
+	// ----------------- TEST SCORE INCREMENT -----------------
+	@SubscribeMessage('testIncrement')
+	handleTestIncrement(client: Socket) {
+		pongPrint(`NestJS pong testIncrement : emit received from ${client.id}`);
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong testIncrement: ${client.id} testIncrement !sesh`);
+			return;
+		}
+		if (sesh.p1.clientid === client.id) {
+			sesh.p1.score += 1;
+		}
+		else if (sesh.p2.clientid === client.id) {
+			sesh.p2.score += 1;
+		}
+		this.server.to(sesh.roomId).emit('testIncrement', { sesh });
+	}
+	// ----------------- TEST SCORE INCREMENT -----------------
+
+	// ----------------- GAMESTATE UPDATE -----------------
+	@SubscribeMessage('gameStateUpdate')
+	handleGameStateUpdate(client: Socket, data: { sesh: GameSession }) {
+		pongPrint(`NestJS pong gameStateUpdate : emit received from ${client.id}`);
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong gameStateUpdate: ${client.id} gameStateUpdate !sesh`);
+			return;
+		}
+		sesh.ball = data.sesh.ball;
+		this.server.to(sesh.roomId).emit('gameStateUpdate', { sesh });
+	}
+	// ----------------- GAMESTATE UPDATE -----------------
 }
+

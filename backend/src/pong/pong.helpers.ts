@@ -16,15 +16,20 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             username: p2.user.username,
             score: 0
         },
-        roomId: roomId
+        roomId: roomId,
+        ball: {
+            x: 50,
+            y: 50,
+            width: 20,
+            height: 20
+        }
     };
     return sesh;
 }
 
 export function printGameSession(sesh: GameSession) {
     pongPrint(`NestJS pong: Game session ${sesh.roomId}`);
-    pongPrint(`NestJS pong: ${sesh.p1.username} vs ${sesh.p2.username}`);
-    pongPrint(`NestJS pong: ${sesh.p1.score} vs ${sesh.p2.score}`);
+    pongPrint(`NestJS pong: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
 }
 
 export function printQueue(queue: { clientId: string, user: User }[]) {
