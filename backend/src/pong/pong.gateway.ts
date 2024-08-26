@@ -171,5 +171,34 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.to(sesh.roomId).emit('gameStateUpdate', { sesh });
 	}
 	// ----------------- GAMESTATE UPDATE -----------------
+
+	private startGameLoop(gameSession: GameSession) {
+		const intervalId = setInterval(() => {
+			// Update ball position
+			gameSession.ball.x += gameSession.ball.speedX;
+			gameSession.ball.y += gameSession.ball.speedY;
+
+			// Emit the updated game state to the clients
+			this.server.to(gameSession.roomId).emit('gameStateUpdate', gameSession);
+
+			// Check for collisions with the walls and reverse direction if necessary
+			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
+				gameSession.ball.speedX *= -1;
+			}
+			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
+				gameSession.ball.speedY *= -1;
+			}
+		}, (1000 / 60));
+
+		// Store the interval ID in the game session for future reference (e.g., to clear the interval when the game ends)
+		gameSession.intervalId = intervalId;
+	}
+
+	private stopGameLoop(gameSession: GameSession) {
+		const intervalId = gameSession.intervalId;
+		if (intervalId) {
+			clearInterval(intervalId);
+		}
+	}
 }
 
