@@ -161,6 +161,28 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
     }
   };
 
+  const handleUserAction = (action: string, username: string) => {
+    switch (action) {
+      case 'ignore':
+        alert(`Ignoring ${username}`);
+        break;
+      case 'kick':
+        alert(`Kicking ${username}`);
+        break;
+      case 'mute':
+        alert(`Muting ${username}`);
+        break;
+      case 'ban':
+        alert(`Banning ${username}`);
+        break;
+      case 'report':
+        alert(`Reporting ${username}`);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="Chat">
       <div className="chat-container">
@@ -238,7 +260,40 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 return activeTab && msg.channel === activeTab.title;
               }).map((msg, index) => (
                 <div key={index} className="message">
-                  <strong>{msg.username}:</strong> {msg.message}
+                  <Popup
+                    trigger={<button className="username-button">{msg.username}</button>}
+                    position="right center"
+                    on="click"
+                    closeOnDocumentClick
+                    mouseLeaveDelay={300}
+                    mouseEnterDelay={0}
+                    contentStyle={{ padding: '10px', border: 'none' }}
+                    arrow={false}
+                  >
+                    <div className="user-actions-popup">
+                    {msg.username !== user.username ? (
+                      <>
+                        {activeType === 'channel' ? (
+                          <>
+                            <button onClick={() => handleUserAction('ignore', msg.username)}>Ignore</button>
+                            <button onClick={() => handleUserAction('kick', msg.username)}>Kick</button>
+                            <button onClick={() => handleUserAction('mute', msg.username)}>Mute</button>
+                            <button onClick={() => handleUserAction('ban', msg.username)}>Ban</button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => handleUserAction('ignore', msg.username)}>Ignore</button>
+                            <button onClick={() => handleUserAction('report', msg.username)}>Report</button>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      // Optional: You can add a button or message for your own username here if needed
+                      <button onClick={() => alert('This is your own message!')}>This is you</button>
+                    )}
+                    </div>
+                  </Popup>
+                  {': ' + msg.message}
                 </div>
               ))}
             </div>
