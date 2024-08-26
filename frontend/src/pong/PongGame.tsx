@@ -57,8 +57,15 @@ const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
         context.fillRect(gameState.ball.x, gameState.ball.y, gameState.ball.width, gameState.ball.height);
 
         const gameLoop = () => {
-            
+            // reset the canvas back to black
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = 'black';
+			context.fillRect(0, 0, canvas.width, canvas.height);
 
+            // draw the ball
+            context.fillStyle = 'white';
+            context.fillRect(gameState.ball.x, gameState.ball.y, gameState.ball.width, gameState.ball.height);
+            
             requestAnimationFrame(gameLoop);
 		};
 		gameLoop();
