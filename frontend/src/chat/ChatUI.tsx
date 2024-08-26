@@ -110,11 +110,15 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
 
   const joinDM = () => {
     if (!newDmName.trim()) return;
-    if (newDmName === user.username) {
+    const dmExists = dms.some(dm => dm.title === newDmName.trim());
+    if (newDmName.trim() === user.username) {
       alert(`You can't create a DM with yourself.`);
       return;
+    } else if (dmExists) {
+      alert(`You already have a DM open with this user`);
+      return;
     }
-    socket.emit('joinDM', { user: user.username, targetUser: newDmName})
+    socket.emit('joinDM', { user: user.username, targetUser: newDmName.trim()})
     setNewDmName('');
   }
 
