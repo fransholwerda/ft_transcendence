@@ -21,7 +21,9 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             x: 50,
             y: 50,
             width: 20,
-            height: 20
+            height: 20,
+            speedX: 1,
+            speedY: 1
         }
     };
     return sesh;

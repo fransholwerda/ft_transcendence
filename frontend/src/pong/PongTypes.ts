@@ -10,6 +10,8 @@ export interface Ball {
 	y: number;
 	width: number;
 	height: number;
+	speedX: number;
+	speedY: number;
 }
 
 export interface GameSession {

@@ -1,6 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MAX_SCORE, pongPrint } from './pong.constants';
+import { MAX_SCORE, pongPrint, PongC } from './pong.constants';
 import { GameSession, User } from './pong.types';
 import {
 	fillGameSession,

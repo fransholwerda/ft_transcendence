@@ -65,7 +65,6 @@ const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
             // draw the ball
             context.fillStyle = 'white';
             context.fillRect(gameState.ball.x, gameState.ball.y, gameState.ball.width, gameState.ball.height);
-            
             requestAnimationFrame(gameLoop);
 		};
 		gameLoop();
@@ -74,18 +73,6 @@ const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
     return (
         <div className="game-screen">
            <canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
-            {/* <p>p1 | P2</p>
-            <p>clientid: {gameSession.p1.clientid ?? 'N/A'} | {gameSession.p2.clientid ?? 'N/A'}</p>
-            <p>userid: {gameSession.p1.userid ?? 'N/A'} | {gameSession.p2.userid ?? 'N/A'}</p>
-            <p>username: {gameSession.p1.username ?? 'N/A'} | {gameSession.p2.username ?? 'N/A'}</p>
-            <p>score: {gameSession.p1.score ?? 0} | {gameSession.p2.score ?? 'N/A'}</p>
-            <p>Room ID: {gameSession.roomId ?? 'N/A'}</p>
-            <button className="leave-game-btn" onClick={pongLeaveGame}>
-                Leave Game
-            </button>
-            <button className="test-increment-btn" onClick={testIncrement}>
-                Test Increment
-            </button> */}
         </div>
     );
 };
