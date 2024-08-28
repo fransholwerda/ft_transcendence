@@ -138,8 +138,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.startGameLoop(gameSession);
 	}
 
-	// ----------------- GAMESTATE UPDATE -----------------
-	@SubscribeMessage('gameStateUpdate')
+	@SubscribeMessage('gameUpdate')
 	handleGameStateUpdate(client: Socket, data: { sesh: GameSession }) {
 		pongPrint(`NestJS pong gameStateUpdate : emit received from ${client.id}`);
 		const sesh = findGameSessionByClientId(this.games, client.id);
@@ -148,32 +147,22 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 		sesh.ball = data.sesh.ball;
-
-		this.server.to(sesh.roomId).emit('gameStateUpdate', { sesh });
+		this.server.to(sesh.roomId).emit('gameUpdate', { sesh });
 	}
-	// ----------------- GAMESTATE UPDATE -----------------
 
 	private startGameLoop(gameSession: GameSession) {
-		// Set up a game loop running at 60 FPS (1000 ms / 60 = ~16.67 ms)
 		const intervalId = setInterval(() => {
-			// Update the ball position based on its velocity
 			gameSession.ball.x += gameSession.ball.speedX;
 			gameSession.ball.y += gameSession.ball.speedY;
-	
-			// Check for collisions with the walls
 			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
-				gameSession.ball.speedX *= -1; // Reverse direction on X-axis
+				gameSession.ball.speedX *= -1;
 			}
 			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
-				gameSession.ball.speedY *= -1; // Reverse direction on Y-axis
+				gameSession.ball.speedY *= -1;
 			}
+			this.server.to(gameSession.roomId).emit('gameUpdate', gameSession);
 	
-			// Emit the updated game state to the clients
-			this.server.to(gameSession.roomId).emit('gameStateUpdate', gameSession);
-	
-		}, 1000 / 60); // 60 FPS
-	
-		// Store the interval ID in the game session for future reference
+		}, 1000 / 60);
 		gameSession.intervalId = intervalId;
 	}
 	
@@ -188,25 +177,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	handleMovePaddle(client: Socket, data: { direction: string  }) {
 		const sesh = findGameSessionByClientId(this.games, client.id);
 		if (!sesh) return;
-
 		let paddle;
 		if (sesh.p1.clientid === client.id) {
 			paddle = sesh.p1.paddle;
 		} else if (sesh.p2.clientid === client.id) {
 			paddle = sesh.p2.paddle;
 		}
-
 		if (!paddle) return;
-
 		const paddleSpeed = 5; // Adjust the speed as needed
 		if (data.direction === 'w') {
 			paddle.y = Math.max(0, paddle.y - paddleSpeed); // Move up
 		} else if (data.direction === 's') {
 			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed); // Move down
 		}
-
-		// this.server.to(sesh.roomId).emit('gameStateUpdate', sesh);
 	}
-
 }
 

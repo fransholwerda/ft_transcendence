@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Pong.css';
 import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
-import PongGame from './PongGame';
-
-// max score
-// const MAX_SCORE = 5;
+import { PongC } from '../../shared/constants';
 
 interface PongProps {
 	user: User;
@@ -18,6 +15,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inQueue, setInQueue] = useState(false);
 	const [inGame, setInGame] = useState(false);
 	const [gameSession, setGameSession] = useState<GameSession | null>(null);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
@@ -121,6 +119,68 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		setGameSession(null);
 	};
 
+	useEffect(() => {
+		const handleGameUpdate = (updatedSession: GameSession) => {
+			setGameSession(updatedSession);
+		};
+	
+		// Listen for game state updates from the server
+		pSock.on('gameUpdate', handleGameUpdate);
+	
+		return () => {
+			// Clean up the listener when the component unmounts
+			pSock.off('gameUpdate', handleGameUpdate);
+		};
+	}, [pSock]);
+	
+	useEffect(() => {
+		let lastKeyPressTime = 0;
+		const keyPressInterval = 10;
+	
+		const handleKeyDown = (event: KeyboardEvent) => {
+			const currentTime = Date.now();
+			if (currentTime - lastKeyPressTime > keyPressInterval) {
+				lastKeyPressTime = currentTime;
+				if (event.key === 'w' || event.key === 's') {
+					pSock.emit('movePaddle', { direction: event.key });
+				}
+			}
+		};
+	
+		window.addEventListener('keydown', handleKeyDown);
+	
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [pSock]);
+
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		const context = canvas.getContext('2d');
+		if (!context) return;
+	
+		const renderGame = () => {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = 'black';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+	
+			// Draw the ball
+			const gs = gameSession;
+			if (!gs) return;
+			context.fillStyle = 'white';
+			context.fillRect(gs.ball.x, gs.ball.y, gs.ball.width, gs.ball.height);
+	
+			// Draw paddles
+			context.fillRect(gs.p1.paddle.x, gs.p1.paddle.y, gs.p1.paddle.width, gs.p1.paddle.height);
+			context.fillRect(gs.p2.paddle.x, gs.p2.paddle.y, gs.p2.paddle.width, gs.p2.paddle.height);
+		};
+	
+		renderGame();
+	
+		return () => renderGame();
+	}, [gameSession]);
+
 	return (
 		<div className="pong-container">
 			{!inQueue && !inGame && (
@@ -143,13 +203,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				</>
 			)}
 			{inGame && gameSession && (
-				<PongGame 
-					pSock={pSock} 
-					gameSession={gameSession} 
-					// onRouteLeaveGame={handleRouteLeaveGame} 
-					// onPongLeaveGame={handlePongLeaveGame} 
-					pongLeaveGame={pongLeaveGame}
-				/>
+				<div className="game-screen">
+					<h6>Game room: {gameSession.roomId}</h6>
+					<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
+					<button onClick={pongLeaveGame}>
+						Leave Game
+					</button>
+				</div>
 			)}
 		</div>
 	);
