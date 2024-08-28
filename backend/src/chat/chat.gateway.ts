@@ -11,6 +11,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   private clients = new Set<string>();
   private ChatUsers = new Map<string, ChatUser>();
   private ChatRooms = new Map<string, ChatRoom>();
+  private SocketUsernames = new Map<string, string>();
 
   afterInit(server: Server) {
     this.server = server;
@@ -61,16 +62,27 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const username = client.handshake.query.username as string;
 
     console.log(`NestJS Chat Gateway Username is: ${username}`);
-    this.clients.add(client.id);
-    client.join('@' + username);
-    if (!this.rooms.has('@' + username))
-      this.rooms.add('@' + username);
+    // this.clients.add(client.id);
+    // client.join('@' + username);
+    // if (!this.rooms.has('@' + username))
+    //   this.rooms.add('@' + username);
     console.log(`NestJS Chat Gateway Client connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    console.log(client.rooms.has("abc"));
+
     this.clients.delete(client.id);
+
+    console.log("NestJS Chat handleDisconnect");
+    console.log(client.id);
+    console.log(this.SocketUsernames.get(client.id));
+    console.log(this.ChatUsers.get(this.SocketUsernames.get(client.id)));
+    this.ChatUsers.delete(this.SocketUsernames.get(client.id));
+
+    // DELETE LATER vvv (once cookie identification is implemented)
+    this.SocketUsernames.delete(client.id);
+    // DELETE LATER ^^^
+
     console.log(`NestJS Chat Gateway Client disconnected: ${client.id}`);
   }
 
@@ -78,6 +90,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleJoinChat(client: Socket, payload: { userId: string, username: string }) {
     // Username validation?
     const { userId, username } = payload;
+
+    // DELETE LATER vvv (once cookie identification is implemented)
+    this.SocketUsernames.set(client.id, username);
+    console.log('SocketID to Username: ' + client.id + ' = ' + this.SocketUsernames.get(client.id));
+    // DELETE LATER ^^^
+
     if (!this.ChatUsers.has(userId)) {
       // User is connecting for the first time
       this.ChatUsers.set(userId, new ChatUser(userId, username));
@@ -85,9 +103,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const user = this.ChatUsers.get(userId);
     if (user) {
         user.addClientID(client.id);
+        console.log(user.clientIDs);
     }
     client.join('@' + username);
     client.emit('chatJoined');
+    if (!this.ChatRooms.has('@' + username)) {
+      this.ChatRooms.set('@' + username, new ChatRoom('@' + username, [user]));
+    }
   }
 
   @SubscribeMessage('createChannel')
