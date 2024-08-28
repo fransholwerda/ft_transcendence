@@ -196,7 +196,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                   className={`chat-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
                 >
-                  <Popup className='chat-channel-popup' trigger={<button>⚙</button>}>
+                  <Popup className='chat-channel-popup' trigger={<span>⚙</span>}>
                     <div className='chat-channel-popup-content'>
                       <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Close Channel</span>
                       <span className="private-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Set Private</span>
@@ -227,7 +227,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                   className={`chat-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
                 >
-                  <Popup className='chat-channel-popup' trigger={<button>⚙</button>}>
+                  <Popup className='chat-channel-popup' trigger={<span>⚙</span>}>
                     <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>Close DM</span>
                     <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>Invite to Game</span>
                   </Popup>
