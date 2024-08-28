@@ -81,14 +81,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		else if (sesh.p2.clientid === client.id) {
 			sesh.p1.score = MAX_SCORE;
 		}
+		this.server.to(sesh.roomId).emit('pongLeaveGame', { sesh: sesh });
 		this.games = removeGameSession(this.games, sesh.roomId);
-		// Ensure that emitting the event does not cause the same handler to be invoked
-		if (client.id !== sesh.p1.clientid) {
-			this.server.to(sesh.p1.clientid).emit('routeLeaveGame', { sesh: sesh });
-		}
-		if (client.id !== sesh.p2.clientid) {
-			this.server.to(sesh.p2.clientid).emit('routeLeaveGame', { sesh: sesh });
-		}
 	}
 	
 	@SubscribeMessage('pongLeaveGame')
@@ -107,14 +101,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		else if (sesh.p2.clientid === client.id) {
 			sesh.p1.score = MAX_SCORE;
 		}
+		this.server.to(sesh.roomId).emit('pongLeaveGame', { sesh: sesh });
 		this.games = removeGameSession(this.games, sesh.roomId);
-		// Ensure that emitting the event does not cause the same handler to be invoked
-		if (client.id !== sesh.p1.clientid) {
-			this.server.to(sesh.p1.clientid).emit('pongLeaveGame', { sesh: sesh });
-		}
-		if (client.id !== sesh.p2.clientid) {
-			this.server.to(sesh.p2.clientid).emit('pongLeaveGame', { sesh: sesh });
-		}
 	}
 
 	private checkQueue() {

@@ -8,11 +8,12 @@ import { PongC } from '../../shared/constants';
 interface PongGameProps {
     pSock: Socket;
     gameSession: GameSession;
-    onRouteLeaveGame: ({ sesh }: { sesh: GameSession }) => void;
-    onPongLeaveGame: ({ sesh }: { sesh: GameSession }) => void;
+    // onRouteLeaveGame: ({ sesh }: { sesh: GameSession }) => void;
+    // onPongLeaveGame: ({ sesh }: { sesh: GameSession }) => void;
+	pongLeaveGame: () => void;
 }
 
-const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession, onRouteLeaveGame, onPongLeaveGame }) => {
+const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession, pongLeaveGame }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [gameState, setGameState] = useState<GameSession>(gameSession);
 	const gameStateRef = useRef<GameSession>(gameSession);
@@ -83,6 +84,9 @@ const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession, onRouteLeaveGam
 		<div className="game-screen">
 			<h6>Game room: {gameState.roomId}</h6>
 			<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
+			<button onClick={pongLeaveGame}>
+                Leave Game
+            </button>
 		</div>
 	);
 };

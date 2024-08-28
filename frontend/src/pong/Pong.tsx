@@ -90,7 +90,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			pongPrint(`pong.tsx: routeLeaveGame useEffect return ${user.username}`);
 			pSock.off('routeLeaveGame', handleRouteLeaveGame);
 		};
-	}, [inGame]);
+	}, [pSock, user]);
 
 	useEffect(() => {
 		const handlePongLeaveGame = ({ sesh }: { sesh: GameSession }) => {
@@ -111,7 +111,15 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			pongPrint(`pong.tsx: pongLeaveGame useEffect return ${user.username}`);
 			pSock.off('pongLeaveGame', handlePongLeaveGame);
 		};
-	}, [inGame]);
+	}, [pSock, user]);
+
+	const pongLeaveGame = () => {
+		pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
+		pSock.emit('pongLeaveGame');
+		setInQueue(false);
+		setInGame(false);
+		setGameSession(null);
+	};
 
 	return (
 		<div className="pong-container">
@@ -138,8 +146,9 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				<PongGame 
 					pSock={pSock} 
 					gameSession={gameSession} 
-					onRouteLeaveGame={handleRouteLeaveGame} 
-					onPongLeaveGame={handlePongLeaveGame} 
+					// onRouteLeaveGame={handleRouteLeaveGame} 
+					// onPongLeaveGame={handlePongLeaveGame} 
+					pongLeaveGame={pongLeaveGame}
 				/>
 			)}
 		</div>
