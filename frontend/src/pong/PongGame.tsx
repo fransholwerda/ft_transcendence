@@ -39,7 +39,7 @@ const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
 			if (currentTime - lastKeyPressTime > keyPressInterval) {
 				lastKeyPressTime = currentTime;
 				if (event.key === 'w' || event.key === 's') {
-					pSock.emit('movePaddle', { direction: event.key, playerId: pSock.id });
+					pSock.emit('movePaddle', { direction: event.key });
 				}
 			}
 		};
