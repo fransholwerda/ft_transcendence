@@ -30,6 +30,19 @@ const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
 		};
 	}, [pSock]);
 	
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'w' || event.key === 's') {
+				pSock.emit('movePaddle', { direction: event.key });
+			}
+		};
+	
+		window.addEventListener('keydown', handleKeyDown);
+	
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [pSock]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -38,23 +51,25 @@ const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
 		if (!context) return;
 	
 		const renderGame = () => {
-			// Clear the canvas
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillStyle = 'black';
 			context.fillRect(0, 0, canvas.width, canvas.height);
 	
-			// Draw the ball based on the current game state
+			// Draw the ball
 			const curState = gameStateRef.current;
 			context.fillStyle = 'white';
 			context.fillRect(curState.ball.x, curState.ball.y, curState.ball.width, curState.ball.height);
+	
+			// Draw paddles
+			context.fillRect(curState.p1.paddle.x, curState.p1.paddle.y, curState.p1.paddle.width, curState.p1.paddle.height);
+			context.fillRect(curState.p2.paddle.x, curState.p2.paddle.y, curState.p2.paddle.width, curState.p2.paddle.height);
 		};
 	
-		renderGame(); // Initial render
+		renderGame();
 	
-		// Re-render the canvas whenever the game state changes
 		return () => renderGame();
-	}, [gameState]);	
-
+	}, [gameState]);
+	
 	return (
 		<div className="game-screen">
 			<h6>Game room: {gameState.roomId}</h6>

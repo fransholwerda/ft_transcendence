@@ -201,6 +201,31 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (gameSession.intervalId) {
 			clearInterval(gameSession.intervalId);
 		}
-	}	
+	}
+
+	@SubscribeMessage('movePaddle')
+	handleMovePaddle(client: Socket, data: { direction: string  }) {
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) return;
+
+		let paddle;
+		if (sesh.p1.clientid === client.id) {
+			paddle = sesh.p1.paddle;
+		} else if (sesh.p2.clientid === client.id) {
+			paddle = sesh.p2.paddle;
+		}
+
+		if (!paddle) return;
+
+		const paddleSpeed = 5; // Adjust the speed as needed
+		if (data.direction === 'w') {
+			paddle.y = Math.max(0, paddle.y - paddleSpeed); // Move up
+		} else if (data.direction === 's') {
+			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed); // Move down
+		}
+
+		this.server.to(sesh.roomId).emit('gameStateUpdate', sesh);
+	}
+
 }
 
