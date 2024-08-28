@@ -6,11 +6,13 @@ import { PongC } from '../../shared/constants';
 // import { pongPrint } from './PongUtils';
 
 interface PongGameProps {
-	pSock: Socket;
-	gameSession: GameSession;
+    pSock: Socket;
+    gameSession: GameSession;
+    onRouteLeaveGame: ({ sesh }: { sesh: GameSession }) => void;
+    onPongLeaveGame: ({ sesh }: { sesh: GameSession }) => void;
 }
 
-const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession }) => {
+const PongGame: React.FC<PongGameProps> = ({ pSock, gameSession, onRouteLeaveGame, onPongLeaveGame }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [gameState, setGameState] = useState<GameSession>(gameSession);
 	const gameStateRef = useRef<GameSession>(gameSession);

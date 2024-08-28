@@ -135,9 +135,12 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				</>
 			)}
 			{inGame && gameSession && (
-				// <PongGame gameSession={gameSession} pongLeaveGame={pongLeaveGame}  testIncrement={testIncrement}/>
-				<PongGame pSock={pSock} gameSession={gameSession}/>
-				// <PongGame pSock={pSock} />
+				<PongGame 
+					pSock={pSock} 
+					gameSession={gameSession} 
+					onRouteLeaveGame={handleRouteLeaveGame} 
+					onPongLeaveGame={handlePongLeaveGame} 
+				/>
 			)}
 		</div>
 	);
