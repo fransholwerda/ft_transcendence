@@ -173,32 +173,34 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// ----------------- GAMESTATE UPDATE -----------------
 
 	private startGameLoop(gameSession: GameSession) {
+		// Set up a game loop running at 60 FPS (1000 ms / 60 = ~16.67 ms)
 		const intervalId = setInterval(() => {
-			// Update ball position
+			// Update the ball position based on its velocity
 			gameSession.ball.x += gameSession.ball.speedX;
 			gameSession.ball.y += gameSession.ball.speedY;
-
-			// Emit the updated game state to the clients
-			this.server.to(gameSession.roomId).emit('gameStateUpdate', gameSession);
-
-			// Check for collisions with the walls and reverse direction if necessary
+	
+			// Check for collisions with the walls
 			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
-				gameSession.ball.speedX *= -1;
+				gameSession.ball.speedX *= -1; // Reverse direction on X-axis
 			}
 			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
-				gameSession.ball.speedY *= -1;
+				gameSession.ball.speedY *= -1; // Reverse direction on Y-axis
 			}
-		}, (1000 / 60));
-
-		// Store the interval ID in the game session for future reference (e.g., to clear the interval when the game ends)
+	
+			// Emit the updated game state to the clients
+			this.server.to(gameSession.roomId).emit('gameStateUpdate', gameSession);
+	
+		}, 1000 / 60); // 60 FPS
+	
+		// Store the interval ID in the game session for future reference
 		gameSession.intervalId = intervalId;
 	}
-
+	
 	private stopGameLoop(gameSession: GameSession) {
-		const intervalId = gameSession.intervalId;
-		if (intervalId) {
-			clearInterval(intervalId);
+		// Clear the interval when the game ends
+		if (gameSession.intervalId) {
+			clearInterval(gameSession.intervalId);
 		}
-	}
+	}	
 }
 
