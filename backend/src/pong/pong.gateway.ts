@@ -224,7 +224,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed); // Move down
 		}
 
-		this.server.to(sesh.roomId).emit('gameStateUpdate', sesh);
+		// this.server.to(sesh.roomId).emit('gameStateUpdate', sesh);
 	}
 
 }
