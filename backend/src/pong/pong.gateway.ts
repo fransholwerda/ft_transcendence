@@ -82,9 +82,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			sesh.p1.score = MAX_SCORE;
 		}
 		this.games = removeGameSession(this.games, sesh.roomId);
-		this.server.to(sesh.roomId).emit('routeLeaveGame', { sesh });
+		// Ensure that emitting the event does not cause the same handler to be invoked
+		if (client.id !== sesh.p1.clientid) {
+			this.server.to(sesh.p1.clientid).emit('routeLeaveGame', { sesh: sesh });
+		}
+		if (client.id !== sesh.p2.clientid) {
+			this.server.to(sesh.p2.clientid).emit('routeLeaveGame', { sesh: sesh });
+		}
 	}
-
+	
 	@SubscribeMessage('pongLeaveGame')
 	handlePongLeaveGame(client: Socket) {
 		pongPrint(`NestJS pong pongLeaveGame: ${client.id}`);
@@ -102,7 +108,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			sesh.p1.score = MAX_SCORE;
 		}
 		this.games = removeGameSession(this.games, sesh.roomId);
-		this.server.to(sesh.roomId).emit('pongLeaveGame', { sesh });
+		// Ensure that emitting the event does not cause the same handler to be invoked
+		if (client.id !== sesh.p1.clientid) {
+			this.server.to(sesh.p1.clientid).emit('pongLeaveGame', { sesh: sesh });
+		}
+		if (client.id !== sesh.p2.clientid) {
+			this.server.to(sesh.p2.clientid).emit('pongLeaveGame', { sesh: sesh });
+		}
 	}
 
 	private checkQueue() {
@@ -137,25 +149,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// Start the game loop for the new game session
 		this.startGameLoop(gameSession);
 	}
-
-	// ----------------- TEST SCORE INCREMENT -----------------
-	@SubscribeMessage('testIncrement')
-	handleTestIncrement(client: Socket) {
-		pongPrint(`NestJS pong testIncrement : emit received from ${client.id}`);
-		const sesh = findGameSessionByClientId(this.games, client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong testIncrement: ${client.id} testIncrement !sesh`);
-			return;
-		}
-		if (sesh.p1.clientid === client.id) {
-			sesh.p1.score += 1;
-		}
-		else if (sesh.p2.clientid === client.id) {
-			sesh.p2.score += 1;
-		}
-		this.server.to(sesh.roomId).emit('testIncrement', { sesh });
-	}
-	// ----------------- TEST SCORE INCREMENT -----------------
 
 	// ----------------- GAMESTATE UPDATE -----------------
 	@SubscribeMessage('gameStateUpdate')

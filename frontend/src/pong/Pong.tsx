@@ -1,18 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Pong.css';
 import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
 import PongGame from './PongGame';
-
-import {
-	ufGameStart,
-	ufQueueStatus,
-	ufRouteLeaveGame,
-	ufPongLeaveGame,
-	ufTestIncrement
-} from './PongUseEffect';
 
 // max score
 // const MAX_SCORE = 5;
@@ -27,12 +19,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inGame, setInGame] = useState(false);
 	const [gameSession, setGameSession] = useState<GameSession | null>(null);
 
-	ufGameStart(pSock, user, setInQueue, setInGame, setGameSession);
-	ufQueueStatus(pSock, user, setInQueue);
-	ufRouteLeaveGame(pSock, user, setInQueue, setInGame, setGameSession);
-	ufPongLeaveGame(pSock, user, setInQueue, setInGame, setGameSession);
-	ufTestIncrement(pSock, setGameSession);
-
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
 		pSock.emit('joinQueue', { user: user });
@@ -44,18 +30,88 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		setInQueue(false);
 	};
 
-	// const pongLeaveGame = () => {
-	// 	pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
-	// 	pSock.emit('pongLeaveGame');
-	// 	setInQueue(false);
-	// 	setInGame(false);
-	// 	setGameSession(null);
-	// };
+	useEffect(() => {
+		const handleGameStart = ({ sesh }: { sesh: GameSession }) => {
+			pongPrint(`pong.tsx: game start received from server`);
+			if (!sesh) {
+				pongPrint(`pong.tsx: No game session found`);
+				return;
+			}
+			pongPrint(`pong.tsx: Game started`);
+			pongPrint(`pong.tsx: Username: ${user.username} Room ID: ${sesh.roomId}`);
 
-	// const testIncrement = () => {
-	// 	pongPrint(`pong.tsx: testIncrement ${user.username}`);
-	// 	pSock.emit('testIncrement');
-	// };
+			setInQueue(false);
+			setInGame(true);
+			setGameSession(sesh);
+		};
+
+		pSock.on('gameStart', handleGameStart);
+		return () => {
+			pongPrint(`pong.tsx: gameStart useEffect return ${user.username}`);
+			pSock.off('gameStart', handleGameStart);
+		};
+	}, [inGame]);
+
+	useEffect(() => {
+		const handleQueueStatus = ({ success, message }: { success: boolean; message: string }) => {
+			pongPrint(`pong.tsx: Queue status: ${success}, ${message}, ${user.username}`);
+			if (success) {
+				pongPrint(`pong.tsx: Successfully joined queue ${user.id}`);
+				setInQueue(true);
+			} else {
+				pongPrint(`pong.tsx: Failed to join queue ${user.id}`);
+				alert(message);
+			}
+		};
+
+		pSock.on('queueStatus', handleQueueStatus);
+		return () => {
+			pongPrint(`pong.tsx: queueStatus useEffect return ${user.username}`);
+			pSock.off('queueStatus', handleQueueStatus);
+		};
+	}, [inQueue]);
+
+	useEffect(() => {
+		const handleRouteLeaveGame = ({ sesh }: { sesh: GameSession }) => {
+			pongPrint(`pong.tsx routeLeaveGame: received from server`);
+			if (!sesh) {
+				pongPrint(`pong.tsx routeLeaveGame: No game session found`);
+				return;
+			}
+			pongPrint(`pong.tsx routeLeaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			setInGame(false);
+			setInQueue(false);
+			setGameSession(null);
+		};
+
+		pSock.on('routeLeaveGame', handleRouteLeaveGame);
+		return () => {
+			pongPrint(`pong.tsx: routeLeaveGame useEffect return ${user.username}`);
+			pSock.off('routeLeaveGame', handleRouteLeaveGame);
+		};
+	}, [inGame]);
+
+	useEffect(() => {
+		const handlePongLeaveGame = ({ sesh }: { sesh: GameSession }) => {
+			pongPrint(`pong.tsx pongLeaveGame: received from server`);
+			if (!sesh) {
+				pongPrint(`pong.tsx pongLeaveGame: No game session found`);
+				return;
+			}
+			pongPrint(`pong.tsx pongLeaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			setInGame(false);
+			setInQueue(false);
+			setGameSession(null);
+		};
+
+		pSock.on('pongLeaveGame', handlePongLeaveGame);
+		return () => {
+			pongPrint(`pong.tsx: pongLeaveGame useEffect return ${user.username}`);
+			pSock.off('pongLeaveGame', handlePongLeaveGame);
+		};
+	}, [inGame]);
 
 	return (
 		<div className="pong-container">
