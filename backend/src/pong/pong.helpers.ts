@@ -1,5 +1,6 @@
 import { GameSession, User } from './pong.types';
 import { pongPrint } from './pong.constants';
+import { PongC } from './pong.constants';
 
 export function fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string): GameSession {
     pongPrint(`NestJS pong: Filling game session for room ${roomId}`);
@@ -8,13 +9,27 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             clientid: p1.clientId,
             userid: p1.user.id,
             username: p1.user.username,
-            score: 0
+            score: 0,
+            paddle: {
+                x: 50,
+                y: PongC.CANVAS_HEIGHT / 2 - PongC.PADDLE_HEIGHT / 2,
+                width: PongC.PADDLE_WIDTH,
+                height: PongC.PADDLE_HEIGHT,
+                speed: PongC.PADDLE_SPEED
+            }
         },
         p2: {
             clientid: p2.clientId,
             userid: p2.user.id,
             username: p2.user.username,
-            score: 0
+            score: 0,
+            paddle: {
+                x: PongC.CANVAS_WIDTH - 50,
+                y: PongC.CANVAS_HEIGHT / 2 - PongC.PADDLE_HEIGHT / 2,
+                width: PongC.PADDLE_WIDTH,
+                height: PongC.PADDLE_HEIGHT,
+                speed: PongC.PADDLE_SPEED
+            }
         },
         roomId: roomId,
         ball: {
