@@ -79,20 +79,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		
 		printGameSession(sesh);
 		
-		// Emit leaveGame event to the opponent only
-		if (client.id === sesh.p1.clientid) {
-			pongPrint(`NestJS pong leaveGame: Emitting leaveGame to ${sesh.p2.clientid}`);
-			this.server.to(sesh.p2.clientid).emit('leaveGame', { sesh: sesh });
-		} else if (client.id === sesh.p2.clientid) {
-			pongPrint(`NestJS pong leaveGame: Emitting leaveGame to ${sesh.p1.clientid}`);
-			this.server.to(sesh.p1.clientid).emit('leaveGame', { sesh: sesh });
-		}
+		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
 		
+		pongPrint(`NestJS pong leaveGame: after send`);
 		// Remove the game session
 		this.games = removeGameSession(this.games, sesh.roomId);
-		
+		pongPrint(`NestJS pong leaveGame: after remove`);
+
 		// Stop the game loop
 		this.stopGameLoop(sesh);
+		pongPrint(`NestJS pong leaveGame: after stopGameLoop`);
 	}
 
 	private checkQueue() {

@@ -118,23 +118,23 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	}, [pSock, user]);
 
 	useEffect(() => {
-		pSock.on('leaveGame', (data: { sesh: GameSession }) => {
-			pongPrint(`pong.tsx leaveGame: received from server`);
+		pSock.on('gameEnd', (data: { sesh: GameSession }) => {
+			pongPrint(`pong.tsx gameEnd: received from server`);
 			if (!data.sesh) {
-				pongPrint(`pong.tsx leaveGame: No game session found`);
+				pongPrint(`pong.tsx gameEnd: No game session found`);
 				return;
 			}
-			pongPrint(`pong.tsx leaveGame: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
+			pongPrint(`pong.tsx gameEnd: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
 			alert(`${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
 			setInGame(false);
 			setInQueue(false);
 			setGameSession(null);
 		});
 		return () => {
-			pSock.off('leaveGame');
+			pSock.off('gameEnd');
 		};
 	}, [pSock]);
-	
+
 	return (
 		<div className="pong-container">
 			{!inQueue && !inGame && (
