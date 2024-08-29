@@ -136,13 +136,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
 				gameSession.ball.speedY *= -1;
 			}
-			const gameSessionCopy = {
-				roomId: gameSession.roomId,
-				p1: { ...gameSession.p1 },
-				p2: { ...gameSession.p2 },
-				ball: { ...gameSession.ball }
-			};
-			this.server.to(gameSession.roomId).emit('gameUpdate', gameSessionCopy);
+			this.server.to(gameSession.roomId).emit('gameUpdate', gameSession);
 			gameSession.timeoutId = setTimeout(gameLoop, 1000 / 60);
 		};
 		gameSession.timeoutId = setTimeout(gameLoop, 1000 / 60);
