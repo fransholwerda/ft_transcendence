@@ -40,7 +40,7 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             speedX: 5,
             speedY: 5
         },
-        timeoutId: null
+        intervalId: null
     };
     return sesh;
 }

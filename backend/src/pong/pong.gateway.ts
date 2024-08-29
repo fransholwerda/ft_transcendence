@@ -137,17 +137,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				gameSession.ball.speedY *= -1;
 			}
 			this.server.to(gameSession.roomId).emit('gameUpdate', gameSession);
-			gameSession.timeoutId = setTimeout(gameLoop, 1000 / 60);
 		};
-		gameSession.timeoutId = setTimeout(gameLoop, 1000 / 60);
+		gameSession.intervalId = setInterval(gameLoop, 1000 / 60);
 	}
 
 	private stopGameLoop(gameSession: GameSession) {
-		if (gameSession.timeoutId) {
-			clearTimeout(gameSession.timeoutId);
-			gameSession.timeoutId = null;
+		if (gameSession.intervalId) {
+			clearInterval(gameSession.intervalId);
+			gameSession.intervalId = null;
 		}
-	}
+	}	
 
 	@SubscribeMessage('movePaddle')
 	handleMovePaddle(client: Socket, data: { direction: string  }) {

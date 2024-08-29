@@ -28,7 +28,7 @@ export interface GameSession {
 	p2: player;
 	roomId: string;
 	ball: Ball;
-	timeoutId: NodeJS.Timeout;
+	intervalId: NodeJS.Timeout;
 }
 
 export interface User {
