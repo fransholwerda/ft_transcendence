@@ -70,54 +70,33 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	}, [inQueue]);
 
 	useEffect(() => {
-		const handleRouteLeaveGame = ({ sesh }: { sesh: GameSession }) => {
-			pongPrint(`pong.tsx routeLeaveGame: received from server`);
+		const handleLeaveGame = ({ sesh }: { sesh: GameSession }) => {
+			pongPrint(`pong.tsx leaveGame: received from server`);
 			if (!sesh) {
-				pongPrint(`pong.tsx routeLeaveGame: No game session found`);
+				pongPrint(`pong.tsx leaveGame: No game session found`);
 				return;
 			}
-			pongPrint(`pong.tsx routeLeaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
+			pongPrint(`pong.tsx leaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
 			alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
 			setInGame(false);
 			setInQueue(false);
 			setGameSession(null);
 		};
 
-		pSock.on('routeLeaveGame', handleRouteLeaveGame);
+		pSock.on('leaveGame', handleLeaveGame);
 		return () => {
-			pongPrint(`pong.tsx: routeLeaveGame useEffect return ${user.username}`);
-			pSock.off('routeLeaveGame', handleRouteLeaveGame);
+			pongPrint(`pong.tsx: leaveGame useEffect return ${user.username}`);
+			pSock.off('leaveGame', handleLeaveGame);
 		};
 	}, [pSock, user]);
 
-	useEffect(() => {
-		const handlePongLeaveGame = ({ sesh }: { sesh: GameSession }) => {
-			pongPrint(`pong.tsx pongLeaveGame: received from server`);
-			if (!sesh) {
-				pongPrint(`pong.tsx pongLeaveGame: No game session found`);
-				return;
-			}
-			pongPrint(`pong.tsx pongLeaveGame: ${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
-			alert(`${sesh.p1.username}:${sesh.p1.score} - ${sesh.p2.username}:${sesh.p2.score}`);
-			setInGame(false);
-			setInQueue(false);
-			setGameSession(null);
-		};
-
-		pSock.on('pongLeaveGame', handlePongLeaveGame);
-		return () => {
-			pongPrint(`pong.tsx: pongLeaveGame useEffect return ${user.username}`);
-			pSock.off('pongLeaveGame', handlePongLeaveGame);
-		};
-	}, [pSock, user]);
-
-	const pongLeaveGame = () => {
-		pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
-		pSock.emit('pongLeaveGame');
-		setInQueue(false);
-		setInGame(false);
-		setGameSession(null);
-	};
+	// const leaveGame = () => {
+	// 	pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
+	// 	pSock.emit('leaveGame');
+	// 	setInQueue(false);
+	// 	setInGame(false);
+	// 	setGameSession(null);
+	// };
 
 	useEffect(() => {
 		const handleGameUpdate = (updatedSession: GameSession) => {
