@@ -1,6 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MAX_SCORE, pongPrint, PongC } from './pong.constants';
+// import { MAX_SCORE, PongC } from './pong.constants';
 import { GameSession, User } from './pong.types';
 import {
 	fillGameSession,
@@ -121,10 +122,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		printGames(this.games);
 
 		// Start the game loop for the new game session
-		this.startGameLoop(gameSession);
+		// this.startGameLoop(gameSession);
 	}
 
 	private startGameLoop(gameSession: GameSession) {
+		if (gameSession.intervalId) {
+			clearInterval(gameSession.intervalId);
+		}
 		const intervalId = setInterval(() => {
 			gameSession.ball.x += gameSession.ball.speedX;
 			gameSession.ball.y += gameSession.ball.speedY;
