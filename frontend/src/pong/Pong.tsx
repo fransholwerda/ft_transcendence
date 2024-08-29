@@ -38,6 +38,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	// ONE BIG USE EFFECT
 	useEffect(() => {
+		if (!pSock) return;
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 		const context = canvas.getContext('2d');
@@ -94,6 +95,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 		window.addEventListener('keydown', handleKeyDown);
 		const renderGame = () => {
+			if (!context || !gameSession) return
+			pongPrint(`pong.tsx: Rendering game ${user.username}`);
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillStyle = 'black';
 			context.fillRect(0, 0, canvas.width, canvas.height);
@@ -113,7 +116,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			pSock.off('leaveGame');
 			window.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [inQueue, inGame, gameSession]);
+	}, [inQueue, inGame, gameSession, pSock, user]);
 
 	return (
 		<div className="pong-container">
