@@ -63,15 +63,14 @@ const PageManager: React.FC = () => {
     setUser(null);
   };
 
-  // special case for switching out the content
-  const routeLeaveQueue = () => {
+  const leaveQueue = () => {
     console.log('PageManager: Leaving Queue');
-    pSock.emit('routeLeaveQueue');
+    pSock.emit('leaveQueue');
   };
 
-  const routeLeaveGame = () => {
+  const leaveGame = () => {
     console.log('PageManager: Leaving Game');
-    pSock.emit('routeLeaveGame');
+    pSock.emit('leaveGame');
   };
 
   useEffect(() => {
@@ -90,8 +89,8 @@ const PageManager: React.FC = () => {
       console.log('PageManager: LocationHandler useEffect');
       if (!location.pathname.includes('/pong')) {
         console.log('PageManager: Not at pong page', user?.username);
-        routeLeaveQueue();
-        routeLeaveGame();
+        leaveQueue();
+        leaveGame();
       }
     }, [location.pathname]);
     return null;

@@ -1,8 +1,17 @@
+export interface Paddle {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	speed: number;
+}
+
 export interface player {
 	clientid: string;
 	userid: string;
 	username: string;
 	score: number;
+	paddle: Paddle;
 }
 
 export interface Ball {
