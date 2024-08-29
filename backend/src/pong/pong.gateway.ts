@@ -16,6 +16,7 @@ import {
 	disconnectFromGame,
 	removeGameSession
 } from './pong.helpers';
+import { time } from 'console';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -126,10 +127,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private startGameLoop(gameSession: GameSession) {
-		if (gameSession.intervalId) {
-			clearInterval(gameSession.intervalId);
-		}
-		const intervalId = setInterval(() => {
+		const gameLoop = () => {
 			gameSession.ball.x += gameSession.ball.speedX;
 			gameSession.ball.y += gameSession.ball.speedY;
 			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
@@ -138,22 +136,22 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
 				gameSession.ball.speedY *= -1;
 			}
-			// Create a shallow copy of the gameSession object
 			const gameSessionCopy = {
-				...gameSession,
+				roomId: gameSession.roomId,
 				p1: { ...gameSession.p1 },
 				p2: { ...gameSession.p2 },
 				ball: { ...gameSession.ball }
 			};
 			this.server.to(gameSession.roomId).emit('gameUpdate', gameSessionCopy);
-		}, 1000 / 10);
-		gameSession.intervalId = intervalId;
+			gameSession.timeoutId = setTimeout(gameLoop, 1000 / 60);
+		};
+		gameSession.timeoutId = setTimeout(gameLoop, 1000 / 60);
 	}
-	
+
 	private stopGameLoop(gameSession: GameSession) {
-		// Clear the interval when the game ends
-		if (gameSession.intervalId) {
-			clearInterval(gameSession.intervalId);
+		if (gameSession.timeoutId) {
+			clearTimeout(gameSession.timeoutId);
+			gameSession.timeoutId = null;
 		}
 	}
 
