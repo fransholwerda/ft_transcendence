@@ -114,7 +114,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	
 	useEffect(() => {
 		let lastKeyPressTime = 0;
-		const keyPressInterval = 10;
+		const keyPressInterval = 50;
 	
 		const handleKeyDown = (event: KeyboardEvent) => {
 			const currentTime = Date.now();

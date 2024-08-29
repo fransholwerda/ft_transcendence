@@ -76,7 +76,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			sesh.p1.score = MAX_SCORE;
 		}
 		printGameSession(sesh);
-		this.server.to(sesh.roomId).emit('leaveGame', { sesh: sesh });
+		// this.server.to(sesh.roomId).emit('leaveGame', { sesh: sesh });
+		if (client.id === sesh.p1.clientid) {
+			this.server.to(sesh.p2.clientid).emit('leaveGame', { sesh: sesh });
+		}
+		else if (client.id === sesh.p2.clientid) {
+			this.server.to(sesh.p1.clientid).emit('leaveGame', { sesh: sesh });
+		}
 		this.games = removeGameSession(this.games, sesh.roomId);
 	}
 
