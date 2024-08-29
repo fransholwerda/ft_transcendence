@@ -119,18 +119,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.startGameLoop(gameSession);
 	}
 
-	@SubscribeMessage('gameUpdate')
-	handleGameStateUpdate(client: Socket, data: { sesh: GameSession }) {
-		pongPrint(`NestJS pong gameStateUpdate : emit received from ${client.id}`);
-		const sesh = findGameSessionByClientId(this.games, client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong gameStateUpdate: ${client.id} gameStateUpdate !sesh`);
-			return;
-		}
-		sesh.ball = data.sesh.ball;
-		this.server.to(sesh.roomId).emit('gameUpdate', { sesh });
-	}
-
 	private startGameLoop(gameSession: GameSession) {
 		const intervalId = setInterval(() => {
 			gameSession.ball.x += gameSession.ball.speedX;
