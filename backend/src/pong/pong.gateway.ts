@@ -1,6 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MAX_SCORE, pongPrint, PongC } from './pong.constants';
+// import { MAX_SCORE, PongC } from './pong.constants';
 import { GameSession, User } from './pong.types';
 import {
 	fillGameSession,
@@ -53,56 +54,42 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
-	@SubscribeMessage('routeLeaveQueue')
-	handleRouteLeaveQueue(client: Socket) {
+	@SubscribeMessage('leaveQueue')
+	handleLeaveQueue(client: Socket) {
 		pongPrint(`NestJS pong: ${client.id} left the queue`);
 		this.queue = removeFromQueue(this.queue, client.id);
 	}
-
-	@SubscribeMessage('pongLeaveQueue')
-	handlePongLeaveQueue(client: Socket) {
-		pongPrint(`NestJS pong: ${client.id} left the queue`);
-		this.queue = removeFromQueue(this.queue, client.id);
-	}
-
-	@SubscribeMessage('routeLeaveGame')
-	handleRouteLeaveGame(client: Socket) {
-		pongPrint(`NestJS pong routeLeaveGame: ${client.id}`);
+	
+	@SubscribeMessage('leaveGame')
+	handleLeaveGame(client: Socket) {
+		pongPrint(`NestJS pong leaveGame: ${client.id}`);
 		const sesh = findGameSessionByClientId(this.games, client.id);
 		if (!sesh) {
-			pongPrint(`NestJS pong routeLeaveGame: ${client.id} leaveGame listener !sesh`);
+			pongPrint(`NestJS pong leaveGame: ${client.id} leaveGame listener !sesh`);
 			return;
 		}
-		pongPrint(`NestJS pong routeLeaveGame: ${sesh.roomId}`);
-		pongPrint(`NestJS pong routeLeaveGame: ${client.id} left room ${sesh.roomId}`);
+		pongPrint(`NestJS pong leaveGame: ${sesh.roomId}`);
+		pongPrint(`NestJS pong leaveGame: ${client.id} left room ${sesh.roomId}`);
+		
+		// Update the score of the opponent
 		if (sesh.p1.clientid === client.id) {
 			sesh.p2.score = MAX_SCORE;
-		}
-		else if (sesh.p2.clientid === client.id) {
+		} else if (sesh.p2.clientid === client.id) {
 			sesh.p1.score = MAX_SCORE;
 		}
+		
+		printGameSession(sesh);
+		
+		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
+		
+		pongPrint(`NestJS pong leaveGame: after send`);
+		// Remove the game session
 		this.games = removeGameSession(this.games, sesh.roomId);
-		this.server.to(sesh.roomId).emit('routeLeaveGame', { sesh });
-	}
+		pongPrint(`NestJS pong leaveGame: after remove`);
 
-	@SubscribeMessage('pongLeaveGame')
-	handlePongLeaveGame(client: Socket) {
-		pongPrint(`NestJS pong pongLeaveGame: ${client.id}`);
-		const sesh = findGameSessionByClientId(this.games, client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong pongLeaveGame: ${client.id} leaveGame listener !sesh`);
-			return;
-		}
-		pongPrint(`NestJS pong pongLeaveGame: ${sesh.roomId}`);
-		pongPrint(`NestJS pong pongLeaveGame: ${client.id} left room ${sesh.roomId}`);
-		if (sesh.p1.clientid === client.id) {
-			sesh.p2.score = MAX_SCORE;
-		}
-		else if (sesh.p2.clientid === client.id) {
-			sesh.p1.score = MAX_SCORE;
-		}
-		this.games = removeGameSession(this.games, sesh.roomId);
-		this.server.to(sesh.roomId).emit('pongLeaveGame', { sesh });
+		// Stop the game loop
+		this.stopGameLoop(sesh);
+		pongPrint(`NestJS pong leaveGame: after stopGameLoop`);
 	}
 
 	private checkQueue() {
@@ -135,69 +122,51 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		printGames(this.games);
 
 		// Start the game loop for the new game session
-		this.startGameLoop(gameSession);
+		// this.startGameLoop(gameSession);
 	}
-
-	// ----------------- TEST SCORE INCREMENT -----------------
-	@SubscribeMessage('testIncrement')
-	handleTestIncrement(client: Socket) {
-		pongPrint(`NestJS pong testIncrement : emit received from ${client.id}`);
-		const sesh = findGameSessionByClientId(this.games, client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong testIncrement: ${client.id} testIncrement !sesh`);
-			return;
-		}
-		if (sesh.p1.clientid === client.id) {
-			sesh.p1.score += 1;
-		}
-		else if (sesh.p2.clientid === client.id) {
-			sesh.p2.score += 1;
-		}
-		this.server.to(sesh.roomId).emit('testIncrement', { sesh });
-	}
-	// ----------------- TEST SCORE INCREMENT -----------------
-
-	// ----------------- GAMESTATE UPDATE -----------------
-	@SubscribeMessage('gameStateUpdate')
-	handleGameStateUpdate(client: Socket, data: { sesh: GameSession }) {
-		pongPrint(`NestJS pong gameStateUpdate : emit received from ${client.id}`);
-		const sesh = findGameSessionByClientId(this.games, client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong gameStateUpdate: ${client.id} gameStateUpdate !sesh`);
-			return;
-		}
-		sesh.ball = data.sesh.ball;
-
-		this.server.to(sesh.roomId).emit('gameStateUpdate', { sesh });
-	}
-	// ----------------- GAMESTATE UPDATE -----------------
 
 	private startGameLoop(gameSession: GameSession) {
+		if (gameSession.intervalId) {
+			clearInterval(gameSession.intervalId);
+		}
 		const intervalId = setInterval(() => {
-			// Update ball position
 			gameSession.ball.x += gameSession.ball.speedX;
 			gameSession.ball.y += gameSession.ball.speedY;
-
-			// Emit the updated game state to the clients
-			this.server.to(gameSession.roomId).emit('gameStateUpdate', gameSession);
-
-			// Check for collisions with the walls and reverse direction if necessary
 			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
 				gameSession.ball.speedX *= -1;
 			}
 			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
 				gameSession.ball.speedY *= -1;
 			}
-		}, (1000 / 60));
-
-		// Store the interval ID in the game session for future reference (e.g., to clear the interval when the game ends)
+			this.server.to(gameSession.roomId).emit('gameUpdate', gameSession);
+	
+		}, 1000 / 60);
 		gameSession.intervalId = intervalId;
 	}
-
+	
 	private stopGameLoop(gameSession: GameSession) {
-		const intervalId = gameSession.intervalId;
-		if (intervalId) {
-			clearInterval(intervalId);
+		// Clear the interval when the game ends
+		if (gameSession.intervalId) {
+			clearInterval(gameSession.intervalId);
+		}
+	}
+
+	@SubscribeMessage('movePaddle')
+	handleMovePaddle(client: Socket, data: { direction: string  }) {
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) return;
+		let paddle;
+		if (sesh.p1.clientid === client.id) {
+			paddle = sesh.p1.paddle;
+		} else if (sesh.p2.clientid === client.id) {
+			paddle = sesh.p2.paddle;
+		}
+		if (!paddle) return;
+		const paddleSpeed = 20;
+		if (data.direction === 'w') {
+			paddle.y = Math.max(0, paddle.y - paddleSpeed); // Move up
+		} else if (data.direction === 's') {
+			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed); // Move down
 		}
 	}
 }
