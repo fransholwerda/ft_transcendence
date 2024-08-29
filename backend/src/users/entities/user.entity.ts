@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, ManyToMany, JoinTable, OneToMany, ManyToOne } from 'typeorm';
 
 @Entity('Users')
 export class User {
@@ -23,4 +23,16 @@ export class User {
 
 	@Column({ type: 'int' })
 	matchesWon: number;
+
+	@OneToMany(() => User, user => user.friends)
+	friends: User[];
+
+	@ManyToOne(() => User, friendedBy => friendedBy.id)
+	friendedBy: User[];
+
+	@OneToMany(() => User, user => user.ignores)
+	ignores: User[];
+
+	@ManyToOne(() => User, ignoredBy => ignoredBy.id)
+	ignoredBy: User[];
 }

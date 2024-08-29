@@ -40,7 +40,10 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return this.userRepository.findOne({where: {id: id}});
+	if (this.userRepository.findOne({where: {id: id}}))
+    	return this.userRepository.findOne({where: {id: id}});
+	else
+		throw Error;
   }
 
   //This function yeets and deletes a passed user from the database.
@@ -53,4 +56,14 @@ export class UsersService {
 	const updatedUserData = this.userRepository.merge(existingUser, updateUserDto);
 	return await this.userRepository.save(updatedUserData);
   }
+
+  async addFriend(userID: number, friendID: number): Promise<void> {
+	const user = await this.userRepository.findOne({where: {id: userID}});
+	const friend = await this.userRepository.findOne({where: {id: friendID}});
+	if (!user || !friend){
+		throw new Error('User or friend not found');
+  	}
+	user.friends.push(friend);
+	await this.userRepository.save(user);
+	}
 }

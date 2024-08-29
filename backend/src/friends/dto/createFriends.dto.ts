@@ -1,6 +1,6 @@
-export class AddFriend {
+// export class AddFriend {
 
-	user: number;
+// 	followerID: number;
+// 	friendID: number;
 
-	friend: number;
-}
+// }
