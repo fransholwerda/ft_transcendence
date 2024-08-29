@@ -22,9 +22,9 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		pSock.emit('joinQueue', { user: user });
 	};
 
-	const pongLeaveQueue = () => {
+	const leaveQueue = () => {
 		pongPrint(`pong.tsx: ${user.username} Leaving queue ${gameSession?.roomId ?? 'N/A'}`);
-		pSock.emit('pongLeaveQueue');
+		pSock.emit('leaveQueue');
 		setInQueue(false);
 	};
 
@@ -90,13 +90,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [pSock, user]);
 
-	// const leaveGame = () => {
-	// 	pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
-	// 	pSock.emit('leaveGame');
-	// 	setInQueue(false);
-	// 	setInGame(false);
-	// 	setGameSession(null);
-	// };
+	const leaveGame = () => {
+		pongPrint(`pong.tsx: ${user.username} Leaving game ${gameSession?.roomId ?? 'N/A'}`);
+		pSock.emit('leaveGame');
+		setInQueue(false);
+		setInGame(false);
+		setGameSession(null);
+	};
 
 	useEffect(() => {
 		const handleGameUpdate = (updatedSession: GameSession) => {
@@ -176,7 +176,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					<h6>User id: {user.id}</h6>
 					<h6>Username: {user.username}</h6>
 					<p>Waiting for opponent...</p>
-					<button className="leave-queue-btn" onClick={pongLeaveQueue}>
+					<button className="leave-queue-btn" onClick={leaveQueue}>
 						Leave Queue
 					</button>
 				</>
@@ -185,7 +185,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				<div className="game-screen">
 					<h6>Game room: {gameSession.roomId}</h6>
 					<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
-					<button onClick={pongLeaveGame}>
+					<button onClick={leaveGame}>
 						Leave Game
 					</button>
 				</div>
