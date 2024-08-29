@@ -38,6 +38,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	// ONE BIG USE EFFECT
 	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		const context = canvas.getContext('2d');
+		if (!context) return;
+		let lastKeyPressTime = 0;
+		const keyPressInterval = 100;
+
 		pSock.on('gameUpdate', (updatedSession: GameSession) => {
 			setGameSession(updatedSession);
 		});
@@ -76,63 +83,36 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setInQueue(false);
 			setGameSession(null);
 		});
+		window.addEventListener('keydown', (e: KeyboardEvent) => {
+			const cur = Date.now();
+			if (cur - lastKeyPressTime > keyPressInterval) {
+				lastKeyPressTime = cur;
+				if (e.key === 'w' || e.key === 's') {
+					pSock.emit('movePaddle', { direction: e.key });
+				}
+			}
+		});
+		const renderGame = () => {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = 'black';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			const gs = gameSession;
+			if (!gs) return;
+			context.fillStyle = 'white';
+			context.fillRect(gs.ball.x, gs.ball.y, gs.ball.width, gs.ball.height);
+			context.fillRect(gs.p1.paddle.x, gs.p1.paddle.y, gs.p1.paddle.width, gs.p1.paddle.height);
+			context.fillRect(gs.p2.paddle.x, gs.p2.paddle.y, gs.p2.paddle.width, gs.p2.paddle.height);
+		};
+		renderGame();
 		return () => {
 			pongPrint(`pong.tsx: gameStart useEffect return ${user.username}`);
 			pSock.off('gameUpdate');
 			pSock.off('gameStart');
 			pSock.off('queueStatus');
 			pSock.off('leaveGame');
+			window.removeEventListener('keydown');
 		};
 	}, []);
-	
-	// GAME USE EFFECTS
-	useEffect(() => {
-		let lastKeyPressTime = 0;
-		const keyPressInterval = 50;
-	
-		const handleKeyDown = (event: KeyboardEvent) => {
-			const currentTime = Date.now();
-			if (currentTime - lastKeyPressTime > keyPressInterval) {
-				lastKeyPressTime = currentTime;
-				if (event.key === 'w' || event.key === 's') {
-					pSock.emit('movePaddle', { direction: event.key });
-				}
-			}
-		};
-	
-		window.addEventListener('keydown', handleKeyDown);
-	
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
-	}, []);
-
-	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (!canvas) return;
-		const context = canvas.getContext('2d');
-		if (!context) return;
-	
-		const renderGame = () => {
-			context.clearRect(0, 0, canvas.width, canvas.height);
-			context.fillStyle = 'black';
-			context.fillRect(0, 0, canvas.width, canvas.height);
-	
-			// Draw the ball
-			const gs = gameSession;
-			if (!gs) return;
-			context.fillStyle = 'white';
-			context.fillRect(gs.ball.x, gs.ball.y, gs.ball.width, gs.ball.height);
-	
-			// Draw paddles
-			context.fillRect(gs.p1.paddle.x, gs.p1.paddle.y, gs.p1.paddle.width, gs.p1.paddle.height);
-			context.fillRect(gs.p2.paddle.x, gs.p2.paddle.y, gs.p2.paddle.width, gs.p2.paddle.height);
-		};
-	
-		renderGame();
-	
-		return () => renderGame();
-	}, [gameSession]);
 
 	return (
 		<div className="pong-container">

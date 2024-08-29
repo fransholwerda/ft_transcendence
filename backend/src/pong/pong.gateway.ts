@@ -69,21 +69,30 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		pongPrint(`NestJS pong leaveGame: ${sesh.roomId}`);
 		pongPrint(`NestJS pong leaveGame: ${client.id} left room ${sesh.roomId}`);
+		
+		// Update the score of the opponent
 		if (sesh.p1.clientid === client.id) {
 			sesh.p2.score = MAX_SCORE;
-		}
-		else if (sesh.p2.clientid === client.id) {
+		} else if (sesh.p2.clientid === client.id) {
 			sesh.p1.score = MAX_SCORE;
 		}
+		
 		printGameSession(sesh);
-		// this.server.to(sesh.roomId).emit('leaveGame', { sesh: sesh });
+		
+		// Emit leaveGame event to the opponent only
 		if (client.id === sesh.p1.clientid) {
+			pongPrint(`NestJS pong leaveGame: Emitting leaveGame to ${sesh.p2.clientid}`);
 			this.server.to(sesh.p2.clientid).emit('leaveGame', { sesh: sesh });
-		}
-		else if (client.id === sesh.p2.clientid) {
+		} else if (client.id === sesh.p2.clientid) {
+			pongPrint(`NestJS pong leaveGame: Emitting leaveGame to ${sesh.p1.clientid}`);
 			this.server.to(sesh.p1.clientid).emit('leaveGame', { sesh: sesh });
 		}
+		
+		// Remove the game session
 		this.games = removeGameSession(this.games, sesh.roomId);
+		
+		// Stop the game loop
+		this.stopGameLoop(sesh);
 	}
 
 	private checkQueue() {
@@ -153,7 +162,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			paddle = sesh.p2.paddle;
 		}
 		if (!paddle) return;
-		const paddleSpeed = 5; // Adjust the speed as needed
+		const paddleSpeed = 20;
 		if (data.direction === 'w') {
 			paddle.y = Math.max(0, paddle.y - paddleSpeed); // Move up
 		} else if (data.direction === 's') {
