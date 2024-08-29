@@ -1,6 +1,6 @@
-export class AddBlockedUser {
+// export class AddBlockedUser {
 
-	user: number;
+// 	user: number;
 
-	blockedUser: number;
-}
+// 	blockedUser: number;
+// }

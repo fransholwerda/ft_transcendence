@@ -24,15 +24,19 @@ export class User {
 	@Column({ type: 'int' })
 	matchesWon: number;
 
-	@OneToMany(() => User, user => user.friends)
+
+	@ManyToMany(() => User, user => user.friends)
+	@JoinTable()
 	friends: User[];
 
-	@ManyToOne(() => User, friendedBy => friendedBy.id)
+	@ManyToMany(() => User, user=> user.friendedBy)
 	friendedBy: User[];
 
-	@OneToMany(() => User, user => user.ignores)
-	ignores: User[];
+	@ManyToMany(() => User, user => user.ignoredUsers)
+	@JoinTable()
+	ignoredUsers: User[];
 
-	@ManyToOne(() => User, ignoredBy => ignoredBy.id)
+	@ManyToMany(() => User, user => user.ignoredBy)
 	ignoredBy: User[];
+
 }

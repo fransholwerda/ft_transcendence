@@ -39,7 +39,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
+  findUser(id: number) {
 	if (this.userRepository.findOne({where: {id: id}}))
     	return this.userRepository.findOne({where: {id: id}});
 	else
@@ -52,7 +52,7 @@ export class UsersService {
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-	const existingUser =  await this.findOne(id);
+	const existingUser =  await this.findUser(id);
 	const updatedUserData = this.userRepository.merge(existingUser, updateUserDto);
 	return await this.userRepository.save(updatedUserData);
   }
@@ -60,10 +60,44 @@ export class UsersService {
   async addFriend(userID: number, friendID: number): Promise<void> {
 	const user = await this.userRepository.findOne({where: {id: userID}});
 	const friend = await this.userRepository.findOne({where: {id: friendID}});
-	if (!user || !friend){
-		throw new Error('User or friend not found');
-  	}
+
+	if (!user || !friend) {
+		throw new Error ('User or friend not found');
+	}
+
 	user.friends.push(friend);
-	await this.userRepository.save(user);
+	friend.friendedBy.push(friend);
+
+	await Promise.all([this.userRepository.save(user), this.userRepository.save(friend)]);
+  }
+
+	async removeFriend(userID: number, friendID: number) {
+		const user = await this.userRepository.findOne({where: {id: userID}});
+		const friend = await this.userRepository.findOne({where: {id: friendID}});
+
+		if (!user || !friend) {
+			throw new Error ('User or friend not found');
+		}
+	
+		user.friends = user.friends.filter(user => user.id !== friendID);
+		friend.friendedBy = friend.friendedBy.filter(user => user.id !== userID);
+
+		await Promise.all([this.userRepository.save(user), this.userRepository.save(friend)]);
+	}
+
+	async getFriends(userID: number) {
+		return this.userRepository.createQueryBuilder('user')
+		.leftJoinAndSelect('user.friends', 'friend')
+		.where('user.id = :userID', { userID })
+		.select(['friend.id', 'friend.username'])
+		.getMany();
+	}
+
+	async getFriendedBy(userID: number) {
+		return this.userRepository.createQueryBuilder('user')
+		.leftJoinAndSelect('user.friendedBy', 'follower')
+		.where('follower.id = :userID', { userID} )
+		.select(['folloewr.id', 'follower.username'])
+		.getMany();
 	}
 }
