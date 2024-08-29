@@ -49,29 +49,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	// 	pSock.on('gameUpdate', (updatedSession: GameSession) => {
 	// 		setGameSession(updatedSession);
 	// 	});
-	// 	pSock.on('gameStart', (data: { sesh: GameSession }) => {
-	// 		pongPrint(`pong.tsx: game start received from server`);
-	// 		if (!data.sesh) {
-	// 			pongPrint(`pong.tsx: No game session found`);
-	// 			return;
-	// 		}
-	// 		pongPrint(`pong.tsx: Game started`);
-	// 		pongPrint(`pong.tsx: Username: ${user.username} Room ID: ${data.sesh.roomId}`);
-
-	// 		setInQueue(false);
-	// 		setInGame(true);
-	// 		setGameSession(data.sesh);
-	// 	});
-	// 	pSock.on('queueStatus', ({ success, message }) => {
-	// 		console.log('pong.tsx: Queue status:', success, message, user.username);
-	// 		if (success) {
-	// 			pongPrint(`pong.tsx: Successfully joined queue ${user.id}`);
-	// 			setInQueue(true);
-	// 		} else {
-	// 			pongPrint(`pong.tsx: Failed to join queue ${user.id}`);
-	// 			alert(message);
-	// 		}
-	// 	});
 	// 	pSock.on('leaveGame', (data: { sesh: GameSession }) => {
 	// 		pongPrint(`pong.tsx leaveGame: received from server`);
 	// 		if (!data.sesh) {
@@ -112,7 +89,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	// 		pongPrint(`pong.tsx: gameStart useEffect return ${user.username}`);
 	// 		pSock.off('gameUpdate');
 	// 		pSock.off('gameStart');
-	// 		pSock.off('queueStatus');
 	// 		pSock.off('leaveGame');
 	// 		window.removeEventListener('keydown', handleKeyDown);
 	// 	};
@@ -120,7 +96,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	useEffect(() => {
 		if (!pSock) return;
-	
 		pSock.on('queueStatus', ({ success, message }) => {
 			console.log('pong.tsx: Queue status:', success, message, user.username);
 			if (success) {
@@ -131,9 +106,27 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				alert(message);
 			}
 		});
-	
 		return () => {
 			pSock.off('queueStatus');
+		};
+	}, [pSock, user]);
+
+	useEffect(() => {
+		pSock.on('gameStart', (data: { sesh: GameSession }) => {
+			pongPrint(`pong.tsx: game start received from server`);
+			if (!data.sesh) {
+				pongPrint(`pong.tsx: No game session found`);
+				return;
+			}
+			pongPrint(`pong.tsx: Game started`);
+			pongPrint(`pong.tsx: Username: ${user.username} Room ID: ${data.sesh.roomId}`);
+
+			setInQueue(false);
+			setInGame(true);
+			setGameSession(data.sesh);
+		});
+		return () => {
+			pSock.off('gameStart');
 		};
 	}, [pSock, user]);
 
