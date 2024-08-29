@@ -36,19 +36,9 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		setGameSession(null);
 	};
 
-	// ONE BIG USE EFFECT
 	// useEffect(() => {
-	// 	if (!pSock) return;
-	// 	const canvas = canvasRef.current;
-	// 	if (!canvas) return;
-	// 	const context = canvas.getContext('2d');
-	// 	if (!context) return;
 	// 	let lastKeyPressTime = 0;
 	// 	const keyPressInterval = 100;
-
-	// 	pSock.on('gameUpdate', (updatedSession: GameSession) => {
-	// 		setGameSession(updatedSession);
-	// 	});
 	// 	const handleKeyDown = (e: KeyboardEvent) => {
 	// 		const cur = Date.now();
 	// 		if (cur - lastKeyPressTime > keyPressInterval) {
@@ -59,27 +49,10 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	// 		}
 	// 	};
 	// 	window.addEventListener('keydown', handleKeyDown);
-	// 	const renderGame = () => {
-	// 		if (!context || !gameSession) return
-	// 		pongPrint(`pong.tsx: Rendering game ${user.username}`);
-	// 		context.clearRect(0, 0, canvas.width, canvas.height);
-	// 		context.fillStyle = 'black';
-	// 		context.fillRect(0, 0, canvas.width, canvas.height);
-	// 		const gs = gameSession;
-	// 		if (!gs) return;
-	// 		context.fillStyle = 'white';
-	// 		context.fillRect(gs.ball.x, gs.ball.y, gs.ball.width, gs.ball.height);
-	// 		context.fillRect(gs.p1.paddle.x, gs.p1.paddle.y, gs.p1.paddle.width, gs.p1.paddle.height);
-	// 		context.fillRect(gs.p2.paddle.x, gs.p2.paddle.y, gs.p2.paddle.width, gs.p2.paddle.height);
-	// 	};
-	// 	renderGame();
 	// 	return () => {
-	// 		pongPrint(`pong.tsx: gameStart useEffect return ${user.username}`);
-	// 		pSock.off('gameUpdate');
-	// 		pSock.off('gameStart');
 	// 		window.removeEventListener('keydown', handleKeyDown);
 	// 	};
-	// }, [inQueue, inGame, gameSession, pSock, user]);
+	// }, [pSock]);
 
 	useEffect(() => {
 		if (!pSock) return;
@@ -134,6 +107,37 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			pSock.off('gameEnd');
 		};
 	}, [pSock]);
+
+	useEffect(() => {
+		pSock.on('gameUpdate', (updatedSession: GameSession) => {
+			setGameSession(updatedSession);
+		});
+		return () => {
+			pSock.off('gameUpdate');
+		};
+	}, [pSock]);
+
+	useEffect(() => {
+		if (!pSock) return;
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		const context = canvas.getContext('2d');
+		if (!context) return;
+		const renderGame = () => {
+			if (!context || !gameSession) return
+			pongPrint(`pong.tsx: Rendering game ${user.username}`);
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = 'black';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			const gs = gameSession;
+			if (!gs) return;
+			context.fillStyle = 'white';
+			context.fillRect(gs.ball.x, gs.ball.y, gs.ball.width, gs.ball.height);
+			context.fillRect(gs.p1.paddle.x, gs.p1.paddle.y, gs.p1.paddle.width, gs.p1.paddle.height);
+			context.fillRect(gs.p2.paddle.x, gs.p2.paddle.y, gs.p2.paddle.width, gs.p2.paddle.height);
+		};
+		renderGame();
+	}, [gameSession]);
 
 	return (
 		<div className="pong-container">
