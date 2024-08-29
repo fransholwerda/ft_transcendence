@@ -49,18 +49,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	// 	pSock.on('gameUpdate', (updatedSession: GameSession) => {
 	// 		setGameSession(updatedSession);
 	// 	});
-	// 	pSock.on('leaveGame', (data: { sesh: GameSession }) => {
-	// 		pongPrint(`pong.tsx leaveGame: received from server`);
-	// 		if (!data.sesh) {
-	// 			pongPrint(`pong.tsx leaveGame: No game session found`);
-	// 			return;
-	// 		}
-	// 		pongPrint(`pong.tsx leaveGame: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-	// 		alert(`${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-	// 		setInGame(false);
-	// 		setInQueue(false);
-	// 		setGameSession(null);
-	// 	});
 	// 	const handleKeyDown = (e: KeyboardEvent) => {
 	// 		const cur = Date.now();
 	// 		if (cur - lastKeyPressTime > keyPressInterval) {
@@ -89,7 +77,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	// 		pongPrint(`pong.tsx: gameStart useEffect return ${user.username}`);
 	// 		pSock.off('gameUpdate');
 	// 		pSock.off('gameStart');
-	// 		pSock.off('leaveGame');
 	// 		window.removeEventListener('keydown', handleKeyDown);
 	// 	};
 	// }, [inQueue, inGame, gameSession, pSock, user]);
@@ -130,6 +117,24 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [pSock, user]);
 
+	useEffect(() => {
+		pSock.on('leaveGame', (data: { sesh: GameSession }) => {
+			pongPrint(`pong.tsx leaveGame: received from server`);
+			if (!data.sesh) {
+				pongPrint(`pong.tsx leaveGame: No game session found`);
+				return;
+			}
+			pongPrint(`pong.tsx leaveGame: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
+			alert(`${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
+			setInGame(false);
+			setInQueue(false);
+			setGameSession(null);
+		});
+		return () => {
+			pSock.off('leaveGame');
+		};
+	}, [pSock]);
+	
 	return (
 		<div className="pong-container">
 			{!inQueue && !inGame && (
