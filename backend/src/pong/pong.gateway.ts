@@ -122,7 +122,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		printGames(this.games);
 
 		// Start the game loop for the new game session
-		// this.startGameLoop(gameSession);
+		this.startGameLoop(gameSession);
 	}
 
 	private startGameLoop(gameSession: GameSession) {
@@ -138,9 +138,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
 				gameSession.ball.speedY *= -1;
 			}
-			this.server.to(gameSession.roomId).emit('gameUpdate', gameSession);
-	
-		}, 1000 / 60);
+			// Create a shallow copy of the gameSession object
+			const gameSessionCopy = {
+				...gameSession,
+				p1: { ...gameSession.p1 },
+				p2: { ...gameSession.p2 },
+				ball: { ...gameSession.ball }
+			};
+			this.server.to(gameSession.roomId).emit('gameUpdate', gameSessionCopy);
+		}, 1000 / 10);
 		gameSession.intervalId = intervalId;
 	}
 	
