@@ -87,10 +87,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// Remove the game session
 		this.games = removeGameSession(this.games, sesh.roomId);
 		pongPrint(`NestJS pong leaveGame: after remove`);
-
-		// Stop the game loop
-		this.stopGameLoop(sesh);
-		pongPrint(`NestJS pong leaveGame: after stopGameLoop`);
 	}
 
 	private checkQueue() {
@@ -121,32 +117,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.in(p2.clientId).socketsJoin(roomId);
 		pongPrint(`NestJS pong checkQueue: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		printGames(this.games);
-
-		// Start the game loop for the new game session
-		this.startGameLoop(gameSession);
 	}
-
-	private startGameLoop(gameSession: GameSession) {
-		const gameLoop = () => {
-			gameSession.ball.x += gameSession.ball.speedX;
-			gameSession.ball.y += gameSession.ball.speedY;
-			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
-				gameSession.ball.speedX *= -1;
-			}
-			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
-				gameSession.ball.speedY *= -1;
-			}
-			this.server.to(gameSession.roomId).emit('gameUpdate', gameSession);
-		};
-		gameSession.intervalId = setInterval(gameLoop, 1000 / 60);
-	}
-
-	private stopGameLoop(gameSession: GameSession) {
-		if (gameSession.intervalId) {
-			clearInterval(gameSession.intervalId);
-			gameSession.intervalId = null;
-		}
-	}	
 
 	@SubscribeMessage('movePaddle')
 	handleMovePaddle(client: Socket, data: { direction: string  }) {
