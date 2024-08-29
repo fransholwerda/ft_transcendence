@@ -83,7 +83,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setInQueue(false);
 			setGameSession(null);
 		});
-		window.addEventListener('keydown', (e: KeyboardEvent) => {
+		const handleKeyDown = (e: KeyboardEvent) => {
 			const cur = Date.now();
 			if (cur - lastKeyPressTime > keyPressInterval) {
 				lastKeyPressTime = cur;
@@ -91,7 +91,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					pSock.emit('movePaddle', { direction: e.key });
 				}
 			}
-		});
+		};
+		window.addEventListener('keydown', handleKeyDown);
 		const renderGame = () => {
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillStyle = 'black';
@@ -110,9 +111,9 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			pSock.off('gameStart');
 			pSock.off('queueStatus');
 			pSock.off('leaveGame');
-			window.removeEventListener('keydown');
+			window.removeEventListener('keydown', handleKeyDown);
 		};
-	}, []);
+	}, [inQueue, inGame, gameSession]);
 
 	return (
 		<div className="pong-container">
