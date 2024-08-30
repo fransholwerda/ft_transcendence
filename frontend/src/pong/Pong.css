@@ -84,7 +84,7 @@
 
 .game-screen .player-score {
 	display: flex;
-	justify-content: space-between;
+	justify-content: center;
 	align-items: center;
 }
 

@@ -165,8 +165,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					{/* <h6>Game room: {gameSession.roomId}</h6> */}
 					<h3>{pSock.id}</h3>
 					<div className="player-score">
-						<h6>{gameSession.p1.username}:{gameSession.p1.score}</h6>
-						<h6>{gameSession.p2.score}:{gameSession.p2.username}</h6>
+						<h6>{gameSession.p1.username}:{gameSession.p1.score}        -        {gameSession.p2.score}:{gameSession.p2.username}</h6>
 					</div>
 					<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
 					<button onClick={leaveGame}>
