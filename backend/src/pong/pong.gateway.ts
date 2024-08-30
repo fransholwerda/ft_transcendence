@@ -141,5 +141,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed); // Move down
 		}
 	}
+
+	@SubscribeMessage('requestGameUpdate')
+	handleRequestGameUpdate(client: Socket) {
+		pongPrint(`NestJS pong: ${client.id}: requested game update`);
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong: ${client.id}: cant find game for request`);
+			return;
+		}
+		this.server.to(sesh.roomId).emit('gameUpdate', { sesh });
+	}
 }
 

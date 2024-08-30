@@ -139,6 +139,18 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		renderGame();
 	}, [gameSession]);
 
+	// game loop for requesting a game update
+	useEffect(() => {
+		if (!pSock) return;
+		if (!inGame) return;
+		const intervalId = setInterval(() => {
+			pSock.emit('requestGameUpdate');
+		}, 1000 / 60);
+		return () => {
+			clearInterval(intervalId);
+		};
+	}, [pSock, inGame]);
+
 	return (
 		<div className="pong-container">
 			{!inQueue && !inGame && (
