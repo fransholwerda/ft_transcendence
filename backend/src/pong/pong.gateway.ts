@@ -16,6 +16,7 @@ import {
 	disconnectFromGame,
 	removeGameSession
 } from './pong.helpers';
+import { time } from 'console';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -32,6 +33,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	handleDisconnect(client: Socket) {
 		pongPrint(`NestJS pong: disconnected: ${client.id}`);
 		this.queue = removeFromQueue(this.queue, client.id);
+		this.leavingGame(client);
 		disconnectFromGame(this.server, this.games, client.id);
 	}
 
@@ -59,9 +61,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		pongPrint(`NestJS pong: ${client.id} left the queue`);
 		this.queue = removeFromQueue(this.queue, client.id);
 	}
-	
-	@SubscribeMessage('leaveGame')
-	handleLeaveGame(client: Socket) {
+	private leavingGame(client: Socket) {
 		pongPrint(`NestJS pong leaveGame: ${client.id}`);
 		const sesh = findGameSessionByClientId(this.games, client.id);
 		if (!sesh) {
@@ -86,10 +86,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// Remove the game session
 		this.games = removeGameSession(this.games, sesh.roomId);
 		pongPrint(`NestJS pong leaveGame: after remove`);
-
-		// Stop the game loop
-		this.stopGameLoop(sesh);
-		pongPrint(`NestJS pong leaveGame: after stopGameLoop`);
+	}
+	
+	@SubscribeMessage('leaveGame')
+	handleLeaveGame(client: Socket) {
+		this.leavingGame(client);
 	}
 
 	private checkQueue() {
@@ -120,35 +121,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.in(p2.clientId).socketsJoin(roomId);
 		pongPrint(`NestJS pong checkQueue: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		printGames(this.games);
-
-		// Start the game loop for the new game session
-		// this.startGameLoop(gameSession);
-	}
-
-	private startGameLoop(gameSession: GameSession) {
-		if (gameSession.intervalId) {
-			clearInterval(gameSession.intervalId);
-		}
-		const intervalId = setInterval(() => {
-			gameSession.ball.x += gameSession.ball.speedX;
-			gameSession.ball.y += gameSession.ball.speedY;
-			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
-				gameSession.ball.speedX *= -1;
-			}
-			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
-				gameSession.ball.speedY *= -1;
-			}
-			this.server.to(gameSession.roomId).emit('gameUpdate', gameSession);
-	
-		}, 1000 / 60);
-		gameSession.intervalId = intervalId;
-	}
-	
-	private stopGameLoop(gameSession: GameSession) {
-		// Clear the interval when the game ends
-		if (gameSession.intervalId) {
-			clearInterval(gameSession.intervalId);
-		}
 	}
 
 	@SubscribeMessage('movePaddle')

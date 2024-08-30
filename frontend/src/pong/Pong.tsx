@@ -162,7 +162,12 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			)}
 			{inGame && gameSession && (
 				<div className="game-screen">
-					<h6>Game room: {gameSession.roomId}</h6>
+					{/* <h6>Game room: {gameSession.roomId}</h6> */}
+					<h3>{pSock.id}</h3>
+					<div className="player-score">
+						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
+						<h6>{gameSession.p2.username} : {gameSession.p2.score}</h6>
+					</div>
 					<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
 					<button onClick={leaveGame}>
 						Leave Game
