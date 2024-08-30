@@ -1,5 +1,5 @@
 // max score
-export const MAX_SCORE = 5;
+export const MAX_SCORE = 10;
 
 // ------------------------------
 // CUSTOM PRINTING
