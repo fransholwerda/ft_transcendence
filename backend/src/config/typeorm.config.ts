@@ -9,4 +9,5 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
     database: 'postgres',
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     synchronize: true,
+	autoLoadEntities: true,
 };

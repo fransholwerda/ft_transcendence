@@ -23,6 +23,10 @@ export class UsersService {
 		user.TwoFactorEnabled = false;
 		user.TwoFactorSecret = '';
 		user.matchesWon = 0;
+		user.friends = [];
+		user.friendedBy = [];
+		user.ignoredUsers = [];
+		user.ignoredBy = [];
 		return await this.userRepository.save(user);
 	} catch (error) {
 		if (error instanceof QueryFailedError && error.driverError.code === '23505') {
@@ -39,8 +43,11 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOne({where: {id: id}});
+  findUser(id: number) {
+	if (this.userRepository.findOne({where: {id: id}}))
+    	return this.userRepository.findOne({where: {id: id}});
+	else
+		throw Error;
   }
 
   //This function yeets and deletes a passed user from the database.
@@ -49,8 +56,61 @@ export class UsersService {
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-	const existingUser =  await this.findOne(id);
+	const existingUser =  await this.findUser(id);
 	const updatedUserData = this.userRepository.merge(existingUser, updateUserDto);
 	return await this.userRepository.save(updatedUserData);
   }
+
+  async addFriend(userID: number, friendID: number): Promise<void> {
+	const user = await this.userRepository.findOne({where: {id: userID}});
+	const friend = await this.userRepository.findOne({where: {id: friendID}});
+
+	if (!user || !friend) {
+		throw new Error ('User or friend not found');
+	}
+
+	if(!user.friends) user.friends = [];
+	if(!friend.friends) friend.friends = [];
+	if(!user.friendedBy) user.friendedBy = [];
+	if(!friend.friendedBy) friend.friendedBy = [];
+
+	user.friends.push(friend);
+	friend.friendedBy.push(user);
+	console.log("user has friends: ", user.friends);
+	console.log("user is freinded by: ",user.friendedBy);
+	console.log("friends also has friends: ", friend.friends);
+	console.log("friend also is friended by: ", friend.friendedBy);
+
+	await Promise.all([this.userRepository.save(user), this.userRepository.save(friend)]);
+  }
+
+	async removeFriend(userID: number, friendID: number) {
+		const user = await this.userRepository.findOne({where: {id: userID}});
+		const friend = await this.userRepository.findOne({where: {id: friendID}});
+
+		if (!user || !friend) {
+			throw new Error ('User or friend not found');
+		}
+	
+		user.friends = user.friends.filter(user => user.id !== friendID);
+		friend.friendedBy = friend.friendedBy.filter(user => user.id !== userID);
+
+		await Promise.all([this.userRepository.save(user), this.userRepository.save(friend)]);
+	}
+
+	async getFriends(userID: number) {
+		return this.userRepository.createQueryBuilder('user')
+		.leftJoinAndSelect('user.friends', 'friend')
+		.where('user.id = :userID', { userID })
+		.select(['friend.id', 'friend.username'])
+		.getMany();
+	}
+
+	async getFriendedBy(userID: number) {
+		return this.userRepository.createQueryBuilder('user')
+		.leftJoinAndSelect('user.friendedBy', 'follower')
+		.where('follower.id = :userID', { userID} )
+		.select(['folloewr.id', 'follower.username'])
+		.getMany();
+	}
 }
