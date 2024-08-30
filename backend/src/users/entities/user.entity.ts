@@ -27,16 +27,17 @@ export class User {
 
 	@ManyToMany(() => User, user => user.friends)
 	@JoinTable()
+	friendedBy: User[];
+	
+	@ManyToMany(() => User, user => user.friendedBy)
+	@JoinTable()
 	friends: User[];
 
-	@ManyToMany(() => User, user=> user.friendedBy)
-	friendedBy: User[];
-
 	@ManyToMany(() => User, user => user.ignoredUsers)
-	@JoinTable()
 	ignoredUsers: User[];
-
+	
 	@ManyToMany(() => User, user => user.ignoredBy)
+	@JoinTable()
 	ignoredBy: User[];
 
 }

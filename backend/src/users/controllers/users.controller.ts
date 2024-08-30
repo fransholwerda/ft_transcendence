@@ -39,7 +39,7 @@ export class UsersController {
   }
 
   @Post(':UserID/friend/:FriendID')
-  async addFriend(@Param('userID') userID: number, @Param('friendID') friendID: number) {
+  async addFriend(@Param('UserID') userID: number, @Param('FriendID') friendID: number) {
 	try {
 		await this.usersService.addFriend(+userID, +friendID);
 	}
@@ -50,7 +50,7 @@ export class UsersController {
   }
 
   @Get(':UserID/friends')
-  async getFriends(@Param('userID', ParseIntPipe) userID: number) {
+  async getFriends(@Param('UserID', ParseIntPipe) userID: number) {
 	try {
 		await this.usersService.getFriends(+userID);
 	}
@@ -61,7 +61,7 @@ export class UsersController {
   }
 
   @Get(':UserID/friendedby')
-  async getFriendedBy(@Param('userID', ParseIntPipe) userID: number) {
+  async getFriendedBy(@Param('UserID', ParseIntPipe) userID: number) {
 	try {
 		await this.usersService.getFriendedBy(+userID);
 	}

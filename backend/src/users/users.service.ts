@@ -23,6 +23,10 @@ export class UsersService {
 		user.TwoFactorEnabled = false;
 		user.TwoFactorSecret = '';
 		user.matchesWon = 0;
+		user.friends = [];
+		user.friendedBy = [];
+		user.ignoredUsers = [];
+		user.ignoredBy = [];
 		return await this.userRepository.save(user);
 	} catch (error) {
 		if (error instanceof QueryFailedError && error.driverError.code === '23505') {
@@ -65,8 +69,17 @@ export class UsersService {
 		throw new Error ('User or friend not found');
 	}
 
+	if(!user.friends) user.friends = [];
+	if(!friend.friends) friend.friends = [];
+	if(!user.friendedBy) user.friendedBy = [];
+	if(!friend.friendedBy) friend.friendedBy = [];
+
 	user.friends.push(friend);
-	friend.friendedBy.push(friend);
+	friend.friendedBy.push(user);
+	console.log("user has friends: ", user.friends);
+	console.log("user is freinded by: ",user.friendedBy);
+	console.log("friends also has friends: ", friend.friends);
+	console.log("friend also is friended by: ", friend.friendedBy);
 
 	await Promise.all([this.userRepository.save(user), this.userRepository.save(friend)]);
   }
