@@ -12,6 +12,8 @@ export interface player {
 	username: string;
 	score: number;
 	paddle: Paddle;
+	isKeyDown: boolean;
+	key: string;
 }
 
 export interface Ball {

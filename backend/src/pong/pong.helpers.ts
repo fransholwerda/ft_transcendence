@@ -16,7 +16,9 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
                 width: PongC.PADDLE_WIDTH,
                 height: PongC.PADDLE_HEIGHT,
                 speed: PongC.PADDLE_SPEED
-            }
+            },
+            isKeyDown: false,
+            key: ''
         },
         p2: {
             clientid: p2.clientId,
@@ -29,7 +31,9 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
                 width: PongC.PADDLE_WIDTH,
                 height: PongC.PADDLE_HEIGHT,
                 speed: PongC.PADDLE_SPEED
-            }
+            },
+            isKeyDown: false,
+            key: ''
         },
         roomId: roomId,
         ball: {

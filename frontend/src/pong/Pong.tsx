@@ -16,6 +16,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [inGame, setInGame] = useState(false);
 	const [gameSession, setGameSession] = useState<GameSession | null>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const keyState = useRef<{ [key: string]: boolean }>({});
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
@@ -37,20 +38,35 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	};
 
 	useEffect(() => {
-		let lastKeyPressTime = 0;
-		const keyPressInterval = 10;
 		const handleKeyDown = (e: KeyboardEvent) => {
-			const cur = Date.now();
-			if (cur - lastKeyPressTime > keyPressInterval) {
-				lastKeyPressTime = cur;
-				if (e.key === 'w' || e.key === 's') {
-					pSock.emit('movePaddle', { direction: e.key });
-				}
+			if (e.key === 'w' || e.key === 's') {
+				keyState.current[e.key] = true;
+			}
+		};
+		const handleKeyUp = (e: KeyboardEvent) => {
+			if (e.key === 'w' || e.key === 's') {
+				keyState.current[e.key] = false;
 			}
 		};
 		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('keyup', handleKeyUp);
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
+			window.removeEventListener('keyup', handleKeyUp);
+		};
+	}, []);
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			if (keyState.current['w']) {
+				pSock.emit('movePaddle', { direction: 'w' });
+			}
+			if (keyState.current['s']) {
+				pSock.emit('movePaddle', { direction: 's' });
+			}
+		}, 1000 / 60);
+		return () => {
+			clearInterval(intervalId);
 		};
 	}, [pSock]);
 
