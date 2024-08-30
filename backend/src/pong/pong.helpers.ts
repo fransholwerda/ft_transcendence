@@ -39,7 +39,8 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             height: 20,
             speedX: 5,
             speedY: 5
-        }
+        },
+        intervalId: null
     };
     return sesh;
 }
