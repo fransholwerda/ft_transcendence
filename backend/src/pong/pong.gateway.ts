@@ -171,6 +171,17 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (sesh.ball.y <= 0 || sesh.ball.y + sesh.ball.height >= PongC.CANVAS_HEIGHT) {
 			sesh.ball.speedY *= -1;
 		}
+		// Check collision with paddles
+		if (sesh.ball.x <= sesh.p1.paddle.x + sesh.p1.paddle.width &&
+			sesh.ball.y >= sesh.p1.paddle.y &&
+			sesh.ball.y <= sesh.p1.paddle.y + sesh.p1.paddle.height) {
+			sesh.ball.speedX *= -1;
+		}
+		if (sesh.ball.x + sesh.ball.width >= sesh.p2.paddle.x &&
+			sesh.ball.y >= sesh.p2.paddle.y &&
+			sesh.ball.y <= sesh.p2.paddle.y + sesh.p2.paddle.height) {
+			sesh.ball.speedX *= -1;
+		}
 		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 	}
 }
