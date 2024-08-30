@@ -180,5 +180,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.server.to(channel).emit('message', { channel, message, username })
     }
   }
-}
 
+  @SubscribeMessage('setPrivate')
+  handleSetPrivate(client: Socket, payload: { channel: string }) {
+    // Make sure channel name is has proper characters in it
+    const { channel } = payload;
+    if (!this.ChatRooms.has(channel)) {
+      client.emit('chatError', 'Channel does not exist.');
+    }
+
+    const chatroom = this.ChatRooms.get(channel);
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+    if (!chatroom.isAdmin(user)) {
+      client.emit('chatError', 'You do not have permission to perform this action.');
+    } else if (this.ChatRooms.get(channel).isPrivate()) {
+      client.emit('chatError', 'Channel is already private.');
+    }
+  }
+}

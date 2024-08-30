@@ -129,7 +129,7 @@ export class ChatRoom {
     this.password = '';
   }
 
-  setProtect( password: string ) {
+  setProtected( password: string ) {
     this.privatized = false;
     this.protect = true;
     this.password = password;
@@ -139,6 +139,21 @@ export class ChatRoom {
     this.privatized = false;
     this.protect = false;
     this.password = '';
+  }
+
+  isPrivate() {
+    return this.privatized;
+  }
+
+  isProtected() {
+    return this.protect;
+  }
+
+  isPublic() {
+    if (!this.privatized && !this.protect) {
+      return true
+    }
+    return false
   }
 
   isEmpty(): boolean {
