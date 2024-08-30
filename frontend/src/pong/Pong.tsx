@@ -36,23 +36,23 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		setGameSession(null);
 	};
 
-	// useEffect(() => {
-	// 	let lastKeyPressTime = 0;
-	// 	const keyPressInterval = 100;
-	// 	const handleKeyDown = (e: KeyboardEvent) => {
-	// 		const cur = Date.now();
-	// 		if (cur - lastKeyPressTime > keyPressInterval) {
-	// 			lastKeyPressTime = cur;
-	// 			if (e.key === 'w' || e.key === 's') {
-	// 				pSock.emit('movePaddle', { direction: e.key });
-	// 			}
-	// 		}
-	// 	};
-	// 	window.addEventListener('keydown', handleKeyDown);
-	// 	return () => {
-	// 		window.removeEventListener('keydown', handleKeyDown);
-	// 	};
-	// }, [pSock]);
+	useEffect(() => {
+		let lastKeyPressTime = 0;
+		const keyPressInterval = 100;
+		const handleKeyDown = (e: KeyboardEvent) => {
+			const cur = Date.now();
+			if (cur - lastKeyPressTime > keyPressInterval) {
+				lastKeyPressTime = cur;
+				if (e.key === 'w' || e.key === 's') {
+					pSock.emit('movePaddle', { direction: e.key });
+				}
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [pSock]);
 
 	useEffect(() => {
 		if (!pSock) return;
