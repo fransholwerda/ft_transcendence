@@ -2,15 +2,15 @@
 
 .main-header {
 	margin: 0;
-	padding: 0;
+	padding: 1vw;
 	display: flex;
-	justify-content: left;
+	justify-content: space-between;
 	align-items: center; /* Centers items vertically */
 	background-color: #005289;
 	/* padding: 10px 20px; */
 	/* border-bottom: 10px solid #747474; */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	gap: 2vw;
+	box-shadow: 0 4px 8px rgba(194, 188, 188, 0.1);
+	gap: 6px;
 	/* margin-bottom: 10px; */
 	flex-wrap: wrap; /* Allows wrapping on small screens */
 	height: var(--maingrid_header_height);
@@ -30,14 +30,29 @@
 	height: 10vh; /* Scales height relative to viewport */
 	/* margin-right: 15px;
 	margin-top: 15px; */
+	/* padding: 2vw; */
+	flex-direction: row;
+	justify-content: left;
+
 }
 
 .header-title {
+	padding: 1vw;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	justify-content: left;
+
 }
 
 .header-title h1 {
+	text-shadow:  0 4px 8px rgba(194, 188, 188, 0.1);
+	padding: 1vw;
+	font-size: 1.2rem;
+	margin: 0;
+	color: #ffffff;
+	
+}.header-title h2 {
+	padding: 1vw;
 	font-size: 1.5rem;
 	margin: 0;
 	color: #ffffff;
@@ -66,6 +81,12 @@
 	font-size: 1rem;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px; /* Adds space between buttons */
+    margin-left: auto; /* Pushes buttons to the right */
 }
 
 .header-button:hover {
