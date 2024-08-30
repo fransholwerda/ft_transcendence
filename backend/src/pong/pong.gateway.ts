@@ -2,7 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnectio
 import { Server, Socket } from 'socket.io';
 import { MAX_SCORE, pongPrint, PongC } from './pong.constants';
 // import { MAX_SCORE, PongC } from './pong.constants';
-import { GameSession, User } from './pong.types';
+import { Ball, GameSession, Paddle, User } from './pong.types';
 import {
 	fillGameSession,
 	printGameSession,
@@ -142,6 +142,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
+	private paddleCollision(p: Paddle, b: Ball) {
+		if (b.x < p.x + p.width &&
+			b.x + b.width > p.x &&
+			b.y < p.y + p.height &&
+			b.y + b.height > p.y) {
+			return true;
+		}
+		return false;
+	}
+
 	@SubscribeMessage('requestGameUpdate')
 	handleRequestGameUpdate(client: Socket) {
 		pongPrint(`NestJS pong: ${client.id}: requested game update`);
@@ -172,14 +182,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			sesh.ball.speedY *= -1;
 		}
 		// Check collision with paddles
-		if (sesh.ball.x <= sesh.p1.paddle.x + sesh.p1.paddle.width &&
-			sesh.ball.y >= sesh.p1.paddle.y &&
-			sesh.ball.y <= sesh.p1.paddle.y + sesh.p1.paddle.height) {
+		if (sesh.ball.speedX < 0 && this.paddleCollision(sesh.p1.paddle, sesh.ball)) {
 			sesh.ball.speedX *= -1;
 		}
-		if (sesh.ball.x + sesh.ball.width >= sesh.p2.paddle.x &&
-			sesh.ball.y >= sesh.p2.paddle.y &&
-			sesh.ball.y <= sesh.p2.paddle.y + sesh.p2.paddle.height) {
+		else if (sesh.ball.speedX > 0 && this.paddleCollision(sesh.p2.paddle, sesh.ball)) {
 			sesh.ball.speedX *= -1;
 		}
 		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
