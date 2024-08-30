@@ -150,7 +150,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			pongPrint(`NestJS pong: ${client.id}: cant find game for request`);
 			return;
 		}
-		this.server.to(sesh.roomId).emit('gameUpdate', { sesh });
+		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 	}
 }
 

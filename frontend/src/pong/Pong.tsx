@@ -109,8 +109,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	}, [pSock]);
 
 	useEffect(() => {
-		pSock.on('gameUpdate', (updatedSession: GameSession) => {
-			setGameSession(updatedSession);
+		pSock.on('gameUpdate', (data: { sesh: GameSession }) => {
+			setGameSession(data.sesh);
 		});
 		return () => {
 			pSock.off('gameUpdate');
@@ -124,7 +124,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		const context = canvas.getContext('2d');
 		if (!context) return;
 		const renderGame = () => {
-			if (!context || !gameSession) return
+			if (!context || !gameSession) return;
 			pongPrint(`pong.tsx: Rendering game ${user.username}`);
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillStyle = 'black';
@@ -139,7 +139,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		renderGame();
 	}, [gameSession]);
 
-	// game loop for requesting a game update
 	useEffect(() => {
 		if (!pSock) return;
 		if (!inGame) return;
