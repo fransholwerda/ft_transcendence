@@ -84,7 +84,8 @@
 
 .game-screen .player-score {
 	display: flex;
-	justify-content: space-between;	
+	justify-content: space-between;
+	align-items: center;
 }
 
 .player-score h6 {
