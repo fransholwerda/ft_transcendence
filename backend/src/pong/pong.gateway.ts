@@ -150,6 +150,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			pongPrint(`NestJS pong: ${client.id}: cant find game for request`);
 			return;
 		}
+		if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
+			pongPrint(`NestJS pong: ${client.id}: game ended`);
+			this.server.to(sesh.roomId).emit('gameEnd', { sesh });
+			this.games = removeGameSession(this.games, sesh.roomId);
+			return;
+		}
 		sesh.ball.x += sesh.ball.speedX;
 		sesh.ball.y += sesh.ball.speedY;
 		if (sesh.ball.x <= 0) {
