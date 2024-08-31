@@ -3,6 +3,7 @@ import './index.css';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 import LoginPage from './LoginPage/LoginPage';
+import AuthenticationPage from './AuthenticationPage/AuthenticationPage';
 import MainGrid from './mainGrid/MainGrid';
 import { Constants } from '../shared/constants';
 
@@ -13,7 +14,9 @@ const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
 export interface User {
   id:  string,
   username: string,
-  avatarURL: string
+  avatarURL: string,
+  TwoFactorSecret: string,
+  TwoFactorEnabled: boolean
 }
 
 const PageManager: React.FC = () => {
@@ -48,8 +51,11 @@ const PageManager: React.FC = () => {
     setUser({
       id: user.id,
       username: user.username,
-      avatarURL:  user.avatarURL
+      avatarURL:  user.avatarURL,
+      TwoFactorSecret: user.TwoFactorSecret,
+      TwoFactorEnabled: user.TwoFactorEnabled
     });
+    return user;
   };
 
   // const randomUserId = (): string => {
@@ -103,6 +109,8 @@ const PageManager: React.FC = () => {
       <LocationHandler />
       <Routes>
         <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+
+	<Route path="/auth" element={<AuthenticationPage user={user} />} />
         
         <Route path="/pong" element={user ? <MainGrid contentComponent="Pong" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         
