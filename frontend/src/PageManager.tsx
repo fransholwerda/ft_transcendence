@@ -7,7 +7,11 @@ import AuthenticationPage from './AuthenticationPage/AuthenticationPage';
 import MainGrid from './mainGrid/MainGrid';
 import { Constants } from '../shared/constants';
 
-const pSock = io(`${Constants.BACKEND_HOST_URL}/pong`, {
+// --- DEBUG --- //
+import { randomDebug, createRandomUser } from "./randomUser"
+// --- DEBUG --- //
+
+const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
   transports: ['websocket'],
 });
 
@@ -41,13 +45,15 @@ const PageManager: React.FC = () => {
         })
       });
       user = await response.json();
-      // ----------------------------------------------------------------
-      // RANDOM USER CREATION
-      // user.id = randomUserId();
-      // user.username = randomUsername();
-      // console.log('PageManager: User created', user);
-      // ----------------------------------------------------------------
     }
+
+    // --- DEBUG --- //
+    if (randomDebug) {
+      user = createRandomUser();
+      console.log('PageManager: Random User created', user);
+    }
+    // --- DEBUG --- //
+  
     setUser({
       id: user.id,
       username: user.username,
@@ -57,14 +63,6 @@ const PageManager: React.FC = () => {
     });
     return user;
   };
-
-  // const randomUserId = (): string => {
-  //   return Math.floor(Math.random() * 1000000).toString();
-  // }
-  //
-  // const randomUsername = (): string => {
-  //   return Math.random().toString(36).substring(7);
-  // }
 
   const handleLogout = () => {
     console.log('PageManager: Logging out');

@@ -39,7 +39,7 @@ const MainGrid: React.FC<MainGridProps & { contentComponent: string }> = ({ user
     <div className="parent">
       <div className="header"><MainHeader user={user} onLogout={onLogout} /></div>
       <div className="content">{renderComponent()}</div>
-      <div className="chat"><Chat user={user} /></div>
+      <div className="chat"><Chat user={user} socket={pSock} /></div>
     </div>
   );
 };

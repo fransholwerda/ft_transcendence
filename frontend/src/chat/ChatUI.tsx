@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Socket } from 'socket.io-client';
 import './ChatUI.css';
 import { User } from '../PageManager';
+import Popup from 'reactjs-popup';
 
 interface Tab {
   id: number;
@@ -103,17 +104,21 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       alert('Channel name can only contain alphanumeric characters, dashes (-), and underscores (_).');
       return;
     }
-    socket.emit('joinChannel', { channel: '#' + newChannelName });
+    socket.emit('joinChannel', { channel: newChannelName });
     setNewChannelName('');
   };
 
   const joinDM = () => {
     if (!newDmName.trim()) return;
-    if (newDmName === user.username) {
+    const dmExists = dms.some(dm => dm.title === newDmName.trim());
+    if (newDmName.trim() === user.username) {
       alert(`You can't create a DM with yourself.`);
       return;
+    } else if (dmExists) {
+      alert(`You already have a DM open with this user`);
+      return;
     }
-    socket.emit('joinDM', { user: user.username, targetUser: newDmName})
+    socket.emit('joinDM', { user: user.username, targetUser: newDmName.trim()})
     setNewDmName('');
   }
 
@@ -156,6 +161,28 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
     }
   };
 
+  const handleUserAction = (action: string, username: string) => {
+    switch (action) {
+      case 'ignore':
+        alert(`Ignoring ${username}`);
+        break;
+      case 'kick':
+        alert(`Kicking ${username}`);
+        break;
+      case 'mute':
+        alert(`Muting ${username}`);
+        break;
+      case 'ban':
+        alert(`Banning ${username}`);
+        break;
+      case 'report':
+        alert(`Reporting ${username}`);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="Chat">
       <div className="chat-container">
@@ -169,7 +196,14 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                   className={`chat-button ${channel.id === activeTabId && activeType === 'channel' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(channel.id); setActiveType('channel'); }}
                 >
-                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>×</span>
+                  <Popup className='chat-channel-popup' trigger={<button>⚙</button>}>
+                    <div className='chat-channel-popup-content'>
+                      <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Close Channel</span>
+                      <span className="private-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Set Private</span>
+                      <span className="password-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Set Password</span>
+                      <input className="password-input"></input>
+                    </div>
+                  </Popup>
                   {channel.title}
                 </button>
               ))}
@@ -193,7 +227,10 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                   className={`chat-button ${dm.id === activeTabId && activeType === 'dm' ? 'active' : ''}`}
                   onClick={() => { setActiveTabId(dm.id); setActiveType('dm'); }}
                 >
-                  <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>×</span>
+                  <Popup className='chat-channel-popup' trigger={<button>⚙</button>}>
+                    <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>Close DM</span>
+                    <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>Invite to Game</span>
+                  </Popup>
                   {dm.title}
                 </button>
               ))}
@@ -223,7 +260,40 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 return activeTab && msg.channel === activeTab.title;
               }).map((msg, index) => (
                 <div key={index} className="message">
-                  <strong>{msg.username}:</strong> {msg.message}
+                  <Popup
+                    trigger={<button className="username-button">{msg.username}</button>}
+                    position="right center"
+                    on="click"
+                    closeOnDocumentClick
+                    mouseLeaveDelay={300}
+                    mouseEnterDelay={0}
+                    contentStyle={{ padding: '10px', border: 'none' }}
+                    arrow={false}
+                  >
+                    <div className="user-actions-popup">
+                    {msg.username !== user.username ? (
+                      <>
+                        {activeType === 'channel' ? (
+                          <>
+                            <button onClick={() => handleUserAction('ignore', msg.username)}>Ignore</button>
+                            <button onClick={() => handleUserAction('kick', msg.username)}>Kick</button>
+                            <button onClick={() => handleUserAction('mute', msg.username)}>Mute</button>
+                            <button onClick={() => handleUserAction('ban', msg.username)}>Ban</button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => handleUserAction('ignore', msg.username)}>Ignore</button>
+                            <button onClick={() => handleUserAction('report', msg.username)}>Report</button>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      // Optional: You can add a button or message for your own username here if needed
+                      <button onClick={() => alert('This is your own message!')}>This is you</button>
+                    )}
+                    </div>
+                  </Popup>
+                  {': ' + msg.message}
                 </div>
               ))}
             </div>
