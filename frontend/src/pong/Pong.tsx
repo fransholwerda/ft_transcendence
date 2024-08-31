@@ -39,6 +39,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	};
 
 	useEffect(() => {
+		if (!pSock) return;
+		if (!inGame) return;
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'w' || e.key === 's') {
 				keyState.current[e.key] = true;
@@ -55,9 +57,11 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			window.removeEventListener('keydown', handleKeyDown);
 			window.removeEventListener('keyup', handleKeyUp);
 		};
-	}, []);
+	}, [pSock, inGame]);
 
 	useEffect(() => {
+		if (!pSock) return;
+		if (!inGame) return;
 		const intervalId = setInterval(() => {
 			if (keyState.current['w']) {
 				pSock.emit('movePaddle', { direction: 'w' });
@@ -69,7 +73,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		return () => {
 			clearInterval(intervalId);
 		};
-	}, [pSock]);
+	}, [pSock, inGame]);
 
 	useEffect(() => {
 		if (!pSock) return;
