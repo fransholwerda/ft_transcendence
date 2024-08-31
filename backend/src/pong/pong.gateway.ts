@@ -1,7 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MAX_SCORE, pongPrint, PongC } from './pong.constants';
-// import { MAX_SCORE, PongC } from './pong.constants';
+import { MAX_SCORE, pongPrint } from './pong.constants';
+import { PongC } from '../../shared/constants';
 import { Ball, GameSession, Paddle, User } from './pong.types';
 import {
 	fillGameSession,
@@ -16,7 +16,6 @@ import {
 	disconnectFromGame,
 	removeGameSession
 } from './pong.helpers';
-import { time } from 'console';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -191,4 +190,3 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 	}
 }
-

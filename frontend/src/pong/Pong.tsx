@@ -4,7 +4,6 @@ import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
-import { PongC } from '../../shared/constants';
 
 interface PongProps {
 	user: User;
@@ -17,6 +16,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [gameSession, setGameSession] = useState<GameSession | null>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const keyState = useRef<{ [key: string]: boolean }>({});
+	const canvasWidth = 800;
+	const canvasHeight = 500;
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
@@ -195,7 +196,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
 						<h6>{gameSession.p2.username} : {gameSession.p2.score}</h6>
 					</div>
-					<canvas ref={canvasRef} width={PongC.CANVAS_WIDTH} height={PongC.CANVAS_HEIGHT} />
+					<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
 					<button onClick={leaveGame}>
 						Leave Game
 					</button>
