@@ -49,7 +49,7 @@ const PageManager: React.FC = () => {
 
     // --- DEBUG --- //
     if (randomDebug) {
-      user = createRandomUser();
+      user = createRandomUser(user);
       console.log('PageManager: Random User created', user);
     }
     // --- DEBUG --- //
