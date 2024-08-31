@@ -16,8 +16,8 @@ export class Constants {
 export class PongC {
 	public static BALL_WIDTH = 20;
 	public static BALL_HEIGHT = 20;
-	public static BALL_SPEEDX = 3;
-	public static BALL_SPEEDY = 3;
+	public static BALL_SPEEDX = 5;
+	public static BALL_SPEEDY = 5;
 
 	public static PADDLE_WIDTH = 5;
 	public static PADDLE_HEIGHT = 100;
