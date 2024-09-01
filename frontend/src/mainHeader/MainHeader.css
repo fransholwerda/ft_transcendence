@@ -8,7 +8,6 @@
 	align-items: center;
 	background-color: #005289;
 	gap: 1vh;
-	flex-wrap: wrap;
 	height: var(--maingrid_header_height);
 	min-height: var(--maingrid_header_height);
 	max-height: var(--maingrid_header_height);
