@@ -5,14 +5,10 @@
 	padding: 1vw;
 	display: flex;
 	justify-content: space-between;
-	align-items: center; /* Centers items vertically */
+	align-items: center;
 	background-color: #005289;
-	/* padding: 10px 20px; */
-	/* border-bottom: 10px solid #747474; */
-	box-shadow: 0 4px 8px rgba(194, 188, 188, 0.1);
-	gap: 6px;
-	/* margin-bottom: 10px; */
-	flex-wrap: wrap; /* Allows wrapping on small screens */
+	gap: 1vh;
+	flex-wrap: wrap;
 	height: var(--maingrid_header_height);
 	min-height: var(--maingrid_header_height);
 	max-height: var(--maingrid_header_height);
@@ -22,18 +18,14 @@
 
 .header-content {
 	display: flex;
-	align-items: center; /* Centers items vertically */
-	flex-wrap: wrap; /* Allows wrapping on small screens */
+	align-items: center;
+	flex-wrap: wrap;
 }
 
 .header-logo img {
-	height: 10vh; /* Scales height relative to viewport */
-	/* margin-right: 15px;
-	margin-top: 15px; */
-	/* padding: 2vw; */
+	height: 10vh;
 	flex-direction: row;
 	justify-content: left;
-
 }
 
 .header-title {
@@ -41,52 +33,35 @@
 	display: flex;
 	flex-direction: row;
 	justify-content: left;
-
 }
 
 .header-title h1 {
-	text-shadow:  0 4px 8px rgba(194, 188, 188, 0.1);
 	padding: 1vw;
-	font-size: 1.2rem;
-	margin: 0;
-	color: #ffffff;
-	
-}.header-title h2 {
-	padding: 1vw;
-	font-size: 1.5rem;
-	margin: 0;
-	color: #ffffff;
-}
-
-.header-title p {
-	font-size: 1rem;
+	font-size: 3vh;
 	margin: 0;
 	color: #ffffff;
 }
 
 .header-item {
 	display: flex;
-	align-items: center; /* Centers items vertically */
-	/* margin-right: 10vw; */
+	align-items: center;
 }
 
 .header-button {
-	padding: 10px 15px;
-	/* margin-left: 10px; */
-	/* margin-top: 10px; */
+	padding: 2vw;
 	border: none;
-	border-radius: 5px;
+	border-radius: 0.5vh;
 	background-color: #007bff;
 	color: white;
-	font-size: 1rem;
+	font-size: 2vh;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
 }
 
 .header-buttons {
     display: flex;
-    gap: 10px; /* Adds space between buttons */
-    margin-left: auto; /* Pushes buttons to the right */
+    gap: 1vh;
+    margin-left: 1vh;
 }
 
 .header-button:hover {
