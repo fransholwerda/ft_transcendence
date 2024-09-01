@@ -161,8 +161,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	}, [gameSession]);
 
 	useEffect(() => {
-		if (!pSock) return;
-		if (!inGame) return;
+		if (!pSock || !inGame || inQueue) return;
 		const intervalId = setInterval(() => {
 			pSock.emit('requestGameUpdate');
 		}, 1000 / 60);
@@ -174,15 +173,15 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	return (
 		<div className="pong-container">
 			{!inQueue && !inGame && (
-				<>
+				<div className="pong-info">
 					<h6>Socket id: {pSock.id}</h6>
 					<h6>User id: {user.id}</h6>
 					<h6>Username: {user.username}</h6>
 					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
-				</>
+				</div>
 			)}
 			{inQueue && !inGame && (
-				<>
+				<div className="pong-waiting">
 					<h6>Socket id: {pSock.id}</h6>
 					<h6>User id: {user.id}</h6>
 					<h6>Username: {user.username}</h6>
@@ -190,11 +189,10 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					<button className="leave-queue-btn" onClick={leaveQueue}>
 						Leave Queue
 					</button>
-				</>
+				</div>
 			)}
 			{inGame && gameSession && (
-				<div className="game-screen">
-					{/* <h6>Game room: {gameSession.roomId}</h6> */}
+				<div className="pong-game">
 					<h3>{pSock.id}</h3>
 					<div className="player-score">
 						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
