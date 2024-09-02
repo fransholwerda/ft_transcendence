@@ -10,8 +10,10 @@ export class MatchService {
 	async createNewMatch(createMatch: CreateMatch): Promise<Match>{
 		const match: Match = new Match();
 		match.player1 = createMatch.player1;
+		match.player1ID = createMatch.player1ID;
 		match.player1Score = createMatch.player1Score;
 		match.player2 = createMatch.player2;
+		match.player2ID = createMatch.player2ID;
 		match.player2Score = createMatch.player2Score;
 		match.winner = createMatch.winner;
 		return await this.matchRepository.save(match);
