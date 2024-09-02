@@ -35,7 +35,7 @@ export class MatchService {
 		const playerMatches = this.matchRepository.createQueryBuilder('matches')
 		.where('(matches.player1ID = :playerID OR matches.player2ID = :playerID)', { playerID });
 
-		console.log(playerMatches);
+		//console.log(playerMatches.getMany());
 
 		return playerMatches.getMany();
 	}
