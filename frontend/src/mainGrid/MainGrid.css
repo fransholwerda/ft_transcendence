@@ -33,9 +33,11 @@
 	background-color: rgb(2, 2, 58);
 	/* WIDTH */
 	min-width: var(--maingrid_content_width);
+	width: var(--maingrid_content_width);
 	max-width: var(--maingrid_content_width);
 	/* HEIGHT */
 	min-height: var(--maingrid_content_height);
+	height: var(--maingrid_content_height);
 	max-height: var(--maingrid_content_height);
 }
 

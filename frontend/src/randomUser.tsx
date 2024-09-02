@@ -38,32 +38,34 @@ const randomNames = [
 const randomNamesLength = randomNames.length;
 
 function getCookie(name: string): string | undefined {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-    return undefined;
+	const value = `; ${document.cookie}`;
+	const parts = value.split(`; ${name}=`);
+	if (parts.length === 2) return parts.pop()?.split(';').shift();
+	return undefined;
 }
 
 function setCookie(name: string, value: string, hours: number): void {
-    let expires = '';
-    if (hours) {
-        const date = new Date();
-        date.setTime(date.getTime() + (hours * 60 * 60 * 1000)); // Convert hours to milliseconds
-        expires = `; expires=${date.toUTCString()}`;
-    }
-    document.cookie = `${name}=${value || ''}${expires}; path=/`;
+	let expires = '';
+	if (hours) {
+		const date = new Date();
+		date.setTime(date.getTime() + (hours * 60 * 60 * 1000)); // Convert hours to milliseconds
+		expires = `; expires=${date.toUTCString()}`;
+	}
+	document.cookie = `${name}=${value || ''}${expires}; path=/`;
 }
 
 let randomNamesIndex = parseInt(getCookie('randomNamesIndex') || '0', 10) || 0;
 
-export const createRandomUser = (): User => {  
-    const user: User = {
-        id: randomNamesIndex.toString(),
-        username: randomNames[randomNamesIndex],
-        avatarURL: ''
-    };
-    randomNamesIndex = (randomNamesIndex + 1) % randomNamesLength;
-    setCookie('randomNamesIndex', randomNamesIndex.toString(), 4); // Persist for 4 hours
-    return user;
+export const createRandomUser = (user: User): User => {
+	const randomUser: User = {
+		id: randomNamesIndex.toString(),
+		username: randomNames[randomNamesIndex],
+		avatarURL:  user.avatarURL,
+		TwoFactorSecret: user.TwoFactorSecret,
+		TwoFactorEnabled: user.TwoFactorEnabled
+	};
+	randomNamesIndex = (randomNamesIndex + 1) % randomNamesLength;
+	setCookie('randomNamesIndex', randomNamesIndex.toString(), 4); // Persist for 4 hours
+	return randomUser;
 };
 

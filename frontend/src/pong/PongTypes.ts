@@ -12,6 +12,8 @@ export interface player {
 	username: string;
 	score: number;
 	paddle: Paddle;
+	isKeyDown: boolean;
+	key: string;
 }
 
 export interface Ball {
@@ -28,7 +30,6 @@ export interface GameSession {
 	p2: player;
 	roomId: string;
 	ball: Ball;
-	intervalId: NodeJS.Timeout;
 }
 
 export interface User {

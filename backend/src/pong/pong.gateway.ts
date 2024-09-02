@@ -1,8 +1,8 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MAX_SCORE, pongPrint, PongC } from './pong.constants';
-// import { MAX_SCORE, PongC } from './pong.constants';
-import { GameSession, User } from './pong.types';
+import { MAX_SCORE, pongPrint } from './pong.constants';
+import { PongC } from '../../shared/constants';
+import { Ball, GameSession, Paddle, User } from './pong.types';
 import {
 	fillGameSession,
 	printGameSession,
@@ -16,7 +16,6 @@ import {
 	disconnectFromGame,
 	removeGameSession
 } from './pong.helpers';
-import { time } from 'console';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -141,5 +140,53 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed); // Move down
 		}
 	}
-}
 
+	private paddleCollision(p: Paddle, b: Ball) {
+		if (b.x < p.x + p.width &&
+			b.x + b.width > p.x &&
+			b.y < p.y + p.height &&
+			b.y + b.height > p.y) {
+			return true;
+		}
+		return false;
+	}
+
+	@SubscribeMessage('requestGameUpdate')
+	handleRequestGameUpdate(client: Socket) {
+		pongPrint(`NestJS pong: ${client.id}: requested game update`);
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong: ${client.id}: cant find game for request`);
+			return;
+		}
+		if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
+			pongPrint(`NestJS pong: ${client.id}: game ended`);
+			this.server.to(sesh.roomId).emit('gameEnd', { sesh });
+			this.games = removeGameSession(this.games, sesh.roomId);
+			return;
+		}
+		sesh.ball.x += sesh.ball.speedX;
+		sesh.ball.y += sesh.ball.speedY;
+		if (sesh.ball.x <= 0) {
+			sesh.p2.score++;
+			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
+			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+		}
+		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
+			sesh.p1.score++;
+			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
+			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+		}
+		if (sesh.ball.y <= 0 || sesh.ball.y + sesh.ball.height >= PongC.CANVAS_HEIGHT) {
+			sesh.ball.speedY *= -1;
+		}
+		// Check collision with paddles
+		if (sesh.ball.speedX < 0 && this.paddleCollision(sesh.p1.paddle, sesh.ball)) {
+			sesh.ball.speedX *= -1;
+		}
+		else if (sesh.ball.speedX > 0 && this.paddleCollision(sesh.p2.paddle, sesh.ball)) {
+			sesh.ball.speedX *= -1;
+		}
+		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
+	}
+}

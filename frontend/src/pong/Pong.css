@@ -1,80 +1,53 @@
 @import url('../maincssroot.css');
 
+:root {
+	--pong1: #ff0000;
+	--pong2: #ffe600;
+	--pong3: #15ff00;
+	--pong4: #1900ff;
+}
+
 .pong-container {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	height: var(--maingrid_content_height);
-	min-height: var(--maingrid_content_height);
-	max-height: var(--maingrid_content_height);
-	background-color: #f0f0f0;
-	font-family: Arial, sans-serif;
-	width: 100%;
-	height: 100%;
-	text-align: center;
-}
-
-.pong-container h1 {
-	color: #333;
-}
-
-.pong-container h2 {
-	color: #333;
-	margin-bottom: 1rem;
-}
-
-.pong-container h3 {
-	color: #333;
-	margin-bottom: 0.5rem;
-}
-
-
-.pong-container p {
-	color: #666;
-	/* margin-bottom: 1rem; */
-}
-
-.pong-container h6 {
-	color: lightsalmon;
-	font-size: 0.8rem;
-}
-
-.pong-container button {
-	background-color: #4CAF50;
-	border: none;
-	border-radius: 4px;
-	color: white;
-	cursor: pointer;
-	font-size: 1rem;
-	padding: 0.75rem 1.5rem;
-	transition: background-color 0.3s ease;
-}
-
-.pong-container button {
-	background-color: #45a049;
-}
-
-.pong-container button:hover {
-	background-color: #f44336;
-}
-
-.pong-container button:disabled {
-	background-color: #cccccc;
-	cursor: not-allowed;
-}
-
-.game-screen {
-	background-color: #e7f3fe;
 	height: var(--maingrid_content_height);
 	min-height: var(--maingrid_content_height);
 	max-height: var(--maingrid_content_height);
 	width: var(--maingrid_content_width);
 	min-width: var(--maingrid_content_width);
 	max-width: var(--maingrid_content_width);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--pong1);
+	font-family: Arial, sans-serif;
+	width: 100%;
+	height: 100%;
+	text-align: center;
 }
 
-.game-screen canvas {
+.pong-info, .pong-waiting, .pong-game {
+	background-color: var(--pong2);
+	padding: 2vh;
+	border-radius: 5%;
+	overflow: hidden;
+}
+
+.pong-container button {
+	background-color: var(--pong3);
+	border: none;
+	border-radius: 5%;
+	color: var(--pong2);
+	cursor: pointer;
+	font-size: 2vh;
+	padding: 0.75vh 3vw;
+	transition: background-color 0.3s ease;
+}
+
+.pong-container button:hover {
+	background-color: var(--pong1);
+}
+
+.pong-game canvas {
 	width: 100%;
 	object-fit: contain;
 	min-width: 80px;
@@ -82,14 +55,18 @@
 	max-height: 75vh;
 }
 
-.game-screen .player-score {
+.pong-game .player-score {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
+.pong-container p, h1, h2, h3, h4, h5, h6 {
+	color: var(--pong3);
+	font-size: 2vh;
+}
+
 .player-score h6 {
-	color: purple;
 	font-size: 3vh;
 	margin: 0 2vw;
 }

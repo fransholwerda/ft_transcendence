@@ -1,6 +1,6 @@
 import { GameSession, User } from './pong.types';
 import { pongPrint } from './pong.constants';
-import { PongC } from './pong.constants';
+import { PongC } from '../../shared/constants';
 
 export function fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string): GameSession {
     pongPrint(`NestJS pong: Filling game session for room ${roomId}`);
@@ -16,7 +16,9 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
                 width: PongC.PADDLE_WIDTH,
                 height: PongC.PADDLE_HEIGHT,
                 speed: PongC.PADDLE_SPEED
-            }
+            },
+            isKeyDown: false,
+            key: ''
         },
         p2: {
             clientid: p2.clientId,
@@ -29,18 +31,19 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
                 width: PongC.PADDLE_WIDTH,
                 height: PongC.PADDLE_HEIGHT,
                 speed: PongC.PADDLE_SPEED
-            }
+            },
+            isKeyDown: false,
+            key: ''
         },
         roomId: roomId,
         ball: {
-            x: 50,
-            y: 50,
-            width: 20,
-            height: 20,
-            speedX: 5,
-            speedY: 5
-        },
-        intervalId: null
+            x: PongC.CANVAS_WIDTH / 2 - PongC.BALL_WIDTH,
+            y: PongC.CANVAS_HEIGHT / 2 - PongC.BALL_HEIGHT,
+            width: PongC.BALL_WIDTH,
+            height: PongC.BALL_HEIGHT,
+            speedX: PongC.BALL_SPEEDX,
+            speedY: PongC.BALL_SPEEDY
+        }
     };
     return sesh;
 }
