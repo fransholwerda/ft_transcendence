@@ -31,9 +31,11 @@ export class MatchService {
 		return this.matchRepository.delete(id);
 	}
 
-	findPlayersMatches(playerID: number): Promise<Match[]> {
+	async findPlayersMatches(playerID: number): Promise<Match[]> {
 		const playerMatches = this.matchRepository.createQueryBuilder('matches')
-		.where('matches.player1ID LIKE :playerID OR matches.player2ID LIKE :playerID', {playerID: playerID});
+		.where('(matches.player1ID = :playerID OR matches.player2ID = :playerID)', { playerID });
+
+		console.log(playerMatches);
 
 		return playerMatches.getMany();
 	}
