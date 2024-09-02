@@ -9,10 +9,11 @@ export class MatchService {
 
 	async createNewMatch(createMatch: CreateMatch): Promise<Match>{
 		const match: Match = new Match();
-		match.player1 = "player1";
-		match.player1Score = Math.floor(Math.random()*10) + 1;
-		match.player2 = "player2";
-		match.player2Score = Math.floor(Math.random()*10) + 1; 
+		match.player1 = createMatch.player1;
+		match.player1Score = createMatch.player1Score;
+		match.player2 = createMatch.player2;
+		match.player2Score = createMatch.player2Score;
+		match.winner = createMatch.winner;
 		return await this.matchRepository.save(match);
 	}
 
@@ -26,5 +27,12 @@ export class MatchService {
 
 	removeMatch(id: number): Promise< { affected?: number }> {
 		return this.matchRepository.delete(id);
+	}
+
+	findPlayersMatches(playerID: number): Promise<Match[]> {
+		const playerMatches = this.matchRepository.createQueryBuilder('matches')
+		.where('matches.player1ID LIKE :playerID OR matches.player2ID LIKE :playerID', {playerID: playerID});
+
+		return playerMatches.getMany();
 	}
 }

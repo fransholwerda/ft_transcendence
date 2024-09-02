@@ -4,10 +4,16 @@ export class CreateMatch {
 
     player1: string;
 
+    player1ID: number;
+
     player1Score: number;
 
     player2: string;
 
+    player2ID: number;
+
     player2Score: number;
+
+    winner: string;
 
 }
