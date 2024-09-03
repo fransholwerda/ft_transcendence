@@ -18,7 +18,6 @@ import {
 } from './pong.helpers';
 
 import { MatchService } from '../matches/matches.service';
-// import { CreateMatch }
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -29,7 +28,27 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private games: GameSession[] = [];
 	private lastUpdateTime: number = Date.now();
 
-	constructor(private matchService: MatchService) {}
+	constructor(private readonly matchService: MatchService) {}
+
+	private async sendCreateMatch(sesh: GameSession) {
+		const createMatchDto = {
+			player1: sesh.p1.username,
+			player1ID: Number(sesh.p1.userid),
+			player1Score: sesh.p1.score,
+			player2: sesh.p2.username,
+			player2ID: Number(sesh.p2.userid),
+			player2Score: sesh.p2.score,
+			winner: sesh.p1.score === MAX_SCORE ? sesh.p2.userid : sesh.p1.userid
+		};
+		await this.matchService.createNewMatch(createMatchDto);
+	}
+
+	private async gameEnd(sesh: GameSession) {
+		pongPrint(`NestJS pong: gameEnd: ${sesh.roomId}`);
+		sendCreateMatch(sesh);
+		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
+		this.games = removeGameSession(this.games, sesh.roomId);
+	}
 
 	handleConnection(client: Socket) {
 		pongPrint(`NestJS pong: connected: ${client.id}`);
@@ -87,21 +106,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('leaveGame')
 	handleLeaveGame(client: Socket) {
 		this.leavingGame(client);
-	}
-
-	private async gameEnd(sesh: GameSession) {
-		const createMatchDto = {
-			player1: sesh.p1.username,
-			player1ID: Number(sesh.p1.userid),
-			player1Score: sesh.p1.score,
-			player2: sesh.p2.username,
-			player2ID: Number(sesh.p2.userid),
-			player2Score: sesh.p2.score,
-			winner: sesh.p1.score === MAX_SCORE ? sesh.p2.userid : sesh.p1.userid
-		};
-		await this.matchService.createNewMatch(createMatchDto);
-		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
-		this.games = removeGameSession(this.games, sesh.roomId);
 	}
 
 	private checkQueue() {
@@ -172,7 +176,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 		if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
-			pongPrint(`NestJS pong: ${client.id}: game ended`);
 			this.gameEnd(sesh);
 			return;
 		}
@@ -185,11 +188,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		sesh.ball.y += sesh.ball.speedY * deltaTime;
 	
 		if (sesh.ball.x <= 0) {
+			console.log('p2 scored');
 			sesh.p2.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
 		}
 		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
+			console.log('p1 scored');
 			sesh.p1.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
