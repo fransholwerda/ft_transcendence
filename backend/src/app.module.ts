@@ -11,7 +11,7 @@ import { AuthController } from './auth/auth.controller';
 import { MatchModule } from './matches/matches.module';
 import { TwostepController } from './twostep/twostep.controller';
 import { MatchService } from './matches/matches.service';
-// import { FriendsModule } from './friends/friends.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
 imports: [
@@ -21,7 +21,7 @@ imports: [
 		}),
 		UsersModule,
 		MatchModule,
-		// FriendsModule,
+		FriendsModule,
 		TypeOrmModule.forRoot(typeOrmConfig)
 	],
 controllers: [AppController, AuthController, TwostepController],

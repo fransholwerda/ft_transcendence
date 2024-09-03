@@ -6,10 +6,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import { QueryFailedError} from 'typeorm/error/QueryFailedError'
+import { Friendship } from 'src/friends/entity/friends.entity';
+import { FriendshipRepository } from 'src/friends/friends.repository';
 
 @Injectable()
 export class UsersService {
-	constructor( public userRepository: UserRepository){}
+	constructor(@InjectRepository(User) public userRepository: UserRepository,
+	@InjectRepository(Friendship) private friendshipRepository: FriendshipRepository
+	){}
 
 	//This function should create a User in User Entity. the createUserData paramater will create an object
 	//of type createUserData where we have already defined what we are expecting.
@@ -23,10 +27,6 @@ export class UsersService {
 		user.TwoFactorEnabled = false;
 		user.TwoFactorSecret = '';
 		user.matchesWon = 0;
-		user.friends = [];
-		user.friendedBy = [];
-		user.ignoredUsers = [];
-		user.ignoredBy = [];
 		return await this.userRepository.save(user);
 	} catch (error) {
 		if (error instanceof QueryFailedError && error.driverError.code === '23505') {
@@ -69,34 +69,18 @@ export class UsersService {
 		throw new Error ('User or friend not found');
 	}
 
-	if(!user.friends) user.friends = [];
-	if(!friend.friends) friend.friends = [];
-	if(!user.friendedBy) user.friendedBy = [];
-	if(!friend.friendedBy) friend.friendedBy = [];
+	const friendship = new Friendship();
+	friendship.friendedBy = user;
+	friendship.friended = friend;
 
-	user.friends.push(friend);
-	friend.friendedBy.push(user);
-	console.log("user has friends: ", user.friends);
-	console.log("user is freinded by: ",user.friendedBy);
-	console.log("friends also has friends: ", friend.friends);
-	console.log("friend also is friended by: ", friend.friendedBy);
-
-	await Promise.all([this.userRepository.save(user), this.userRepository.save(friend)]);
+	await this.friendshipRepository.save(friendship);
   }
 
-	async removeFriend(userID: number, friendID: number) {
-		const user = await this.userRepository.findOne({where: {id: userID}});
-		const friend = await this.userRepository.findOne({where: {id: friendID}});
-
-		if (!user || !friend) {
-			throw new Error ('User or friend not found');
-		}
-	
-		user.friends = user.friends.filter(user => user.id !== friendID);
-		friend.friendedBy = friend.friendedBy.filter(user => user.id !== userID);
-
-		await Promise.all([this.userRepository.save(user), this.userRepository.save(friend)]);
-	}
+	// async removeFriend(userID: number, friendID: number): Promise<void> {
+	// 	const friendship = await this.friendshipRepository.findOne({
+	// 		where: [{friended }]
+	// 	})
+	// }
 
 	async getFriends(userID: number) {
 		return this.userRepository.createQueryBuilder('user')
