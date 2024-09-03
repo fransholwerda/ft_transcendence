@@ -10,12 +10,8 @@ import { PongGateway } from './pong/pong.gateway';
 import { AuthController } from './auth/auth.controller';
 import { MatchModule } from './matches/matches.module';
 import { TwostepController } from './twostep/twostep.controller';
-<<<<<<< HEAD
-import { FriendsModule } from './friends/friends.module';
-=======
 import { MatchService } from './matches/matches.service';
-// import { FriendsModule } from './friends/friends.module';
->>>>>>> origin
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
 imports: [
