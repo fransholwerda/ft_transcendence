@@ -7,27 +7,40 @@ export interface Theme {
 
 export const themes = new Map<string, Theme>([
 	['default', {
-		bg: '#26547c',
-		inner: '#ef476f',
-		text: '#ffd166',
-		extra: '#06d6a0'
+		bg: '#bcb8b1',
+		inner: '#463f3a',
+		text: '#f4f3ee',
+		extra: '#8a817c'
 	}],
-	['lighter', {
+	['Wooden', {
+		bg: '#a44200',
+		inner: '#3c1518',
+		text: '#d58936',
+		extra: '#69140e'
+	}],
+	['Coral Breeze', {
 		bg: '#ffa69e',
 		inner: '#faf3dd',
 		text: '#b8f2e6',
 		extra: '#aed9e0'
 	}],
-	['darker', {
+	['Twilight Ember', {
 		bg: '#003049',
 		inner: '#d62828',
 		text: '#f77f00',
 		extra: '#fcbf49'
 	}],
-	['unicorn', {
+	['Dreamscape Aura', {
 		bg: '#70d6ff',
 		inner: '#ff70a6',
 		text: '#e7ecef',
 		extra: '#ffd670'
 	}]
 ]);
+/*
+darkness
+3th
+1th
+4th
+2th
+*/

@@ -34,6 +34,24 @@
 	flex-direction: column;
 }
 
+.pong-info h6, .pong-waiting h6 {
+	min-height: 4vh;
+	height: 4vh;
+	max-height: 4vh;
+}
+
+.pong-info button, .pong-waiting button {
+	min-height: 8vh;
+	height: 8vh;
+	max-height: 8vh;
+}
+
+.pong-info select {
+	min-height: 6vh;
+	height: 6vh;
+	max-height: 6vh;
+}
+
 .pong-game {
 	/* background-color: var(--ponginner); */
 	border-radius: 5%;
