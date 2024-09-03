@@ -18,6 +18,7 @@ import {
 } from './pong.helpers';
 
 import { MatchService } from '../matches/matches.service';
+import { MatchModule } from '../matches/matches.module';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -45,7 +46,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private async gameEnd(sesh: GameSession) {
 		pongPrint(`NestJS pong: gameEnd: ${sesh.roomId}`);
-		sendCreateMatch(sesh);
+		this.sendCreateMatch(sesh);
 		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
 		this.games = removeGameSession(this.games, sesh.roomId);
 	}
