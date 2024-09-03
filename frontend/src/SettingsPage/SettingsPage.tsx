@@ -67,6 +67,21 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user }) => {
     return (result);
   }
 
+  async function disable2fa() {
+      const response = await fetch(`${Constants.FRONTEND_HOST_URL}/user/${user.id}`, {
+          method:  'PATCH',
+          headers: {
+              'Content-Type':'application/json'
+          },
+          body: JSON.stringify({
+              TwoFactorSecret: "",
+              TwoFactorEnabled: false
+          })
+      });
+      const result = await response.json();
+      return (result);
+  }
+
   async function verify2faCode(base32: string) {
     const response = await fetch(`${Constants.FRONTEND_HOST_URL}/twostep/verify`, {
       method:  'POST',
@@ -110,12 +125,18 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user }) => {
       </div>
 
       {/* Frame 3: 2FA Trigger Button */}
+      {!user.TwoFactorEnabled && 
       <div className="twofa-frame">
         <img src={twoStepSecret.dataURL} />
 	{!hasGeneratedCode && <button type="button" onClick={loadSecret}>Generate QR Code</button>}
 	{hasGeneratedCode && <input type="text" value={verificationCode} onChange={handleVerificationCodeChange} />}
-	{hasGeneratedCode && <button type="button" onClick={() => verifyAndEnableSecret(twoStepSecret.base32)}>verify and enable 2fa</button>}
-      </div>
+	{hasGeneratedCode && <button type="button" onClick={() => verifyAndEnableSecret(twoStepSecret.base32)}>Verify and enable 2fa</button>}
+      </div>}
+
+      {user.TwoFactorEnabled && 
+      <div className="twofa-frame">
+        <button type="button" onClick={disable2fa}>Disable 2fa</button>
+      </div>}
     </div>
   );
 };
