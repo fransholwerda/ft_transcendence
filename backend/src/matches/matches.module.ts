@@ -9,10 +9,6 @@ import { MatchService } from "./matches.service";
 	imports: [TypeOrmModule.forFeature([Match])],
 	controllers: [MatchController],
 	providers: [MatchService, MatchRepository],
-<<<<<<< HEAD
-	exports: [TypeOrmModule]
-=======
 	exports: [TypeOrmModule, MatchService, MatchRepository]
->>>>>>> origin
 })
 export class MatchModule{}
