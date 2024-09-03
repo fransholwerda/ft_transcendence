@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 
 import { Constants } from '../../shared/constants';
+import { User } from '../PageManager.tsx';
 
 interface LoginProps {
-  onLogin: (user_id: number) => void;
+  onLogin: (user_id: number) => Promise<User>;
 }
 
 function authorize(client_id: string, redirect_uri: string, scope: string, response_type: string) {
@@ -53,8 +54,12 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
     const access_token = await requestToken("authorization_code", client_id, url_params.get("code") || "", redirect_uri);
     const intra_user = await requestIntraUser(access_token);
     window.history.pushState({}, document.title, "/");
-    await onLogin(intra_user);
-    navigate('/pong');
+    const user = await onLogin(intra_user);
+    if (user.TwoFactorEnabled) {
+      navigate("/auth");
+    } else {
+      navigate('/pong');
+    }
   }
 
   if (url_params.has("code")) {

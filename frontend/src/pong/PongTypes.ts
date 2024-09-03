@@ -1,8 +1,19 @@
+export interface Paddle {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	speed: number;
+}
+
 export interface player {
 	clientid: string;
 	userid: string;
 	username: string;
 	score: number;
+	paddle: Paddle;
+	isKeyDown: boolean;
+	key: string;
 }
 
 export interface Ball {
@@ -19,7 +30,6 @@ export interface GameSession {
 	p2: player;
 	roomId: string;
 	ball: Ball;
-	intervalId?: NodeJS.Timeout;
 }
 
 export interface User {

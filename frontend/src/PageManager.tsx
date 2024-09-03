@@ -3,6 +3,7 @@ import './index.css';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 import LoginPage from './LoginPage/LoginPage';
+import AuthenticationPage from './AuthenticationPage/AuthenticationPage';
 import MainGrid from './mainGrid/MainGrid';
 import { Constants } from '../shared/constants';
 
@@ -17,7 +18,9 @@ const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
 export interface User {
   id:  string,
   username: string,
-  avatarURL: string
+  avatarURL: string,
+  TwoFactorSecret: string,
+  TwoFactorEnabled: boolean
 }
 
 const PageManager: React.FC = () => {
@@ -46,7 +49,7 @@ const PageManager: React.FC = () => {
 
     // --- DEBUG --- //
     if (randomDebug) {
-      user = createRandomUser();
+      user = createRandomUser(user);
       console.log('PageManager: Random User created', user);
     }
     // --- DEBUG --- //
@@ -54,8 +57,11 @@ const PageManager: React.FC = () => {
     setUser({
       id: user.id,
       username: user.username,
-      avatarURL:  user.avatarURL
+      avatarURL:  user.avatarURL,
+      TwoFactorSecret: user.TwoFactorSecret,
+      TwoFactorEnabled: user.TwoFactorEnabled
     });
+    return user;
   };
 
   const handleLogout = () => {
@@ -63,15 +69,14 @@ const PageManager: React.FC = () => {
     setUser(null);
   };
 
-  // special case for switching out the content
-  const routeLeaveQueue = () => {
+  const leaveQueue = () => {
     console.log('PageManager: Leaving Queue');
-    pSock.emit('routeLeaveQueue');
+    pSock.emit('leaveQueue');
   };
 
-  const routeLeaveGame = () => {
+  const leaveGame = () => {
     console.log('PageManager: Leaving Game');
-    pSock.emit('routeLeaveGame');
+    pSock.emit('leaveGame');
   };
 
   useEffect(() => {
@@ -90,8 +95,8 @@ const PageManager: React.FC = () => {
       console.log('PageManager: LocationHandler useEffect');
       if (!location.pathname.includes('/pong')) {
         console.log('PageManager: Not at pong page', user?.username);
-        routeLeaveQueue();
-        routeLeaveGame();
+        leaveQueue();
+        leaveGame();
       }
     }, [location.pathname]);
     return null;
@@ -102,6 +107,8 @@ const PageManager: React.FC = () => {
       <LocationHandler />
       <Routes>
         <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+
+	<Route path="/auth" element={<AuthenticationPage user={user} />} />
         
         <Route path="/pong" element={user ? <MainGrid contentComponent="Pong" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         

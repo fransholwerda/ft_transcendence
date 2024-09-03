@@ -1,5 +1,5 @@
 // max score
-export const MAX_SCORE = 5;
+export const MAX_SCORE = 10;
 
 // ------------------------------
 // CUSTOM PRINTING
@@ -22,19 +22,3 @@ export const pongPrint = (message: any) => {
     pongPrintIndex = (pongPrintIndex + 1) % pongPrintColors.length;
 };
 // ------------------------------
-
-export class PongC {
-	public static BALL_WIDTH = 10;
-	public static BALL_HEIGHT = 10;
-	public static BALL_SPEEDX = 5;
-	public static BALL_SPEEDY = 5;
-
-	public static PADDLE_WIDTH = 20;
-	public static PADDLE_HEIGHT = 100;
-	public static PADDLE_SPEED = 5;
-
-	public static SCORE_SIZE = 50;
-
-	public static CANVAS_WIDTH = 800;
-	public static CANVAS_HEIGHT = 500;
-}

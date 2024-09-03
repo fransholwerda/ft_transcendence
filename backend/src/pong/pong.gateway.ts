@@ -1,7 +1,8 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MAX_SCORE, pongPrint, PongC } from './pong.constants';
-import { GameSession, User } from './pong.types';
+import { MAX_SCORE, pongPrint } from './pong.constants';
+import { PongC } from '../../shared/constants';
+import { Ball, GameSession, Paddle, User } from './pong.types';
 import {
 	fillGameSession,
 	printGameSession,
@@ -31,6 +32,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	handleDisconnect(client: Socket) {
 		pongPrint(`NestJS pong: disconnected: ${client.id}`);
 		this.queue = removeFromQueue(this.queue, client.id);
+		this.leavingGame(client);
 		disconnectFromGame(this.server, this.games, client.id);
 	}
 
@@ -53,56 +55,41 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
-	@SubscribeMessage('routeLeaveQueue')
-	handleRouteLeaveQueue(client: Socket) {
+	@SubscribeMessage('leaveQueue')
+	handleLeaveQueue(client: Socket) {
 		pongPrint(`NestJS pong: ${client.id} left the queue`);
 		this.queue = removeFromQueue(this.queue, client.id);
 	}
-
-	@SubscribeMessage('pongLeaveQueue')
-	handlePongLeaveQueue(client: Socket) {
-		pongPrint(`NestJS pong: ${client.id} left the queue`);
-		this.queue = removeFromQueue(this.queue, client.id);
-	}
-
-	@SubscribeMessage('routeLeaveGame')
-	handleRouteLeaveGame(client: Socket) {
-		pongPrint(`NestJS pong routeLeaveGame: ${client.id}`);
+	private leavingGame(client: Socket) {
+		pongPrint(`NestJS pong leaveGame: ${client.id}`);
 		const sesh = findGameSessionByClientId(this.games, client.id);
 		if (!sesh) {
-			pongPrint(`NestJS pong routeLeaveGame: ${client.id} leaveGame listener !sesh`);
+			pongPrint(`NestJS pong leaveGame: ${client.id} leaveGame listener !sesh`);
 			return;
 		}
-		pongPrint(`NestJS pong routeLeaveGame: ${sesh.roomId}`);
-		pongPrint(`NestJS pong routeLeaveGame: ${client.id} left room ${sesh.roomId}`);
+		pongPrint(`NestJS pong leaveGame: ${sesh.roomId}`);
+		pongPrint(`NestJS pong leaveGame: ${client.id} left room ${sesh.roomId}`);
+		
+		// Update the score of the opponent
 		if (sesh.p1.clientid === client.id) {
 			sesh.p2.score = MAX_SCORE;
-		}
-		else if (sesh.p2.clientid === client.id) {
+		} else if (sesh.p2.clientid === client.id) {
 			sesh.p1.score = MAX_SCORE;
 		}
+		
+		printGameSession(sesh);
+		
+		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
+		
+		pongPrint(`NestJS pong leaveGame: after send`);
+		// Remove the game session
 		this.games = removeGameSession(this.games, sesh.roomId);
-		this.server.to(sesh.roomId).emit('routeLeaveGame', { sesh });
+		pongPrint(`NestJS pong leaveGame: after remove`);
 	}
-
-	@SubscribeMessage('pongLeaveGame')
-	handlePongLeaveGame(client: Socket) {
-		pongPrint(`NestJS pong pongLeaveGame: ${client.id}`);
-		const sesh = findGameSessionByClientId(this.games, client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong pongLeaveGame: ${client.id} leaveGame listener !sesh`);
-			return;
-		}
-		pongPrint(`NestJS pong pongLeaveGame: ${sesh.roomId}`);
-		pongPrint(`NestJS pong pongLeaveGame: ${client.id} left room ${sesh.roomId}`);
-		if (sesh.p1.clientid === client.id) {
-			sesh.p2.score = MAX_SCORE;
-		}
-		else if (sesh.p2.clientid === client.id) {
-			sesh.p1.score = MAX_SCORE;
-		}
-		this.games = removeGameSession(this.games, sesh.roomId);
-		this.server.to(sesh.roomId).emit('pongLeaveGame', { sesh });
+	
+	@SubscribeMessage('leaveGame')
+	handleLeaveGame(client: Socket) {
+		this.leavingGame(client);
 	}
 
 	private checkQueue() {
@@ -133,72 +120,73 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.in(p2.clientId).socketsJoin(roomId);
 		pongPrint(`NestJS pong checkQueue: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		printGames(this.games);
-
-		// Start the game loop for the new game session
-		this.startGameLoop(gameSession);
 	}
 
-	// ----------------- TEST SCORE INCREMENT -----------------
-	@SubscribeMessage('testIncrement')
-	handleTestIncrement(client: Socket) {
-		pongPrint(`NestJS pong testIncrement : emit received from ${client.id}`);
+	@SubscribeMessage('movePaddle')
+	handleMovePaddle(client: Socket, data: { direction: string  }) {
 		const sesh = findGameSessionByClientId(this.games, client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong testIncrement: ${client.id} testIncrement !sesh`);
-			return;
-		}
+		if (!sesh) return;
+		let paddle;
 		if (sesh.p1.clientid === client.id) {
-			sesh.p1.score += 1;
+			paddle = sesh.p1.paddle;
+		} else if (sesh.p2.clientid === client.id) {
+			paddle = sesh.p2.paddle;
 		}
-		else if (sesh.p2.clientid === client.id) {
-			sesh.p2.score += 1;
+		if (!paddle) return;
+		const paddleSpeed = 20;
+		if (data.direction === 'w') {
+			paddle.y = Math.max(0, paddle.y - paddleSpeed); // Move up
+		} else if (data.direction === 's') {
+			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed); // Move down
 		}
-		this.server.to(sesh.roomId).emit('testIncrement', { sesh });
 	}
-	// ----------------- TEST SCORE INCREMENT -----------------
 
-	// ----------------- GAMESTATE UPDATE -----------------
-	@SubscribeMessage('gameStateUpdate')
-	handleGameStateUpdate(client: Socket, data: { sesh: GameSession }) {
-		pongPrint(`NestJS pong gameStateUpdate : emit received from ${client.id}`);
+	private paddleCollision(p: Paddle, b: Ball) {
+		if (b.x < p.x + p.width &&
+			b.x + b.width > p.x &&
+			b.y < p.y + p.height &&
+			b.y + b.height > p.y) {
+			return true;
+		}
+		return false;
+	}
+
+	@SubscribeMessage('requestGameUpdate')
+	handleRequestGameUpdate(client: Socket) {
+		pongPrint(`NestJS pong: ${client.id}: requested game update`);
 		const sesh = findGameSessionByClientId(this.games, client.id);
 		if (!sesh) {
-			pongPrint(`NestJS pong gameStateUpdate: ${client.id} gameStateUpdate !sesh`);
+			pongPrint(`NestJS pong: ${client.id}: cant find game for request`);
 			return;
 		}
-		sesh.ball = data.sesh.ball;
-
-		this.server.to(sesh.roomId).emit('gameStateUpdate', { sesh });
-	}
-	// ----------------- GAMESTATE UPDATE -----------------
-
-	private startGameLoop(gameSession: GameSession) {
-		const intervalId = setInterval(() => {
-			// Update ball position
-			gameSession.ball.x += gameSession.ball.speedX;
-			gameSession.ball.y += gameSession.ball.speedY;
-
-			// Emit the updated game state to the clients
-			this.server.to(gameSession.roomId).emit('gameStateUpdate', gameSession);
-
-			// Check for collisions with the walls and reverse direction if necessary
-			if (gameSession.ball.x <= 0 || gameSession.ball.x + gameSession.ball.width >= PongC.CANVAS_WIDTH) {
-				gameSession.ball.speedX *= -1;
-			}
-			if (gameSession.ball.y <= 0 || gameSession.ball.y + gameSession.ball.height >= PongC.CANVAS_HEIGHT) {
-				gameSession.ball.speedY *= -1;
-			}
-		}, (1000 / 60));
-
-		// Store the interval ID in the game session for future reference (e.g., to clear the interval when the game ends)
-		gameSession.intervalId = intervalId;
-	}
-
-	private stopGameLoop(gameSession: GameSession) {
-		const intervalId = gameSession.intervalId;
-		if (intervalId) {
-			clearInterval(intervalId);
+		if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
+			pongPrint(`NestJS pong: ${client.id}: game ended`);
+			this.server.to(sesh.roomId).emit('gameEnd', { sesh });
+			this.games = removeGameSession(this.games, sesh.roomId);
+			return;
 		}
+		sesh.ball.x += sesh.ball.speedX;
+		sesh.ball.y += sesh.ball.speedY;
+		if (sesh.ball.x <= 0) {
+			sesh.p2.score++;
+			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
+			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+		}
+		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
+			sesh.p1.score++;
+			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
+			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+		}
+		if (sesh.ball.y <= 0 || sesh.ball.y + sesh.ball.height >= PongC.CANVAS_HEIGHT) {
+			sesh.ball.speedY *= -1;
+		}
+		// Check collision with paddles
+		if (sesh.ball.speedX < 0 && this.paddleCollision(sesh.p1.paddle, sesh.ball)) {
+			sesh.ball.speedX *= -1;
+		}
+		else if (sesh.ball.speedX > 0 && this.paddleCollision(sesh.p2.paddle, sesh.ball)) {
+			sesh.ball.speedX *= -1;
+		}
+		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 	}
 }
-
