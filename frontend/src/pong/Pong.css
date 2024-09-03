@@ -1,80 +1,113 @@
 @import url('../maincssroot.css');
 
+:root {
+	--pongbg: #ff0000;
+	--ponginner: #ffe600;
+	--pongtext: #15ff00;
+	--pongextra: #1900ff;
+}
+
 .pong-container {
+	height: var(--maingrid_content_height);
+	min-height: var(--maingrid_content_height);
+	max-height: var(--maingrid_content_height);
+	width: var(--maingrid_content_width);
+	min-width: var(--maingrid_content_width);
+	max-width: var(--maingrid_content_width);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	height: var(--maingrid_content_height);
-	min-height: var(--maingrid_content_height);
-	max-height: var(--maingrid_content_height);
-	background-color: #f0f0f0;
+	background-color: var(--pongbg);
 	font-family: Arial, sans-serif;
-	background-size: 100%;
-    background-image: url('bg.jpg');
-}
-
-.pong-card {
-	background-color: white;
-	/* border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	padding: 2rem; */
-	text-align: center;
-	/* max-width: 400px; */
 	width: 100%;
+	height: 100%;
+	text-align: center;
 }
 
-.pong-container h2 {
-	color: #333;
-	margin-bottom: 1rem;
+.pong-container p, h1, h2, h3, h4, h5, h6 {
+	color: var(--pongtext);
+	font-size: 2vh;
 }
 
-.pong-container h3 {
-	color: #333;
-	margin-bottom: 0.5rem;
+.pong-info, .pong-waiting {
+	background-color: var(--ponginner);
+	padding: 2vh;
+	border-radius: 5%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 }
 
+.pong-info h6, .pong-waiting h6 {
+	font-size: 4vh;
+	padding-top: 0.5vh;
+	padding-bottom: 0.5vh;
+}
 
-.pong-container p {
-	color: #666;
-	margin-bottom: 1rem;
+.pong-info button, .pong-waiting button {
+	min-height: 8vh;
+	height: 8vh;
+	max-height: 8vh;
+	font-size: 6vh;
+}
+
+.pong-info select, option {
+	min-height: 6vh;
+	height: 6vh;
+	max-height: 6vh;
+	font-size: 5vh;
+}
+
+.pong-game {
+	/* background-color: var(--ponginner); */
+	border-radius: 5%;
+	overflow: hidden;
 }
 
 .pong-container button {
-	background-color: #4CAF50;
+	background-color: var(--pongtext);
 	border: none;
-	border-radius: 4px;
-	color: white;
+	border-radius: 5%;
+	color: var(--ponginner);
 	cursor: pointer;
-	font-size: 1rem;
-	padding: 0.75rem 1.5rem;
+	padding: 0.75vh 3vw;
 	transition: background-color 0.3s ease;
 }
 
-.join-queue-btn:hover {
-	background-color: #45a049;
+.pong-container button:hover {
+	background-color: var(--pongbg);
 }
 
-.join-queue-btn:disabled {
-	background-color: #cccccc;
-	cursor: not-allowed;
+.pong-game canvas {
+	width: 100%;
+	object-fit: contain;
+	min-width: 80px;
+	min-height: 50px;
 }
 
-.leave-queue-btn, .leave-game-btn {
-	background-color: #f44336;
+.pong-game .player-score {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-.leave-queue-btn:hover, .leave-game-btn:hover{
-	background-color: #da190b;
+.player-score h6 {
+	font-size: 4vh;
+	margin: 0 2vw;
 }
 
-.game-info {
-	background-color: #e7f3fe;
-	/* border-radius: 4px; */
-	/* padding: 1rem; */
-	/* margin-top: 1rem; */
+.pong-game .player-score {
+	max-height: 8vh;
 }
 
-.game-info p {
-	/* margin: 0.5rem 0; */
+.pong-game canvas {
+	max-height: 70vh;
+}
+
+.pong-game .button {
+	min-height: 7vh;
+	height: 7vh;
+	max-height: 7vh;
+	font-size: 5vh;
 }

@@ -1,6 +1,5 @@
 import React from 'react';
 import './MainHeader.css';
-import mainHeaderImage from './mainheader.png';
 import { User } from '../PageManager.tsx';
 import { Link } from 'react-router-dom';
 
@@ -13,16 +12,14 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onLogout }) => {
   return (
     <div className="main-header">
       <div className="header-content">
-        <div className="header-logo">
-          <img src={mainHeaderImage} alt="logo" />
-        </div>
         <div className="header-title">
-          <h1>FT Transcendence</h1>
-          <p>Welcome, {user.username}</p>
+          <div>
+            <h1>Welcome, {user.username} : {user.id}! </h1>
+          </div>
         </div>
       </div>
 
-      <div className="header-item">
+      <div className="header-buttons">
         <Link to="/profile">
           <button className="header-button">
             Profile
