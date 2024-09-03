@@ -25,10 +25,10 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		if (!pSock) return;
 		const newTheme = themes.get(theme);
 		if (!newTheme) return;
-		document.documentElement.style.setProperty('--pong1', newTheme.color1);
-		document.documentElement.style.setProperty('--pong2', newTheme.color2);
-		document.documentElement.style.setProperty('--pong3', newTheme.color3);
-		document.documentElement.style.setProperty('--pong4', newTheme.color4);
+		document.documentElement.style.setProperty('--pongbg', newTheme.bg);
+		document.documentElement.style.setProperty('--ponginner', newTheme.inner);
+		document.documentElement.style.setProperty('--pongtext', newTheme.text);
+		document.documentElement.style.setProperty('--pongextra', newTheme.extra);
 	}, [theme, pSock]);
 
 	const joinQueue = () => {
@@ -158,13 +158,15 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		if (!context) return;
 		const renderGame = () => {
 			if (!context || !gameSession) return;
+			const curTheme = themes.get(theme);
+			if (!curTheme) return;
 			pongPrint(`pong.tsx: Rendering game ${user.username}`);
 			context.clearRect(0, 0, canvas.width, canvas.height);
-			context.fillStyle = 'black';
+			context.fillStyle = curTheme.inner;
 			context.fillRect(0, 0, canvas.width, canvas.height);
 			const gs = gameSession;
 			if (!gs) return;
-			context.fillStyle = 'white';
+			context.fillStyle = curTheme.text;
 			context.fillRect(gs.ball.x, gs.ball.y, gs.ball.width, gs.ball.height);
 			context.fillRect(gs.p1.paddle.x, gs.p1.paddle.y, gs.p1.paddle.width, gs.p1.paddle.height);
 			context.fillRect(gs.p2.paddle.x, gs.p2.paddle.y, gs.p2.paddle.width, gs.p2.paddle.height);
@@ -190,6 +192,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					<h6>User id: {user.id}</h6>
 					<h6>Username: {user.username}</h6>
 					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
+					<h6>Select your color theme</h6>
 					<select onChange={(e) => setTheme(e.target.value)}>
 						{Array.from(themes.keys()).map((theme) => (
 							<option key={theme} value={theme}>

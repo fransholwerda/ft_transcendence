@@ -1,33 +1,33 @@
 export interface Theme {
-	color1: string;
-	color2: string;
-	color3: string;
-	color4: string;
+	bg: string;
+	inner: string;
+	text: string;
+	extra: string;
 }
 
 export const themes = new Map<string, Theme>([
 	['default', {
-		color1: '#d4e09b',
-		color2: '#f6f4d2',
-		color3: '#cbdfbd',
-		color4: '#f19c79'
+		bg: '#26547c',
+		inner: '#ef476f',
+		text: '#ffd166',
+		extra: '#06d6a0'
 	}],
 	['lighter', {
-		color1: '#ffa69e',
-		color2: '#faf3dd',
-		color3: '#b8f2e6',
-		color4: '#aed9e0'
+		bg: '#ffa69e',
+		inner: '#faf3dd',
+		text: '#b8f2e6',
+		extra: '#aed9e0'
 	}],
 	['darker', {
-		color1: '#003049',
-		color2: '#d62828',
-		color3: '#f77f00',
-		color4: '#fcbf49'
+		bg: '#003049',
+		inner: '#d62828',
+		text: '#f77f00',
+		extra: '#fcbf49'
 	}],
 	['unicorn', {
-		color1: '#70d6ff',
-		color2: '#ff70a6',
-		color3: '#e7ecef',
-		color4: '#ffd670'
+		bg: '#70d6ff',
+		inner: '#ff70a6',
+		text: '#e7ecef',
+		extra: '#ffd670'
 	}]
 ]);

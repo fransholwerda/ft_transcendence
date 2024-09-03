@@ -1,10 +1,10 @@
 @import url('../maincssroot.css');
 
 :root {
-	--pong1: #ff0000;
-	--pong2: #ffe600;
-	--pong3: #15ff00;
-	--pong4: #1900ff;
+	--pongbg: #ff0000;
+	--ponginner: #ffe600;
+	--pongtext: #15ff00;
+	--pongextra: #1900ff;
 }
 
 .pong-container {
@@ -18,7 +18,7 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	background-color: var(--pong1);
+	background-color: var(--pongbg);
 	font-family: Arial, sans-serif;
 	width: 100%;
 	height: 100%;
@@ -26,23 +26,25 @@
 }
 
 .pong-info, .pong-waiting {
-	background-color: var(--pong2);
+	background-color: var(--ponginner);
 	padding: 2vh;
 	border-radius: 5%;
 	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 }
 
 .pong-game {
-	/* background-color: var(--pong2); */
+	/* background-color: var(--ponginner); */
 	border-radius: 5%;
 	overflow: hidden;
 }
 
 .pong-container button {
-	background-color: var(--pong3);
+	background-color: var(--pongtext);
 	border: none;
 	border-radius: 5%;
-	color: var(--pong2);
+	color: var(--ponginner);
 	cursor: pointer;
 	font-size: 2vh;
 	padding: 0.75vh 3vw;
@@ -50,7 +52,7 @@
 }
 
 .pong-container button:hover {
-	background-color: var(--pong1);
+	background-color: var(--pongbg);
 }
 
 .pong-game canvas {
@@ -67,7 +69,7 @@
 }
 
 .pong-container p, h1, h2, h3, h4, h5, h6 {
-	color: var(--pong3);
+	color: var(--pongtext);
 	font-size: 2vh;
 }
 
