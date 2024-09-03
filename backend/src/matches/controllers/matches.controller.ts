@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Delete, Get, Param, HttpCode } from "@nestjs/common";
+import { Controller, Post, Body, Delete, Get, Param, HttpCode, ParseIntPipe } from "@nestjs/common";
 import { MatchService } from "../matches.service";
 import { CreateMatch } from "../dto/create-match.dto";
 
@@ -27,4 +27,16 @@ export class MatchController {
 	remove(@Param('id') id: string) {
 		return this.matchService.removeMatch(+id);
 	}
+
+	@Get(':playerID/matchHistory')
+	async findPlayersMatches(@Param('playerID', ParseIntPipe) playerID: number) {
+		try {
+			await this.matchService.findPlayersMatches(+playerID);
+		}
+		catch (error) {
+			console.log('something went wrong with finding match list. Unlucky.');
+			throw (error);
+		}
+	}
+
 }
