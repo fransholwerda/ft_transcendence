@@ -4,6 +4,7 @@ import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
+import { themes } from './themes';
 
 interface PongProps {
 	user: User;
@@ -18,6 +19,17 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const keyState = useRef<{ [key: string]: boolean }>({});
 	const canvasWidth = 800;
 	const canvasHeight = 500;
+	const [theme, setTheme] = useState('default');
+
+	useEffect(() => {
+		if (!pSock) return;
+		const newTheme = themes.get(theme);
+		if (!newTheme) return;
+		document.documentElement.style.setProperty('--pong1', newTheme.color1);
+		document.documentElement.style.setProperty('--pong2', newTheme.color2);
+		document.documentElement.style.setProperty('--pong3', newTheme.color3);
+		document.documentElement.style.setProperty('--pong4', newTheme.color4);
+	}, [theme, pSock]);
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
@@ -178,6 +190,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					<h6>User id: {user.id}</h6>
 					<h6>Username: {user.username}</h6>
 					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
+					<select onChange={(e) => setTheme(e.target.value)}>
+						{Array.from(themes.keys()).map((theme) => (
+							<option key={theme} value={theme}>
+								{theme}
+							</option>
+						))}
+					</select>
 				</div>
 			)}
 			{inQueue && !inGame && (
@@ -193,7 +212,6 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			)}
 			{inGame && gameSession && (
 				<div className="pong-game">
-					<h3>{pSock.id}</h3>
 					<div className="player-score">
 						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
 						<h6>{gameSession.p2.username} : {gameSession.p2.score}</h6>

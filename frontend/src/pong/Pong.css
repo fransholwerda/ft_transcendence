@@ -25,9 +25,15 @@
 	text-align: center;
 }
 
-.pong-info, .pong-waiting, .pong-game {
+.pong-info, .pong-waiting {
 	background-color: var(--pong2);
 	padding: 2vh;
+	border-radius: 5%;
+	overflow: hidden;
+}
+
+.pong-game {
+	/* background-color: var(--pong2); */
 	border-radius: 5%;
 	overflow: hidden;
 }
@@ -52,7 +58,6 @@
 	object-fit: contain;
 	min-width: 80px;
 	min-height: 50px;
-	max-height: 75vh;
 }
 
 .pong-game .player-score {
@@ -69,4 +74,16 @@
 .player-score h6 {
 	font-size: 3vh;
 	margin: 0 2vw;
+}
+
+.pong-game .player-score {
+	max-height: 8vh;
+}
+
+.pong-game canvas {
+	max-height: 70vh;
+}
+
+.pong-game .player-score {
+	max-height: 7vh;
 }
