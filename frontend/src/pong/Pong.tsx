@@ -204,10 +204,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			)}
 			{inQueue && !inGame && (
 				<div className="pong-waiting">
-					<h6>Socket id: {pSock.id}</h6>
-					<h6>User id: {user.id}</h6>
 					<h6>Username: {user.username}</h6>
-					<p>Waiting for opponent...</p>
+					<h6>Waiting for opponent...</h6>
 					<button className="leave-queue-btn" onClick={leaveQueue}>
 						Leave Queue
 					</button>
@@ -217,7 +215,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				<div className="pong-game">
 					<div className="player-score">
 						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
-						<h6>{gameSession.p2.username} : {gameSession.p2.score}</h6>
+						<h6>{gameSession.p2.score} : {gameSession.p2.username}</h6>
 					</div>
 					<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
 					<button onClick={leaveGame}>
