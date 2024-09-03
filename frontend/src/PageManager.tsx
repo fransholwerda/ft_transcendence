@@ -108,7 +108,7 @@ const PageManager: React.FC = () => {
       <Routes>
         <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
 
-	<Route path="/auth" element={<AuthenticationPage user={user} />} />
+	      <Route path="/auth" element={<AuthenticationPage user={user} />} />
         
         <Route path="/pong" element={user ? <MainGrid contentComponent="Pong" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
         

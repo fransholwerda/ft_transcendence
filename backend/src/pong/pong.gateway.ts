@@ -17,6 +17,9 @@ import {
 	removeGameSession
 } from './pong.helpers';
 
+import { MatchService } from '../matches/matches.service';
+import { MatchModule } from '../matches/matches.module';
+
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
@@ -25,6 +28,28 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private queue: { clientId: string, user: User }[] = [];	
 	private games: GameSession[] = [];
 	private lastUpdateTime: number = Date.now();
+
+	constructor(private readonly matchService: MatchService) {}
+
+	private async sendCreateMatch(sesh: GameSession) {
+		const createMatchDto = {
+			player1: sesh.p1.username,
+			player1ID: Number(sesh.p1.userid),
+			player1Score: sesh.p1.score,
+			player2: sesh.p2.username,
+			player2ID: Number(sesh.p2.userid),
+			player2Score: sesh.p2.score,
+			winner: sesh.p1.score === MAX_SCORE ? sesh.p1.userid : sesh.p2.userid
+		};
+		await this.matchService.createNewMatch(createMatchDto);
+	}
+
+	private async gameEnd(sesh: GameSession) {
+		pongPrint(`NestJS pong: gameEnd: ${sesh.roomId}`);
+		this.sendCreateMatch(sesh);
+		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
+		this.games = removeGameSession(this.games, sesh.roomId);
+	}
 
 	handleConnection(client: Socket) {
 		pongPrint(`NestJS pong: connected: ${client.id}`);
@@ -70,22 +95,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		pongPrint(`NestJS pong leaveGame: ${sesh.roomId}`);
 		pongPrint(`NestJS pong leaveGame: ${client.id} left room ${sesh.roomId}`);
-		
-		// Update the score of the opponent
 		if (sesh.p1.clientid === client.id) {
 			sesh.p2.score = MAX_SCORE;
 		} else if (sesh.p2.clientid === client.id) {
 			sesh.p1.score = MAX_SCORE;
 		}
-		
 		printGameSession(sesh);
-		
-		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
-		
-		pongPrint(`NestJS pong leaveGame: after send`);
-		// Remove the game session
-		this.games = removeGameSession(this.games, sesh.roomId);
-		pongPrint(`NestJS pong leaveGame: after remove`);
+		this.gameEnd(sesh);
 	}
 	
 	@SubscribeMessage('leaveGame')
@@ -161,9 +177,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 		if (sesh.p1.score === MAX_SCORE || sesh.p2.score === MAX_SCORE) {
-			pongPrint(`NestJS pong: ${client.id}: game ended`);
-			this.server.to(sesh.roomId).emit('gameEnd', { sesh });
-			this.games = removeGameSession(this.games, sesh.roomId);
+			this.gameEnd(sesh);
 			return;
 		}
 	
@@ -175,11 +189,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		sesh.ball.y += sesh.ball.speedY * deltaTime;
 	
 		if (sesh.ball.x <= 0) {
+			console.log('p2 scored');
 			sesh.p2.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
 		}
 		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
+			console.log('p1 scored');
 			sesh.p1.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
