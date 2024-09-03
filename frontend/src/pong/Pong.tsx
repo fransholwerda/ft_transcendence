@@ -4,6 +4,7 @@ import { User } from '../PageManager';
 import { Socket } from 'socket.io-client';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
+import { themes } from './themes';
 
 interface PongProps {
 	user: User;
@@ -18,6 +19,17 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const keyState = useRef<{ [key: string]: boolean }>({});
 	const canvasWidth = 800;
 	const canvasHeight = 500;
+	const [theme, setTheme] = useState('default');
+
+	useEffect(() => {
+		if (!pSock) return;
+		const newTheme = themes.get(theme);
+		if (!newTheme) return;
+		document.documentElement.style.setProperty('--pongbg', newTheme.bg);
+		document.documentElement.style.setProperty('--ponginner', newTheme.inner);
+		document.documentElement.style.setProperty('--pongtext', newTheme.text);
+		document.documentElement.style.setProperty('--pongextra', newTheme.extra);
+	}, [theme, pSock]);
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
@@ -146,13 +158,15 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		if (!context) return;
 		const renderGame = () => {
 			if (!context || !gameSession) return;
+			const curTheme = themes.get(theme);
+			if (!curTheme) return;
 			pongPrint(`pong.tsx: Rendering game ${user.username}`);
 			context.clearRect(0, 0, canvas.width, canvas.height);
-			context.fillStyle = 'black';
+			context.fillStyle = curTheme.inner;
 			context.fillRect(0, 0, canvas.width, canvas.height);
 			const gs = gameSession;
 			if (!gs) return;
-			context.fillStyle = 'white';
+			context.fillStyle = curTheme.text;
 			context.fillRect(gs.ball.x, gs.ball.y, gs.ball.width, gs.ball.height);
 			context.fillRect(gs.p1.paddle.x, gs.p1.paddle.y, gs.p1.paddle.width, gs.p1.paddle.height);
 			context.fillRect(gs.p2.paddle.x, gs.p2.paddle.y, gs.p2.paddle.width, gs.p2.paddle.height);
@@ -178,14 +192,20 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					<h6>User id: {user.id}</h6>
 					<h6>Username: {user.username}</h6>
 					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
+					<h6>Select your color theme</h6>
+					<select onChange={(e) => setTheme(e.target.value)}>
+						{Array.from(themes.keys()).map((theme) => (
+							<option key={theme} value={theme}>
+								{theme}
+							</option>
+						))}
+					</select>
 				</div>
 			)}
 			{inQueue && !inGame && (
 				<div className="pong-waiting">
-					<h6>Socket id: {pSock.id}</h6>
-					<h6>User id: {user.id}</h6>
 					<h6>Username: {user.username}</h6>
-					<p>Waiting for opponent...</p>
+					<h6>Waiting for opponent...</h6>
 					<button className="leave-queue-btn" onClick={leaveQueue}>
 						Leave Queue
 					</button>
@@ -193,10 +213,9 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			)}
 			{inGame && gameSession && (
 				<div className="pong-game">
-					<h3>{pSock.id}</h3>
 					<div className="player-score">
 						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
-						<h6>{gameSession.p2.username} : {gameSession.p2.score}</h6>
+						<h6>{gameSession.p2.score} : {gameSession.p2.username}</h6>
 					</div>
 					<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
 					<button onClick={leaveGame}>

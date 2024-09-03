@@ -1,10 +1,10 @@
 @import url('../maincssroot.css');
 
 :root {
-	--pong1: #ff0000;
-	--pong2: #ffe600;
-	--pong3: #15ff00;
-	--pong4: #1900ff;
+	--pongbg: #ff0000;
+	--ponginner: #ffe600;
+	--pongtext: #15ff00;
+	--pongextra: #1900ff;
 }
 
 .pong-container {
@@ -18,33 +18,65 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	background-color: var(--pong1);
+	background-color: var(--pongbg);
 	font-family: Arial, sans-serif;
 	width: 100%;
 	height: 100%;
 	text-align: center;
 }
 
-.pong-info, .pong-waiting, .pong-game {
-	background-color: var(--pong2);
+.pong-container p, h1, h2, h3, h4, h5, h6 {
+	color: var(--pongtext);
+	font-size: 2vh;
+}
+
+.pong-info, .pong-waiting {
+	background-color: var(--ponginner);
 	padding: 2vh;
+	border-radius: 5%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.pong-info h6, .pong-waiting h6 {
+	font-size: 4vh;
+	padding-top: 0.5vh;
+	padding-bottom: 0.5vh;
+}
+
+.pong-info button, .pong-waiting button {
+	min-height: 8vh;
+	height: 8vh;
+	max-height: 8vh;
+	font-size: 6vh;
+}
+
+.pong-info select, option {
+	min-height: 6vh;
+	height: 6vh;
+	max-height: 6vh;
+	font-size: 5vh;
+}
+
+.pong-game {
+	/* background-color: var(--ponginner); */
 	border-radius: 5%;
 	overflow: hidden;
 }
 
 .pong-container button {
-	background-color: var(--pong3);
+	background-color: var(--pongtext);
 	border: none;
 	border-radius: 5%;
-	color: var(--pong2);
+	color: var(--ponginner);
 	cursor: pointer;
-	font-size: 2vh;
 	padding: 0.75vh 3vw;
 	transition: background-color 0.3s ease;
 }
 
 .pong-container button:hover {
-	background-color: var(--pong1);
+	background-color: var(--pongbg);
 }
 
 .pong-game canvas {
@@ -52,7 +84,6 @@
 	object-fit: contain;
 	min-width: 80px;
 	min-height: 50px;
-	max-height: 75vh;
 }
 
 .pong-game .player-score {
@@ -61,12 +92,22 @@
 	align-items: center;
 }
 
-.pong-container p, h1, h2, h3, h4, h5, h6 {
-	color: var(--pong3);
-	font-size: 2vh;
+.player-score h6 {
+	font-size: 4vh;
+	margin: 0 2vw;
 }
 
-.player-score h6 {
-	font-size: 3vh;
-	margin: 0 2vw;
+.pong-game .player-score {
+	max-height: 8vh;
+}
+
+.pong-game canvas {
+	max-height: 70vh;
+}
+
+.pong-game .button {
+	min-height: 7vh;
+	height: 7vh;
+	max-height: 7vh;
+	font-size: 5vh;
 }
