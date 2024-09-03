@@ -24,6 +24,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private queue: { clientId: string, user: User }[] = [];	
 	private games: GameSession[] = [];
+	private lastUpdateTime: number = Date.now();
 
 	handleConnection(client: Socket) {
 		pongPrint(`NestJS pong: connected: ${client.id}`);
@@ -133,11 +134,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			paddle = sesh.p2.paddle;
 		}
 		if (!paddle) return;
-		const paddleSpeed = 20;
+		const paddleSpeed = 15;
 		if (data.direction === 'w') {
-			paddle.y = Math.max(0, paddle.y - paddleSpeed); // Move up
+			paddle.y = Math.max(0, paddle.y - paddleSpeed);
 		} else if (data.direction === 's') {
-			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed); // Move down
+			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed);
 		}
 	}
 
@@ -165,8 +166,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.games = removeGameSession(this.games, sesh.roomId);
 			return;
 		}
-		sesh.ball.x += sesh.ball.speedX;
-		sesh.ball.y += sesh.ball.speedY;
+	
+		const now = Date.now();
+		const deltaTime = (now - this.lastUpdateTime) / 20;
+		this.lastUpdateTime = now;
+	
+		sesh.ball.x += sesh.ball.speedX * deltaTime;
+		sesh.ball.y += sesh.ball.speedY * deltaTime;
+	
 		if (sesh.ball.x <= 0) {
 			sesh.p2.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
@@ -177,8 +184,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
 		}
-		if (sesh.ball.y <= 0 || sesh.ball.y + sesh.ball.height >= PongC.CANVAS_HEIGHT) {
+		if (sesh.ball.y <= 0) {
 			sesh.ball.speedY *= -1;
+			let diff = sesh.ball.y * -1;
+			sesh.ball.y = 0 + diff;
+		}
+		else if (sesh.ball.y + sesh.ball.height >= PongC.CANVAS_HEIGHT) {
+			sesh.ball.speedY *= -1;
+			let diff = (sesh.ball.y + sesh.ball.height) - PongC.CANVAS_HEIGHT;
+			sesh.ball.y = PongC.CANVAS_HEIGHT - sesh.ball.height - diff;
 		}
 		// Check collision with paddles
 		if (sesh.ball.speedX < 0 && this.paddleCollision(sesh.p1.paddle, sesh.ball)) {
