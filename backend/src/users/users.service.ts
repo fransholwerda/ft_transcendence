@@ -76,19 +76,11 @@ export class UsersService {
 	await this.friendshipRepository.save(friendship);
   }
 
-	async removeFriend(userID: number, friendID: number) {
-		const user = await this.userRepository.findOne({where: {id: userID}});
-		const friend = await this.userRepository.findOne({where: {id: friendID}});
-
-		if (!user || !friend) {
-			throw new Error ('User or friend not found');
-		}
-	
-		user.friends = user.friends.filter(user => user.id !== friendID);
-		friend.beingfriended = friend.beingfriended.filter(user => user.id !== userID);
-
-		await Promise.all([this.userRepository.save(user), this.userRepository.save(friend)]);
-	}
+	// async removeFriend(userID: number, friendID: number): Promise<void> {
+	// 	const friendship = await this.friendshipRepository.findOne({
+	// 		where: [{friended }]
+	// 	})
+	// }
 
 	async getFriends(userID: number) {
 		return this.userRepository.createQueryBuilder('user')
