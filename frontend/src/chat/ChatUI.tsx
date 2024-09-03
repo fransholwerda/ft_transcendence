@@ -42,6 +42,26 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       setActiveType('channel');
     });
 
+    socket.on('channelLeft', ({ channel }: { channel: string }) => {
+      setChannels(prevChannels => {
+        const updatedChannels = prevChannels.filter(c => c.title !== channel);
+        
+        if (updatedChannels.length) {
+          setActiveTabId(updatedChannels[0].id);
+          setActiveType('channel');
+        } else if (dms.length) {
+          setActiveTabId(dms[0].id);
+          setActiveType('dm');
+        } else {
+          setActiveTabId(0);
+        }
+    
+        return updatedChannels;
+      });
+    
+      setMessages(prevMessages => prevMessages.filter(msg => msg.channel !== channel));
+    });
+
     socket.on('dmCreated', ({ dm }: { dm: string }) => {
       const newId = dms.length ? dms[dms.length - 1].id + 1 : 101;
       setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `` }]);
@@ -79,6 +99,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
     return () => {
       socket.off('channelCreated');
       socket.off('channelJoined');
+      socket.off('channelLeft');
       socket.off('dmCreated');
       socket.off('dmJoined');
       socket.off('message');
