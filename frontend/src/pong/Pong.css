@@ -111,3 +111,8 @@
 	max-height: 7vh;
 	font-size: 5vh;
 }
+
+.pong-game button:hover {
+	background-color: var(--ponginner);
+	color: var(--pongbg);
+}
