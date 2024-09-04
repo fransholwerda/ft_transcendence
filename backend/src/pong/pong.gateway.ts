@@ -150,11 +150,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			paddle = sesh.p2.paddle;
 		}
 		if (!paddle) return;
-		const paddleSpeed = 15;
 		if (data.direction === 'w') {
-			paddle.y = Math.max(0, paddle.y - paddleSpeed);
+			paddle.y = Math.max(0, paddle.y - paddle.speed);
 		} else if (data.direction === 's') {
-			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed);
+			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddle.speed);
 		}
 	}
 
@@ -182,7 +181,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	
 		const now = Date.now();
-		const deltaTime = (now - this.lastUpdateTime) / 20;
+		const deltaTime = (now - this.lastUpdateTime) / 1000;
 		this.lastUpdateTime = now;
 	
 		sesh.ball.x += sesh.ball.speedX * deltaTime;
