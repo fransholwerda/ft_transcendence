@@ -32,6 +32,7 @@ export interface GameSession {
 	ball: Ball;
 	lastUpdateTime: number;
 	timeSinceLastScore: number;
+	ballDelay: number;
 }
 
 export interface User {

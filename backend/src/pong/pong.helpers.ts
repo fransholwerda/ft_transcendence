@@ -45,7 +45,8 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             speedY: PongC.BALL_SPEEDY
         },
         lastUpdateTime: Date.now(),
-        timeSinceLastScore: 0
+        timeSinceLastScore: 0,
+        ballDelay: 2
     };
     return sesh;
 }

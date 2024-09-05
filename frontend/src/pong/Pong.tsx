@@ -160,13 +160,20 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			if (!context || !gameSession) return;
 			const curTheme = themes.get(theme);
 			if (!curTheme) return;
-			pongPrint(`pong.tsx: Rendering game ${user.username}`);
+			// pongPrint(`pong.tsx: Rendering game ${user.username}`);
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillStyle = curTheme.inner;
 			context.fillRect(0, 0, canvas.width, canvas.height);
 			const gs = gameSession;
 			if (!gs) return;
 			context.fillStyle = curTheme.text;
+			if (gs.timeSinceLastScore < gs.ballDelay) {
+				// console.log(`countdown: ${gs.timeSinceLastScore}`);
+				let countDown = (gs.ballDelay - Number(gs.timeSinceLastScore)).toFixed(1);
+				let countdownSize = canvas.height / 6;
+				context.font = `${countdownSize}px Arial`;
+				context.fillText(`${countDown}`, gs.ball.x - countdownSize/2, gs.ball.y - countdownSize);
+			}
 			context.fillRect(gs.ball.x, gs.ball.y, gs.ball.width, gs.ball.height);
 			context.fillRect(gs.p1.paddle.x, gs.p1.paddle.y, gs.p1.paddle.width, gs.p1.paddle.height);
 			context.fillRect(gs.p2.paddle.x, gs.p2.paddle.y, gs.p2.paddle.width, gs.p2.paddle.height);
@@ -215,19 +222,19 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			{inGame && gameSession && (
 				<div className="pong-game">
 					<div className="player-score">
-						<h6>{gameSession.p1.score} : {gameSession.p1.username}</h6>
+						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
 						<h6>{gameSession.p2.score} : {gameSession.p2.username}</h6>
 					</div>
 					<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
 					<div className="below-canvas">
 						<div className="p1-arrow">
-							{pSock.id === gameSession.p1.clientid && <h6>/\</h6>}
+							{pSock.id === gameSession.p1.clientid && <h6>YOU</h6>}
 						</div>
 						<button onClick={leaveGame}>
 							Leave Game
 						</button>
 						<div className="p2-arrow">
-							{pSock.id === gameSession.p2.clientid && <h6>/\</h6>}
+							{pSock.id === gameSession.p2.clientid && <h6>YOU</h6>}
 						</div>
 					</div>
 				</div>
