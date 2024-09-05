@@ -30,6 +30,7 @@ export interface GameSession {
 	p2: player;
 	roomId: string;
 	ball: Ball;
+	lastUpdateTime: number;
 }
 
 export interface User {

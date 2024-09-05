@@ -27,8 +27,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private queue: { clientId: string, user: User }[] = [];	
 	private games: GameSession[] = [];
-	private lastUpdateTime: number = Date.now();
-
+	
 	constructor(private readonly matchService: MatchService) {}
 
 	private async sendCreateMatch(sesh: GameSession) {
@@ -181,8 +180,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	
 		const now = Date.now();
-		const deltaTime = (now - this.lastUpdateTime) / 1000;
-		this.lastUpdateTime = now;
+		const deltaTime = (now - sesh.lastUpdateTime) / 1000;
+		sesh.lastUpdateTime = now;
 	
 		sesh.ball.x += sesh.ball.speedX * deltaTime;
 		sesh.ball.y += sesh.ball.speedY * deltaTime;

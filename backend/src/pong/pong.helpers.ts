@@ -43,7 +43,8 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             height: PongC.BALL_HEIGHT,
             speedX: PongC.BALL_SPEEDX,
             speedY: PongC.BALL_SPEEDY
-        }
+        },
+        lastUpdateTime: Date.now()
     };
     return sesh;
 }
