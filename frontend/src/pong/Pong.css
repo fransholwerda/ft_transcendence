@@ -106,13 +106,23 @@
 }
 
 .pong-game .button {
-	min-height: 7vh;
-	height: 7vh;
-	max-height: 7vh;
-	font-size: 5vh;
+	min-height: 10vh;
+	height: 10vh;
+	max-height: 10vh;
+	font-size: 8vh;
 }
 
 .pong-game button:hover {
 	background-color: var(--ponginner);
 	color: var(--pongbg);
+}
+
+.pong-game .below-canvas {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.p1-arrow h6, .p2-arrow h6{
+	font-size: 8vh;
 }

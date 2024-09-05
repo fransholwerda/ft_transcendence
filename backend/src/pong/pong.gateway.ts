@@ -27,7 +27,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private queue: { clientId: string, user: User }[] = [];	
 	private games: GameSession[] = [];
-	private lastUpdateTime: number = Date.now();
 
 	constructor(private readonly matchService: MatchService) {}
 
@@ -150,11 +149,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			paddle = sesh.p2.paddle;
 		}
 		if (!paddle) return;
-		const paddleSpeed = 15;
 		if (data.direction === 'w') {
-			paddle.y = Math.max(0, paddle.y - paddleSpeed);
+			paddle.y = Math.max(0, paddle.y - paddle.speed);
 		} else if (data.direction === 's') {
-			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddleSpeed);
+			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddle.speed);
 		}
 	}
 
@@ -180,25 +178,32 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.gameEnd(sesh);
 			return;
 		}
-	
+		// get latest time and time since last update
 		const now = Date.now();
-		const deltaTime = (now - this.lastUpdateTime) / 20;
-		this.lastUpdateTime = now;
-	
+		const deltaTime = (now - sesh.lastUpdateTime) / 1000;
+		sesh.lastUpdateTime = now;
+		// Update time since last score
+		sesh.timeSinceLastScore += deltaTime;
+		// Only update the ball if 2 seconds have passed since the last score
+		if (sesh.timeSinceLastScore < 2) {
+			this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
+			return;
+		}
 		sesh.ball.x += sesh.ball.speedX * deltaTime;
 		sesh.ball.y += sesh.ball.speedY * deltaTime;
-	
 		if (sesh.ball.x <= 0) {
 			console.log('p2 scored');
 			sesh.p2.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+			sesh.timeSinceLastScore = 0;
 		}
 		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
 			console.log('p1 scored');
 			sesh.p1.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+			sesh.timeSinceLastScore = 0;
 		}
 		if (sesh.ball.y <= 0) {
 			sesh.ball.speedY *= -1;
@@ -213,11 +218,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// Check collision with paddles
 		if (sesh.ball.speedX < 0 && this.paddleCollision(sesh.p1.paddle, sesh.ball)) {
 			sesh.ball.speedX *= -1;
-			sesh.ball.x += PongC.CANVAS_WIDTH + 3;
+			sesh.ball.x += PongC.PADDLE_WIDTH;
 		}
 		else if (sesh.ball.speedX > 0 && this.paddleCollision(sesh.p2.paddle, sesh.ball)) {
 			sesh.ball.speedX *= -1;
-			sesh.ball.x -= PongC.CANVAS_WIDTH + 3;
+			sesh.ball.x -= PongC.PADDLE_WIDTH;
 		}
 		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 	}
