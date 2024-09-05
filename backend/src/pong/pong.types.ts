@@ -33,6 +33,7 @@ export interface GameSession {
 	lastUpdateTime: number;
 	timeSinceLastScore: number;
 	ballDelay: number;
+	isCustom: boolean;
 }
 
 export interface User {

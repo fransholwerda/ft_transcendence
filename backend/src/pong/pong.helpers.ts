@@ -46,7 +46,8 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
         },
         lastUpdateTime: Date.now(),
         timeSinceLastScore: 0,
-        ballDelay: 2
+        ballDelay: 2,
+        isCustom: false
     };
     return sesh;
 }
