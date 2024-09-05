@@ -27,7 +27,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private queue: { clientId: string, user: User }[] = [];	
 	private games: GameSession[] = [];
-	
+
 	constructor(private readonly matchService: MatchService) {}
 
 	private async sendCreateMatch(sesh: GameSession) {
@@ -178,25 +178,32 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.gameEnd(sesh);
 			return;
 		}
-	
+		// get latest time and time since last update
 		const now = Date.now();
 		const deltaTime = (now - sesh.lastUpdateTime) / 1000;
 		sesh.lastUpdateTime = now;
-	
+		// Update time since last score
+		sesh.timeSinceLastScore += deltaTime;
+		// Only update the ball if 2 seconds have passed since the last score
+		if (sesh.timeSinceLastScore < 2) {
+			this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
+			return;
+		}
 		sesh.ball.x += sesh.ball.speedX * deltaTime;
 		sesh.ball.y += sesh.ball.speedY * deltaTime;
-	
 		if (sesh.ball.x <= 0) {
 			console.log('p2 scored');
 			sesh.p2.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+			sesh.timeSinceLastScore = 0;
 		}
 		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
 			console.log('p1 scored');
 			sesh.p1.score++;
 			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
 			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+			sesh.timeSinceLastScore = 0;
 		}
 		if (sesh.ball.y <= 0) {
 			sesh.ball.speedY *= -1;

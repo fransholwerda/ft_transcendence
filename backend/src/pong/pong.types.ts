@@ -31,6 +31,7 @@ export interface GameSession {
 	roomId: string;
 	ball: Ball;
 	lastUpdateTime: number;
+	timeSinceLastScore: number;
 }
 
 export interface User {
