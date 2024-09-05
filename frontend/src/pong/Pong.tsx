@@ -215,19 +215,19 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			{inGame && gameSession && (
 				<div className="pong-game">
 					<div className="player-score">
-						<h6>{gameSession.p1.score} : {gameSession.p1.username}</h6>
+						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
 						<h6>{gameSession.p2.score} : {gameSession.p2.username}</h6>
 					</div>
 					<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
 					<div className="below-canvas">
 						<div className="p1-arrow">
-							{pSock.id === gameSession.p1.clientid && <h6>/\</h6>}
+							{pSock.id === gameSession.p1.clientid && <h6>YOU</h6>}
 						</div>
 						<button onClick={leaveGame}>
 							Leave Game
 						</button>
 						<div className="p2-arrow">
-							{pSock.id === gameSession.p2.clientid && <h6>/\</h6>}
+							{pSock.id === gameSession.p2.clientid && <h6>YOU</h6>}
 						</div>
 					</div>
 				</div>
