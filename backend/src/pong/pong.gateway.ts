@@ -184,8 +184,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		sesh.lastUpdateTime = now;
 		// Update time since last score
 		sesh.timeSinceLastScore += deltaTime;
-		// Only update the ball if 2 seconds have passed since the last score
-		if (sesh.timeSinceLastScore < 2) {
+		if (sesh.timeSinceLastScore < sesh.ballDelay) {
 			this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 			return;
 		}
