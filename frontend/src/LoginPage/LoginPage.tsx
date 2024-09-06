@@ -1,3 +1,5 @@
+// import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import './LoginPage.css';
@@ -42,6 +44,7 @@ async function requestIntraUser(access_token: object) {
 }
 
 const LoginPage: React.FC<LoginProps> = ({ onLogin , pSock }) => {
+  // const [isSocketConnected, setIsSocketConnected] = useState(false);
   const navigate = useNavigate();
 
   const client_id = "u-s4t2ud-d65b8708fe160cee8d25bff3aadbe733bd913f884d1fc2ad79cf4091132d661f";
@@ -67,14 +70,22 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin , pSock }) => {
     load_user();
   }
 
+  // useEffect(() => {
+  //   if (pSock && pSock.id !== "") {
+  //     setIsSocketConnected(true);
+  //   } else {
+  //     setIsSocketConnected(false);
+  //   }
+  // }, [pSock]);
+
   return (
     <div className="login-container">
       <h2>ft_transcendence</h2>
-      {pSock.id ? (
-        <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>Login</button>
-      ) : (
+      <h2>Socket id:|{pSock.id}|</h2>
+      <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>Login</button>
+      {/* {isSocketConnected && (
         <h2>waiting for socket</h2>
-      )}
+      )} */}
     </div>
   );
 };
