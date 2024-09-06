@@ -1,43 +1,41 @@
 .modal-overlay, .modal-content {
-	width: 50vw;
-	min-width: 50vw;
-	max-width: 50vw;
-	height: 50vh;
-	min-height: 50vh;
-	max-height: 50vh;
-}
-
-.modal-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: rgba(0, 0, 0, 0.5);
+	width: 40vw;
+	min-width: 40vw;
+	max-width: 40vw;
+	height: 40vh;
+	min-height: 40vh;
+	max-height: 40vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+.modal-overlay {
 	z-index: 1000;
 }
 
 .modal-content {
-	background-color: white;
+	background-color: rgba(255, 255, 255, 0.3);
 	padding: 2.4vh 4vw;
 	border-radius: 0.8vw;
 	box-shadow: 0 0.8vh 1.5vh rgba(0, 0, 0, 0.3);
 	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 
 .modal-content h4 {
-	margin-bottom: 0.7vh;
+	margin-bottom: 1.4vh;
 	color: black;
-	font-size: 16vh;
+	font-size: 10vh;
 }
 
 .modal-content p {
-	margin-bottom: 1.2vh;
+	margin-bottom: 2.4vh;
 	color: black;
-	font-size: 14vh;
+	font-size: 8vh;
 }
 
 .modal-content button {
@@ -47,7 +45,7 @@
 	border: none;
 	border-radius: 0.5vw;
 	cursor: pointer;
-	font-size: 12vh;
+	font-size: 8vh;
 }
 
 .modal-content button:hover {
