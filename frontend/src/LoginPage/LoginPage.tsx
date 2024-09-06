@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-
+import { Socket } from 'socket.io-client';
 import './LoginPage.css';
 
 import { Constants } from '../../shared/constants';
@@ -7,6 +7,7 @@ import { User } from '../PageManager.tsx';
 
 interface LoginProps {
   onLogin: (user_id: number) => Promise<User>;
+  pSock: Socket;
 }
 
 function authorize(client_id: string, redirect_uri: string, scope: string, response_type: string) {
@@ -40,7 +41,7 @@ async function requestIntraUser(access_token: object) {
   return (result);
 }
 
-const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
+const LoginPage: React.FC<LoginProps> = ({ onLogin , pSock }) => {
   const navigate = useNavigate();
 
   const client_id = "u-s4t2ud-d65b8708fe160cee8d25bff3aadbe733bd913f884d1fc2ad79cf4091132d661f";
@@ -69,7 +70,11 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
   return (
     <div className="login-container">
       <h2>ft_transcendence</h2>
-      <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>Login</button>
+      {pSock ? (
+        <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>Login</button>
+      ) : (
+        <h2>waiting for socket</h2>
+      )}
     </div>
   );
 };
