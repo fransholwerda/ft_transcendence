@@ -70,7 +70,7 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin , pSock }) => {
   return (
     <div className="login-container">
       <h2>ft_transcendence</h2>
-      {pSock ? (
+      {pSock.id ? (
         <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>Login</button>
       ) : (
         <h2>waiting for socket</h2>
