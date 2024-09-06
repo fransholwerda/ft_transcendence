@@ -200,7 +200,12 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	return (
 		<div className="pong-container">
-			{showPongPopUp && <PongPopUp message={PongpopUpMessage} onClose={handleClosePongPopUp} />}
+			{showPongPopUp && (
+				<PongPopUp
+					message={PongpopUpMessage}
+					onClose={handleClosePongPopUp}
+					/>
+			)}
 			{!inQueue && !inGame && (
 				<div className="pong-info">
 					<h6>Socket id: {pSock.id}</h6>

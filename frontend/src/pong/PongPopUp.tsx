@@ -8,8 +8,8 @@ interface PongPopUpProps {
 
 const PongPopUp: React.FC<PongPopUpProps> = ({ message, onClose }) => {
     return (
-        <div className="pongPopUp-overlay">
-            <div className="pongPopUp-content">
+        <div className="modal-overlay">
+            <div className="modal-content">
                 <h4>Game Over</h4>
                 <p>{message}</p>
                 <button onClick={onClose}>Close</button>
