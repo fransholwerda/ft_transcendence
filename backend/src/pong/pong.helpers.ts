@@ -77,7 +77,7 @@ export function removeFromQueue(queue: { clientId: string, user: User }[], clien
 }
 
 export function findGameSessionByClientId(games: GameSession[], clientId: string): GameSession | null {
-    pongPrint(`NestJS pong: findGameSessionByClientId ${clientId}`);
+    // pongPrint(`NestJS pong: findGameSessionByClientId ${clientId}`);
     const gameSession = games.find((game) => game.p1.clientid === clientId || game.p2.clientid === clientId);
     if (!gameSession) {
         pongPrint(`NestJS pong: Could not find game session for user ${clientId}`);

@@ -5,6 +5,7 @@ import { Socket } from 'socket.io-client';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
 import { themes } from './themes';
+import PongPopUp from './PongPopUp';
 
 interface PongProps {
 	user: User;
@@ -20,6 +21,10 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const canvasWidth = 800;
 	const canvasHeight = 500;
 	const [theme, setTheme] = useState('default');
+
+	const [showPongPopUp, setShowPongPopUp] = useState(false);
+	const [PongpopUpMessage, setPongPopUpMessage] = useState('');
+	const handleClosePongPopUp = () => setShowPongPopUp(false);
 
 	useEffect(() => {
 		if (!pSock) return;
@@ -131,7 +136,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				return;
 			}
 			pongPrint(`pong.tsx gameEnd: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-			alert(`${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
+			setPongPopUpMessage(`${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
+			setShowPongPopUp(true);
 			setInGame(false);
 			setInQueue(false);
 			setGameSession(null);
@@ -194,6 +200,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	return (
 		<div className="pong-container">
+			{showPongPopUp && <PongPopUp message={PongpopUpMessage} onClose={handleClosePongPopUp} />}
 			{!inQueue && !inGame && (
 				<div className="pong-info">
 					<h6>Socket id: {pSock.id}</h6>
