@@ -136,7 +136,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				return;
 			}
 			pongPrint(`pong.tsx gameEnd: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-			setPongPopUpMessage(`${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
+			setPongPopUpMessage(`${data.sesh.p1.username}:${data.sesh.p1.score} ${data.sesh.p2.username}:${data.sesh.p2.score}`);
 			setShowPongPopUp(true);
 			setInGame(false);
 			setInQueue(false);

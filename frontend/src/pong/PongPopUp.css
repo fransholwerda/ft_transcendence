@@ -13,29 +13,30 @@
 
 .modal-content {
 	background-color: white;
-	padding: 20px;
-	border-radius: 8px;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-	width: 300px;
+	padding: 1.2vh 2vw;
+	border-radius: 0.4vw;
+	box-shadow: 0 0.4vh 0.75vh rgba(0, 0, 0, 0.3);
+	width: 15vw;
 	max-width: 100%;
 	text-align: center;
 }
 
 .modal-content h4 {
-	margin-bottom: 15px;
+	margin-bottom: 0.75vh;
 	color: black;
 }
 
 .modal-content p {
-	margin-bottom: 20px;
+	margin-bottom: 1.2vh;
+	color: black;
 }
 
 .modal-content button {
-	padding: 10px 20px;
+	padding: 0.8vh 1.5vw;
 	background-color: #007BFF;
 	color: white;
 	border: none;
-	border-radius: 5px;
+	border-radius: 0.25vw;
 	cursor: pointer;
 }
 
