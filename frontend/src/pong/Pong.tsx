@@ -23,8 +23,9 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [theme, setTheme] = useState('default');
 
 	const [showPongPopUp, setShowPongPopUp] = useState(false);
-	const [PongpopUpMsg1, setPongPopUpMsg1] = useState('');
-	const [PongpopUpMsg2, setPongPopUpMsg2] = useState('');
+	const [PongpopUpEndStatus, setPongPopUpEndStatus] = useState('');
+	const [PongpopUpWinner, setPongPopUpWinner] = useState('');
+	const [PongpopUpScore, setPongPopUpScore] = useState('');
 	const handleClosePongPopUp = () => setShowPongPopUp(false);
 
 	useEffect(() => {
@@ -129,6 +130,19 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [pSock, user]);
 
+	const setupPopUp = () => {
+		const winner = gameSession?.p1.score > gameSession?.p2.score ? gameSession.p1 : gameSession.p2;
+		if (winner.clientid === pSock.id) {
+			setPongPopUpEndStatus(`Victory`);
+		}
+		else {
+			setPongPopUpEndStatus(`Defeat`);
+		};
+		setPongPopUpWinner(`Winner: ${winner.username}`);
+		setPongPopUpScore(`${data.sesh.p1.score} : ${data.sesh.p1.score}`);
+		setShowPongPopUp(true);
+	};
+
 	useEffect(() => {
 		pSock.on('gameEnd', (data: { sesh: GameSession }) => {
 			pongPrint(`pong.tsx gameEnd: received from server`);
@@ -137,9 +151,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				return;
 			}
 			pongPrint(`pong.tsx gameEnd: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-			setPongPopUpMsg1(`${data.sesh.p1.username} : ${data.sesh.p1.score}`);
-			setPongPopUpMsg2(`${data.sesh.p2.username} : ${data.sesh.p2.score}`);
-			setShowPongPopUp(true);
+			setupPopUp();
 			setInGame(false);
 			setInQueue(false);
 			setGameSession(null);
@@ -204,8 +216,9 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		<div className="pong-container">
 			{showPongPopUp && (
 				<PongPopUp
-					msg1={PongpopUpMsg1}
-					msg2={PongpopUpMsg2}
+					endStatus={PongpopUpEndStatus}
+					winner={PongpopUpWinner}
+					score={PongpopUpScore}
 					onClose={handleClosePongPopUp}
 					/>
 			)}
