@@ -136,7 +136,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				return;
 			}
 			pongPrint(`pong.tsx gameEnd: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-			setPongPopUpMessage(`${data.sesh.p1.username}:${data.sesh.p1.score} ${data.sesh.p2.username}:${data.sesh.p2.score}`);
+			setPongPopUpMessage(`${data.sesh.p1.username} : ${data.sesh.p1.score} | ${data.sesh.p2.score} : ${data.sesh.p2.username}`);
 			setShowPongPopUp(true);
 			setInGame(false);
 			setInQueue(false);
@@ -240,13 +240,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
 					<div className="below-canvas">
 						<div className="p1-arrow">
-							{pSock.id === gameSession.p1.clientid && <h6>YOU</h6>}
+							{pSock.id === gameSession.p1.clientid && <h6>⬆</h6>}
 						</div>
 						<button onClick={leaveGame}>
 							Leave Game
 						</button>
 						<div className="p2-arrow">
-							{pSock.id === gameSession.p2.clientid && <h6>YOU</h6>}
+							{pSock.id === gameSession.p2.clientid && <h6>⬆</h6>}
 						</div>
 					</div>
 				</div>
