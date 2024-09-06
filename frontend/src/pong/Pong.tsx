@@ -23,7 +23,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [theme, setTheme] = useState('default');
 
 	const [showPongPopUp, setShowPongPopUp] = useState(false);
-	const [PongpopUpMessage, setPongPopUpMessage] = useState('');
+	const [PongpopUpMsg1, setPongPopUpMsg1] = useState('');
+	const [PongpopUpMsg2, setPongPopUpMsg2] = useState('');
 	const handleClosePongPopUp = () => setShowPongPopUp(false);
 
 	useEffect(() => {
@@ -136,7 +137,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				return;
 			}
 			pongPrint(`pong.tsx gameEnd: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-			setPongPopUpMessage(`${data.sesh.p1.username} : ${data.sesh.p1.score} | ${data.sesh.p2.score} : ${data.sesh.p2.username}`);
+			setPongPopUpMsg1(`${data.sesh.p1.username} : ${data.sesh.p1.score}`);
+			setPongPopUpMsg2(`${data.sesh.p2.username} : ${data.sesh.p2.score}`);
 			setShowPongPopUp(true);
 			setInGame(false);
 			setInQueue(false);
@@ -202,7 +204,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		<div className="pong-container">
 			{showPongPopUp && (
 				<PongPopUp
-					message={PongpopUpMessage}
+					msg1={PongpopUpMsg1}
+					msg1={PongpopUpMsg2}
 					onClose={handleClosePongPopUp}
 					/>
 			)}

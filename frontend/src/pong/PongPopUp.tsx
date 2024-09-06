@@ -2,16 +2,18 @@ import React from 'react';
 import './PongPopUp.css';
 
 interface PongPopUpProps {
-    message: string;
+    msg1: string;
+    msg2: string;
     onClose: () => void;
 }
 
-const PongPopUp: React.FC<PongPopUpProps> = ({ message, onClose }) => {
+const PongPopUp: React.FC<PongPopUpProps> = ({ msg1, msg2, onClose }) => {
     return (
         <div className="modal-overlay">
             <div className="modal-content">
                 <h4>Game Over</h4>
-                <p>{message}</p>
+                <p>{msg1}</p>
+                <p>{msg2}</p>
                 <button onClick={onClose}>Close</button>
             </div>
         </div>
