@@ -205,7 +205,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			{showPongPopUp && (
 				<PongPopUp
 					msg1={PongpopUpMsg1}
-					msg1={PongpopUpMsg2}
+					msg2={PongpopUpMsg2}
 					onClose={handleClosePongPopUp}
 					/>
 			)}

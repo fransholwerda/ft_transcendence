@@ -18,7 +18,7 @@
 	height: 40vh;
 	min-height: 40vh;
 	max-height: 40vh;
-	background-color: rgba(255, 255, 255, 0.3);
+	background-color: rgba(255, 255, 255, 1);
 	padding: 2.4vh 4vw;
 	border-radius: 0.8vw;
 	box-shadow: 0 0.8vh 1.5vh rgba(0, 0, 0, 0.3);
@@ -30,15 +30,15 @@
 }
 
 .modal-content h4 {
-	margin-bottom: 1.4vh;
+	margin-bottom: 1vh;
 	color: black;
-	font-size: 5vh;
+	font-size: 7vh;
 }
 
 .modal-content p {
-	margin-bottom: 2.4vh;
+	margin-bottom: 0.5vh;
 	color: black;
-	font-size: 3vh;
+	font-size: 5vh;
 }
 
 .modal-content button {
@@ -48,7 +48,7 @@
 	border: none;
 	border-radius: 0.5vw;
 	cursor: pointer;
-	font-size: 3vh;
+	font-size: 4vh;
 }
 
 .modal-content button:hover {
