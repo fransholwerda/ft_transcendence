@@ -203,6 +203,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 			return;
 		}
+		if (sesh.isCustom) {
+			// Increase ball speed over time
+			const BALL_ACCELERATION = 0.1;
+			sesh.ball.speedX += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedX);
+			sesh.ball.speedY += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedY);
+		}
 		sesh.ball.x += sesh.ball.speedX * deltaTime;
 		sesh.ball.y += sesh.ball.speedY * deltaTime;
 		if (sesh.ball.x <= 0) {
