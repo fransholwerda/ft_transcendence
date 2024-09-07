@@ -70,17 +70,21 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin , pSock }) => {
     load_user();
   }
 
-  useEffect(() => {
-    if (!pSock || !pSock.id?.trim()) {
-      setIsSocketConnected(false);
-    } else {
-      setIsSocketConnected(true);
-    }
-  }, [pSock.id]);
+  // useEffect(() => {
+  //   if (!pSock || !pSock.id?.trim()) {
+  //     setIsSocketConnected(false);
+  //   } else {
+  //     setIsSocketConnected(true);
+  //   }
+  // }, [pSock, pSock.id]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       console.log(`Socket id: ${pSock?.id}`);
+      if (pSock && pSock.id?.trim()) {
+        setIsSocketConnected(true);
+        clearInterval(interval);
+      }
     }, 50);
 
     return () => clearInterval(interval);
@@ -88,12 +92,11 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin , pSock }) => {
 
   return (
     <div className="login-container">
-      {isSocketConnected && (
+      {isSocketConnected ? (
         <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>
           Login
-       </button>
-      )}
-      {!isSocketConnected && (
+        </button>
+      ) : (
         <h2>Connecting...</h2>
       )}
     </div>
