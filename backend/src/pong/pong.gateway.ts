@@ -85,6 +85,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		pongPrint(`NestJS pong: ${client.id} left the queue`);
 		this.queue = removeFromQueue(this.queue, client.id);
 	}
+
 	private leavingGame(client: Socket) {
 		pongPrint(`NestJS pong leaveGame: ${client.id}`);
 		const sesh = findGameSessionByClientId(this.games, client.id);
@@ -168,7 +169,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('requestGameUpdate')
 	handleRequestGameUpdate(client: Socket) {
-		pongPrint(`NestJS pong: ${client.id}: requested game update`);
+		// pongPrint(`NestJS pong: ${client.id}: requested game update`);
 		const sesh = findGameSessionByClientId(this.games, client.id);
 		if (!sesh) {
 			pongPrint(`NestJS pong: ${client.id}: cant find game for request`);

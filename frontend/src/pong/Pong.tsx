@@ -5,6 +5,7 @@ import { Socket } from 'socket.io-client';
 import { GameSession } from './PongTypes';
 import { pongPrint } from './PongUtils';
 import { themes } from './themes';
+import PongPopUp from './PongPopUp';
 
 interface PongProps {
 	user: User;
@@ -20,6 +21,14 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const canvasWidth = 800;
 	const canvasHeight = 500;
 	const [theme, setTheme] = useState('default');
+
+	const [showPongPopUp, setShowPongPopUp] = useState(false);
+	const [PongpopUpEndStatus, setPongPopUpEndStatus] = useState('');
+	const [PongpopUpWinner, setPongPopUpWinner] = useState('');
+	const [PongpopUpScore, setPongPopUpScore] = useState('');
+	const handleClosePongPopUp = () => setShowPongPopUp(false);
+
+	const [pSockId, setPSockId] = useState(pSock.id?.trim() || '');
 
 	useEffect(() => {
 		if (!pSock) return;
@@ -123,6 +132,19 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [pSock, user]);
 
+	const setupPopUp = (sesh: GameSession) => {
+		const winner = sesh.p1.score > sesh.p2.score ? sesh.p1 : sesh.p2;
+		if (winner.clientid === pSock.id) {
+			setPongPopUpEndStatus(`Victory`);
+		}
+		else {
+			setPongPopUpEndStatus(`Defeat`);
+		};
+		setPongPopUpWinner(`Winner: ${winner.username}`);
+		setPongPopUpScore(`${sesh.p1.score} : ${sesh.p2.score}`);
+		setShowPongPopUp(true);
+	};
+
 	useEffect(() => {
 		pSock.on('gameEnd', (data: { sesh: GameSession }) => {
 			pongPrint(`pong.tsx gameEnd: received from server`);
@@ -131,7 +153,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				return;
 			}
 			pongPrint(`pong.tsx gameEnd: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-			alert(`${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
+			setupPopUp(data.sesh);
 			setInGame(false);
 			setInQueue(false);
 			setGameSession(null);
@@ -192,9 +214,34 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [pSock, inGame, inQueue, gameSession]);
 
+	useEffect(() => {
+		const updatePSockId = () => {
+			setPSockId(pSock.id?.trim() || '');
+			console.log('pong.tsx: pSockId:', pSock.id);
+		};
+		updatePSockId();
+		pSock.on('connect', updatePSockId);
+		return () => {
+			pSock.off('connect', updatePSockId);
+		};
+	}, [pSock]);
+
 	return (
 		<div className="pong-container">
-			{!inQueue && !inGame && (
+			{showPongPopUp && (
+				<PongPopUp
+					endStatus={PongpopUpEndStatus}
+					winner={PongpopUpWinner}
+					score={PongpopUpScore}
+					onClose={handleClosePongPopUp}
+					/>
+			)}
+			{!inQueue && !inGame && !pSockId && (
+				<div className="pong-info">
+					<h6>Connecting to server...</h6>
+				</div>
+			)}
+			{!inQueue && !inGame && pSockId && (
 				<div className="pong-info">
 					<h6>Socket id: {pSock.id}</h6>
 					<h6>User id: {user.id}</h6>
@@ -228,13 +275,13 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
 					<div className="below-canvas">
 						<div className="p1-arrow">
-							{pSock.id === gameSession.p1.clientid && <h6>YOU</h6>}
+							{pSock.id === gameSession.p1.clientid && <h6>⬆</h6>}
 						</div>
 						<button onClick={leaveGame}>
 							Leave Game
 						</button>
 						<div className="p2-arrow">
-							{pSock.id === gameSession.p2.clientid && <h6>YOU</h6>}
+							{pSock.id === gameSession.p2.clientid && <h6>⬆</h6>}
 						</div>
 					</div>
 				</div>
