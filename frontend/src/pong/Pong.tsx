@@ -269,7 +269,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			)}
 			{inQueue && !inGame && (
 				<div className="pong-waiting">
-					<h6>Username: {user.username}</h6>
+					<h6>Queued GameMode:</h6>
+					<h6>{gameMode}</h6>
 					<h6>Waiting for opponent...</h6>
 					<button className="leave-queue-btn" onClick={leaveQueue}>
 						Leave Queue
