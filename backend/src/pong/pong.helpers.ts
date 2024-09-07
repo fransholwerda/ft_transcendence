@@ -71,7 +71,7 @@ export function printGames(games: GameSession[]) {
     });
 }
 
-export function removeFromQueue(queue: { clientId: string, user: User }[], clientId: string) {
+export function removeFromQueue(queue: { clientId: string, user: User, gameMode: string }[], clientId: string) {
     pongPrint(`NestJS pong: ${clientId} removing client from queue`);
     return queue.filter((q) => q.clientId !== clientId);
 }

@@ -30,6 +30,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	const [pSockId, setPSockId] = useState(pSock.id?.trim() || '');
 
+	const [gameMode, setGameMode] = useState('default');
+
 	useEffect(() => {
 		if (!pSock) return;
 		const newTheme = themes.get(theme);
@@ -40,9 +42,17 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		document.documentElement.style.setProperty('--pongextra', newTheme.extra);
 	}, [theme, pSock]);
 
+	const switchGameMode = () => {
+		if (gameMode === 'default') {
+			setGameMode('custom');
+		} else {
+			setGameMode('default');
+		}
+	}
+
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
-		pSock.emit('joinQueue', { user: user });
+		pSock.emit('joinQueue', { user: user, gameMode: gameMode });
 	};
 
 	const leaveQueue = () => {
@@ -243,10 +253,10 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			)}
 			{!inQueue && !inGame && pSockId && (
 				<div className="pong-info">
-					<h6>Socket id: {pSock.id}</h6>
-					<h6>User id: {user.id}</h6>
-					<h6>Username: {user.username}</h6>
-					<button className="join-queue-btn" onClick={joinQueue}>Join Queue</button>
+					<h6>Current GameMode:</h6>
+					<h6>{gameMode}</h6>
+					<button onClick={switchGameMode}>Switch GameMode</button>
+					<button onClick={joinQueue}>Queue for {gameMode}</button>
 					<h6>Select your color theme</h6>
 					<select onChange={(e) => setTheme(e.target.value)}>
 						{Array.from(themes.keys()).map((theme) => (
@@ -259,7 +269,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			)}
 			{inQueue && !inGame && (
 				<div className="pong-waiting">
-					<h6>Username: {user.username}</h6>
+					<h6>Queued GameMode:</h6>
+					<h6>{gameMode}</h6>
 					<h6>Waiting for opponent...</h6>
 					<button className="leave-queue-btn" onClick={leaveQueue}>
 						Leave Queue

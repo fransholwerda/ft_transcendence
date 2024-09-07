@@ -53,9 +53,12 @@
 }
 
 .pong-game {
-	/* background-color: var(--ponginner); */
 	border-radius: 5%;
 	overflow: hidden;
+}
+
+.pong-info button {
+	margin-bottom: 2vh;
 }
 
 .pong-info button, .pong-waiting button {

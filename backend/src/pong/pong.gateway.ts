@@ -25,7 +25,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	private queue: { clientId: string, user: User }[] = [];	
+	private queue: { clientId: string, user: User, gameMode: string }[] = [];	
 	private games: GameSession[] = [];
 
 	constructor(private readonly matchService: MatchService) {}
@@ -62,7 +62,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('joinQueue')
-	handleJoinQueue(client: Socket, data: { user: User }) {
+	handleJoinQueue(client: Socket, data: { user: User, gameMode: string }) {
 		pongPrint(`NestJS pong: ${client.id} : ${data.user.id} trying to join queue`);
 		if (isUserInGame(this.games, data.user.id)) {
 			pongPrint(`NestJS pong: ${client.id} : ${data.user.id} is already in a game`);
@@ -70,7 +70,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		else if (!this.queue.find((q) => q.user.id === data.user.id)) {
 			pongPrint(`NestJS pong: ${client.id} : ${data.user.id} could not find in queue`);
-			this.queue.push({ clientId: client.id, user: data.user });
+			this.queue.push({ clientId: client.id, user: data.user, gameMode: data.gameMode });
 			this.checkQueue();
 			client.emit('queueStatus', { success: true, message: 'Successfully joined the queue.' });
 		}
@@ -115,7 +115,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			pongPrint('NestJS pong checkQueue: Not enough players in queue');
 			return;
 		}
-	
+		// check if there are 2 for custom or normal game
+
 		pongPrint('NestJS pong checkQueue: Found 2 players in queue');
 		printQueue(this.queue);
 		const p1 = this.queue.shift();
@@ -126,7 +127,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		pongPrint(`NestJS pong checkQueue: Found players ${p1.user.username} and ${p2.user.username}`);
 		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
-	
+		// add is custom
+		
 		const gameSession = fillGameSession(p1, p2, roomId);
 		this.games.push(gameSession);
 		printGameSession(gameSession);
