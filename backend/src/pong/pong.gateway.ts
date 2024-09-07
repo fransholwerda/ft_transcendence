@@ -136,12 +136,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			console.log('NestJS pong checkQueue: Not enough players of same gameMode');
 			return;
 		}
-
-		pongPrint(`NestJS pong checkQueue: Found players ${p1.user.username} and ${p2.user.username}`);
 		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
-		// add is custom
-		
-		const gameSession = fillGameSession(p1, p2, roomId);
+		const gameSession = fillGameSession(p1, p2, roomId, isCustom);
 		this.games.push(gameSession);
 		printGameSession(gameSession);
 		this.server.to(p1.clientId).emit('gameStart', { sesh: gameSession });

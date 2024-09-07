@@ -2,7 +2,7 @@ import { GameSession, User } from './pong.types';
 import { pongPrint } from './pong.constants';
 import { PongC } from '../../shared/constants';
 
-export function fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string): GameSession {
+export function fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string, isCustom: boolean): GameSession {
     pongPrint(`NestJS pong: Filling game session for room ${roomId}`);
     const sesh: GameSession = {
         p1: {
@@ -47,7 +47,7 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
         lastUpdateTime: Date.now(),
         timeSinceLastScore: 0,
         ballDelay: 2,
-        isCustom: false
+        isCustom: isCustom
     };
     return sesh;
 }
