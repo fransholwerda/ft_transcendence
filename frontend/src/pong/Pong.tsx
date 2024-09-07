@@ -130,8 +130,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [pSock, user]);
 
-	const setupPopUp = () => {
-		const winner = gameSession?.p1.score > gameSession?.p2.score ? gameSession.p1 : gameSession.p2;
+	const setupPopUp = (sesh: GameSession) => {
+		const winner = sesh.p1.score > sesh.p2.score ? sesh.p1 : sesh.p2;
 		if (winner.clientid === pSock.id) {
 			setPongPopUpEndStatus(`Victory`);
 		}
@@ -139,7 +139,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setPongPopUpEndStatus(`Defeat`);
 		};
 		setPongPopUpWinner(`Winner: ${winner.username}`);
-		setPongPopUpScore(`${data.sesh.p1.score} : ${data.sesh.p1.score}`);
+		setPongPopUpScore(`${sesh.p1.score} : ${sesh.p1.score}`);
 		setShowPongPopUp(true);
 	};
 
@@ -151,7 +151,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				return;
 			}
 			pongPrint(`pong.tsx gameEnd: ${data.sesh.p1.username}:${data.sesh.p1.score} - ${data.sesh.p2.username}:${data.sesh.p2.score}`);
-			setupPopUp();
+			setupPopUp(data.sesh);
 			setInGame(false);
 			setInQueue(false);
 			setGameSession(null);
