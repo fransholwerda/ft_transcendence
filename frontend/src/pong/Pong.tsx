@@ -42,6 +42,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
+		// send if they want to go custom or not
 		pSock.emit('joinQueue', { user: user });
 	};
 
