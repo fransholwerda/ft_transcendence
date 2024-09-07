@@ -116,19 +116,27 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 		pongPrint('NestJS pong checkQueue: checking for two players of same gameMode');
-		// check if there are 2 for custom or normal game
-		// loop through it first as default gameMode
-		// if there are 2 for default, take those two out and create a game
-		// else check for 2 people as custom
-		// if there are 2 for custom, take those two out and create a game
-		// const customQueue = this.queue.filter((q) => q.gameMode === 'custom');
 		printQueue(this.queue);
-		const p1 = this.queue.shift();
-		const p2 = this.queue.shift();
-		if (!p1 || !p2) {
-			pongPrint('NestJS pong checkQueue: Could not find both players in queue');
+		let p1, p2;
+		let isCustom = false;
+		const defaultQueue = this.queue.filter((q) => q.gameMode === 'default');
+		const customQueue = this.queue.filter((q) => q.gameMode === 'custom');
+		if (defaultQueue.length >= 2) {
+			console.log('NestJS pong checkQueue: Found 2 default players');
+			p1 = defaultQueue.shift();
+			p2 = defaultQueue.shift();
+		}
+		else if (customQueue.length >= 2) {
+			console.log('NestJS pong checkQueue: Found 2 custom players');
+			p1 = customQueue.shift();
+			p2 = customQueue.shift();
+			isCustom = true;
+		}
+		else {
+			console.log('NestJS pong checkQueue: Not enough players of same gameMode');
 			return;
 		}
+
 		pongPrint(`NestJS pong checkQueue: Found players ${p1.user.username} and ${p2.user.username}`);
 		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
 		// add is custom
