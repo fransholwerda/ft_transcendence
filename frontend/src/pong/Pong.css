@@ -58,6 +58,10 @@
 	overflow: hidden;
 }
 
+.pong-info button {
+	margin-bottom: 2vh;
+}
+
 .pong-info button, .pong-waiting button {
 	min-height: 8vh;
 	height: 8vh;
