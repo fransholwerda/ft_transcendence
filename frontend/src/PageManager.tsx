@@ -106,7 +106,7 @@ const PageManager: React.FC = () => {
     <Router>
       <LocationHandler />
       <Routes>
-        <Route path="/" element={<LoginPage onLogin={handleLogin} pSock={pSock} />} />
+        <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
 
 	      <Route path="/auth" element={<AuthenticationPage user={user} />} />
         

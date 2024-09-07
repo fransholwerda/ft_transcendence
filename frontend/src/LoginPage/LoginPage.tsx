@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from 'react';
-// import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Socket } from 'socket.io-client';
 import './LoginPage.css';
 
 import { Constants } from '../../shared/constants';
@@ -9,7 +6,6 @@ import { User } from '../PageManager.tsx';
 
 interface LoginProps {
   onLogin: (user_id: number) => Promise<User>;
-  pSock: Socket;
 }
 
 function authorize(client_id: string, redirect_uri: string, scope: string, response_type: string) {
@@ -43,8 +39,7 @@ async function requestIntraUser(access_token: object) {
   return (result);
 }
 
-const LoginPage: React.FC<LoginProps> = ({ onLogin , pSock }) => {
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
+const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
   const navigate = useNavigate();
 
   const client_id = "u-s4t2ud-d65b8708fe160cee8d25bff3aadbe733bd913f884d1fc2ad79cf4091132d661f";
@@ -70,35 +65,12 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin , pSock }) => {
     load_user();
   }
 
-  // useEffect(() => {
-  //   if (!pSock || !pSock.id?.trim()) {
-  //     setIsSocketConnected(false);
-  //   } else {
-  //     setIsSocketConnected(true);
-  //   }
-  // }, [pSock, pSock.id]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log(`Socket id: ${pSock?.id}`);
-      if (pSock && pSock.id?.trim()) {
-        setIsSocketConnected(true);
-        clearInterval(interval);
-      }
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [pSock]);
-
   return (
     <div className="login-container">
-      {isSocketConnected ? (
-        <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>
-          Login
-        </button>
-      ) : (
-        <h2>Connecting...</h2>
-      )}
+      <h2>ft_transcendance</h2>
+      <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>
+        Login
+      </button>
     </div>
   );
 };
