@@ -141,7 +141,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setPongPopUpEndStatus(`Defeat`);
 		};
 		setPongPopUpWinner(`Winner: ${winner.username}`);
-		setPongPopUpScore(`${sesh.p1.score} : ${sesh.p1.score}`);
+		setPongPopUpScore(`${sesh.p1.score} : ${sesh.p2.score}`);
 		setShowPongPopUp(true);
 	};
 
