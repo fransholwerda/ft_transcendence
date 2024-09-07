@@ -215,9 +215,16 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	}, [pSock, inGame, inQueue, gameSession]);
 
 	useEffect(() => {
-        setPSockId(pSock.id?.trim() || '');
-        console.log('pong.tsx: pSockId:', pSock.id);
-    }, [pSock, pSock.id]);
+		const updatePSockId = () => {
+			setPSockId(pSock.id?.trim() || '');
+			console.log('pong.tsx: pSockId:', pSock.id);
+		};
+		updatePSockId();
+		pSock.on('connect', updatePSockId);
+		return () => {
+			pSock.off('connect', updatePSockId);
+		};
+	}, [pSock]);
 
 	return (
 		<div className="pong-container">
@@ -228,6 +235,11 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					score={PongpopUpScore}
 					onClose={handleClosePongPopUp}
 					/>
+			)}
+			{!inQueue && !inGame && !pSockId && (
+				<div className="pong-info">
+					<h6>Connecting to server...</h6>
+				</div>
 			)}
 			{!inQueue && !inGame && pSockId && (
 				<div className="pong-info">
