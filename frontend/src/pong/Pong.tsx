@@ -28,6 +28,8 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 	const [PongpopUpScore, setPongPopUpScore] = useState('');
 	const handleClosePongPopUp = () => setShowPongPopUp(false);
 
+	const [pSockId, setPSockId] = useState(pSock.id?.trim() || '');
+
 	useEffect(() => {
 		if (!pSock) return;
 		const newTheme = themes.get(theme);
@@ -212,6 +214,11 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		};
 	}, [pSock, inGame, inQueue, gameSession]);
 
+	useEffect(() => {
+        setPSockId(pSock.id?.trim() || '');
+        console.log('pong.tsx: pSockId:', pSock.id);
+    }, [pSock, pSock.id]);
+
 	return (
 		<div className="pong-container">
 			{showPongPopUp && (
@@ -222,7 +229,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					onClose={handleClosePongPopUp}
 					/>
 			)}
-			{!inQueue && !inGame && (
+			{!inQueue && !inGame && pSockId && (
 				<div className="pong-info">
 					<h6>Socket id: {pSock.id}</h6>
 					<h6>User id: {user.id}</h6>
