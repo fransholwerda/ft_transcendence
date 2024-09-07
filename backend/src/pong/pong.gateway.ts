@@ -125,11 +125,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			console.log('NestJS pong checkQueue: Found 2 default players');
 			p1 = defaultQueue.shift();
 			p2 = defaultQueue.shift();
+			if (!p1 || !p2) return;
+			this.queue = this.queue.filter((q) => q !== p1 && q !== p2);
 		}
 		else if (customQueue.length >= 2) {
 			console.log('NestJS pong checkQueue: Found 2 custom players');
 			p1 = customQueue.shift();
 			p2 = customQueue.shift();
+			if (!p1 || !p2) return;
+			this.queue = this.queue.filter((q) => q !== p1 && q !== p2);
 			isCustom = true;
 		}
 		else {
