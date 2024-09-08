@@ -115,21 +115,33 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			pongPrint('NestJS pong checkQueue: Not enough players in queue');
 			return;
 		}
-		// check if there are 2 for custom or normal game
-
-		pongPrint('NestJS pong checkQueue: Found 2 players in queue');
+		pongPrint('NestJS pong checkQueue: checking for two players of same gameMode');
 		printQueue(this.queue);
-		const p1 = this.queue.shift();
-		const p2 = this.queue.shift();
-		if (!p1 || !p2) {
-			pongPrint('NestJS pong checkQueue: Could not find both players in queue');
+		let p1, p2;
+		let isCustom = false;
+		const defaultQueue = this.queue.filter((q) => q.gameMode === 'default');
+		const customQueue = this.queue.filter((q) => q.gameMode === 'custom');
+		if (defaultQueue.length >= 2) {
+			console.log('NestJS pong checkQueue: Found 2 default players');
+			p1 = defaultQueue.shift();
+			p2 = defaultQueue.shift();
+			if (!p1 || !p2) return;
+			this.queue = this.queue.filter((q) => q !== p1 && q !== p2);
+		}
+		else if (customQueue.length >= 2) {
+			console.log('NestJS pong checkQueue: Found 2 custom players');
+			p1 = customQueue.shift();
+			p2 = customQueue.shift();
+			if (!p1 || !p2) return;
+			this.queue = this.queue.filter((q) => q !== p1 && q !== p2);
+			isCustom = true;
+		}
+		else {
+			console.log('NestJS pong checkQueue: Not enough players of same gameMode');
 			return;
 		}
-		pongPrint(`NestJS pong checkQueue: Found players ${p1.user.username} and ${p2.user.username}`);
 		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
-		// add is custom
-		
-		const gameSession = fillGameSession(p1, p2, roomId);
+		const gameSession = fillGameSession(p1, p2, roomId, isCustom);
 		this.games.push(gameSession);
 		printGameSession(gameSession);
 		this.server.to(p1.clientId).emit('gameStart', { sesh: gameSession });
@@ -188,23 +200,42 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// Update time since last score
 		sesh.timeSinceLastScore += deltaTime;
 		if (sesh.timeSinceLastScore < sesh.ballDelay) {
+			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
+			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+			sesh.ball.speedX = PongC.BALL_SPEEDX * Math.sign(sesh.ball.speedX);
+			sesh.ball.speedY = PongC.BALL_SPEEDY * Math.sign(sesh.ball.speedY);
 			this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 			return;
 		}
+		if (sesh.isCustom) {
+			// Increase ball speed over time
+			const BALL_ACCELERATION = 20;
+			sesh.ball.speedX += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedX);
+			sesh.ball.speedY += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedY);
+			if (sesh.ball.speedX > PongC.BALL_MAX_SPEEDX) {
+				sesh.ball.speedX = PongC.BALL_MAX_SPEEDX;
+			}
+			else if (sesh.ball.speedX < -PongC.BALL_MAX_SPEEDX) {
+				sesh.ball.speedX = -PongC.BALL_MAX_SPEEDX;
+			}
+			if (sesh.ball.speedY > PongC.BALL_MAX_SPEEDY) {
+				sesh.ball.speedY = PongC.BALL_MAX_SPEEDY;
+			}
+			else if (sesh.ball.speedY < -PongC.BALL_MAX_SPEEDY) {
+				sesh.ball.speedY = -PongC.BALL_MAX_SPEEDY;
+			}
+		}
+		// console.log(`speedX: ${sesh.ball.speedX}, speedY: ${sesh.ball.speedY}`);
 		sesh.ball.x += sesh.ball.speedX * deltaTime;
 		sesh.ball.y += sesh.ball.speedY * deltaTime;
 		if (sesh.ball.x <= 0) {
 			console.log('p2 scored');
 			sesh.p2.score++;
-			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
-			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
 			sesh.timeSinceLastScore = 0;
 		}
 		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
 			console.log('p1 scored');
 			sesh.p1.score++;
-			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
-			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
 			sesh.timeSinceLastScore = 0;
 		}
 		if (sesh.ball.y <= 0) {

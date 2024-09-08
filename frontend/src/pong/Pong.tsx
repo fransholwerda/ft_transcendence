@@ -67,6 +67,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 		setInQueue(false);
 		setInGame(false);
 		setGameSession(null);
+		setGameMode('default');
 	};
 
 	useEffect(() => {
@@ -167,6 +168,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			setInGame(false);
 			setInQueue(false);
 			setGameSession(null);
+			setGameMode('default');
 		});
 		return () => {
 			pSock.off('gameEnd');
