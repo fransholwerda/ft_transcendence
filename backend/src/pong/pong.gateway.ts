@@ -200,12 +200,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// Update time since last score
 		sesh.timeSinceLastScore += deltaTime;
 		if (sesh.timeSinceLastScore < sesh.ballDelay) {
+			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
+			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
+			sesh.ball.speedX = PongC.BALL_SPEEDX * Math.sign(sesh.ball.speedX);
+			sesh.ball.speedY = PongC.BALL_SPEEDY * Math.sign(sesh.ball.speedY);
 			this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 			return;
 		}
 		if (sesh.isCustom) {
 			// Increase ball speed over time
-			const BALL_ACCELERATION = 0.1;
+			const BALL_ACCELERATION = 0.5;
 			sesh.ball.speedX += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedX);
 			sesh.ball.speedY += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedY);
 		}
@@ -214,15 +218,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (sesh.ball.x <= 0) {
 			console.log('p2 scored');
 			sesh.p2.score++;
-			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
-			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
 			sesh.timeSinceLastScore = 0;
 		}
 		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
 			console.log('p1 scored');
 			sesh.p1.score++;
-			sesh.ball.x = PongC.CANVAS_WIDTH / 2;
-			sesh.ball.y = PongC.CANVAS_HEIGHT / 2;
 			sesh.timeSinceLastScore = 0;
 		}
 		if (sesh.ball.y <= 0) {
