@@ -207,7 +207,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 				let countdownSize = canvas.height / 6;
 				context.font = `${countdownSize}px Arial`;
 				context.fillText(`${countDown}`, gs.ball.x - countdownSize/2, gs.ball.y - countdownSize);
-				let arrow = '⭦';
+				let arrow = '⭩';
 				if (gs.ball.speedX > 0 && gs.ball.speedY > 0) {
 					arrow = '⭨';
 				}
@@ -215,7 +215,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 					arrow = '⭧';
 				}
 				else if (gs.ball.speedX < 0 && gs.ball.speedY < 0) {
-					arrow = '⭩';
+					arrow = '⭦';
 				}
 				context.font = `${countdownSize*1.5}px Arial`;
 				context.fillText(arrow, gs.ball.x - countdownSize/2, gs.ball.y + countdownSize*2);
