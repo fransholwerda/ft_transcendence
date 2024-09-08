@@ -212,6 +212,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const BALL_ACCELERATION = 20;
 			sesh.ball.speedX += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedX);
 			sesh.ball.speedY += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedY);
+			if (sesh.ball.speedX > PongC.BALL_MAX_SPEEDX) {
+				sesh.ball.speedX = PongC.BALL_MAX_SPEEDX;
+			}
+			else if (sesh.ball.speedX < -PongC.BALL_MIN_SPEEDX) {
+				sesh.ball.speedX = -PongC.BALL_MIN_SPEEDX;
+			}
+			if (sesh.ball.speedY > PongC.BALL_MAX_SPEEDY) {
+				sesh.ball.speedY = PongC.BALL_MAX_SPEEDY;
+			}
+			else if (sesh.ball.speedY < -PongC.BALL_MIN_SPEEDY) {
+				sesh.ball.speedY = -PongC.BALL_MIN_SPEEDY;
+			}
+			console.log(`speedX: ${sesh.ball.speedX}, speedY: ${sesh.ball.speedY}`);
 		}
 		sesh.ball.x += sesh.ball.speedX * deltaTime;
 		sesh.ball.y += sesh.ball.speedY * deltaTime;
