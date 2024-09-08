@@ -209,7 +209,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		if (sesh.isCustom) {
 			// Increase ball speed over time
-			const BALL_ACCELERATION = 0.5;
+			const BALL_ACCELERATION = 20;
 			sesh.ball.speedX += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedX);
 			sesh.ball.speedY += BALL_ACCELERATION * deltaTime * Math.sign(sesh.ball.speedY);
 		}
