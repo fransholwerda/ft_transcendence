@@ -229,12 +229,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		sesh.ball.x += sesh.ball.speedX * deltaTime;
 		sesh.ball.y += sesh.ball.speedY * deltaTime;
 		if (sesh.ball.x <= 0) {
-			console.log('p2 scored');
+			console.log(`${sesh.p2.username} scored`);
 			sesh.p2.score++;
 			sesh.timeSinceLastScore = 0;
 		}
 		else if (sesh.ball.x + sesh.ball.width >= PongC.CANVAS_WIDTH) {
-			console.log('p1 scored');
+			console.log(`${sesh.p1.username} scored`);
 			sesh.p1.score++;
 			sesh.timeSinceLastScore = 0;
 		}
