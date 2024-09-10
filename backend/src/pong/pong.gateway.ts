@@ -169,14 +169,21 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
-	private paddleCollision(p: Paddle, b: Ball) {
+	private paddleCollisionPercentage(p: Paddle, b: Ball): number | null {
+		const ballCenterY = b.y + b.height / 2;
+		const paddleTopY = p.y;
+		const paddleBottomY = p.y + p.height;
+	
 		if (b.x < p.x + p.width &&
 			b.x + b.width > p.x &&
 			b.y < p.y + p.height &&
 			b.y + b.height > p.y) {
-			return true;
+			
+			const relativeY = ballCenterY - paddleTopY;
+			const percentage = (relativeY / p.height) * 100;
+			return percentage;
 		}
-		return false;
+		return null;
 	}
 
 	@SubscribeMessage('requestGameUpdate')
@@ -246,14 +253,22 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			let diff = (sesh.ball.y + sesh.ball.height) - PongC.CANVAS_HEIGHT;
 			sesh.ball.y = PongC.CANVAS_HEIGHT - sesh.ball.height - diff;
 		}
-		// Check collision with paddles
-		if (sesh.ball.speedX < 0 && this.paddleCollision(sesh.p1.paddle, sesh.ball)) {
-			sesh.ball.speedX *= -1;
-			sesh.ball.x += PongC.PADDLE_WIDTH;
-		}
-		else if (sesh.ball.speedX > 0 && this.paddleCollision(sesh.p2.paddle, sesh.ball)) {
-			sesh.ball.speedX *= -1;
-			sesh.ball.x -= PongC.PADDLE_WIDTH;
+		if (sesh.ball.speedX < 0) {
+			const collisionPercentage = this.paddleCollisionPercentage(sesh.p1.paddle, sesh.ball);
+			if (collisionPercentage !== null) {
+				sesh.ball.speedX *= -1;
+				sesh.ball.x += PongC.PADDLE_WIDTH;
+				// Use collisionPercentage to adjust ball behavior
+				console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
+			}
+		} else if (sesh.ball.speedX > 0) {
+			const collisionPercentage = this.paddleCollisionPercentage(sesh.p2.paddle, sesh.ball);
+			if (collisionPercentage !== null) {
+				sesh.ball.speedX *= -1;
+				sesh.ball.x -= PongC.PADDLE_WIDTH;
+				// Use collisionPercentage to adjust ball behavior
+				console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
+			}
 		}
 		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 	}
