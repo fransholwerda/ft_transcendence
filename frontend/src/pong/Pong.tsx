@@ -44,7 +44,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	const switchGameMode = () => {
 		if (gameMode === 'default') {
-			setGameMode('custom');
+			setGameMode('Speed Surge');
 		} else {
 			setGameMode('default');
 		}
@@ -294,8 +294,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 			{inGame && gameSession && (
 				<div className="pong-game">
 					<div className="player-score">
-						<h6>{gameSession.p1.username} : {gameSession.p1.score}</h6>
-						<h6>{gameSession.p2.score} : {gameSession.p2.username}</h6>
+						<h6>{gameSession.p1.username} : {gameSession.p1.score} | {gameSession.p2.score} : {gameSession.p2.username}</h6>
 					</div>
 					<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
 					<div className="below-canvas">

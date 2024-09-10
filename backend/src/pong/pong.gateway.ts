@@ -120,26 +120,24 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		let p1, p2;
 		let isCustom = false;
 		const defaultQueue = this.queue.filter((q) => q.gameMode === 'default');
-		const customQueue = this.queue.filter((q) => q.gameMode === 'custom');
+		const customQueue = this.queue.filter((q) => q.gameMode === 'Speed Surge');
 		if (defaultQueue.length >= 2) {
 			console.log('NestJS pong checkQueue: Found 2 default players');
 			p1 = defaultQueue.shift();
 			p2 = defaultQueue.shift();
-			if (!p1 || !p2) return;
-			this.queue = this.queue.filter((q) => q !== p1 && q !== p2);
 		}
 		else if (customQueue.length >= 2) {
 			console.log('NestJS pong checkQueue: Found 2 custom players');
 			p1 = customQueue.shift();
 			p2 = customQueue.shift();
-			if (!p1 || !p2) return;
-			this.queue = this.queue.filter((q) => q !== p1 && q !== p2);
 			isCustom = true;
 		}
 		else {
 			console.log('NestJS pong checkQueue: Not enough players of same gameMode');
 			return;
 		}
+		if (!p1 || !p2) return;
+		this.queue = this.queue.filter((q) => q !== p1 && q !== p2);
 		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
 		const gameSession = fillGameSession(p1, p2, roomId, isCustom);
 		this.games.push(gameSession);
