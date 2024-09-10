@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CreateUserData } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -8,11 +7,14 @@ import { UserRepository } from './user.repository';
 import { QueryFailedError} from 'typeorm/error/QueryFailedError'
 import { Friendship } from 'src/friends/entity/friends.entity';
 import { FriendshipRepository } from 'src/friends/friends.repository';
+import { BlockedRepository } from 'src/ingores/ignores.repostiory';
+import { Blocked } from 'src/ingores/ignores.entity.ts/ignores.entity';
 
 @Injectable()
 export class UsersService {
 	constructor(@InjectRepository(User) public userRepository: UserRepository,
-	@InjectRepository(Friendship) private friendshipRepository: FriendshipRepository
+	@InjectRepository(Friendship) private friendshipRepository: FriendshipRepository,
+	@InjectRepository(Blocked) private blockedRepository: BlockedRepository
 	){}
 
 	//This function should create a User in User Entity. the createUserData paramater will create an object
@@ -74,13 +76,15 @@ export class UsersService {
 	friendship.friended = friend;
 
 	await this.friendshipRepository.save(friendship);
-  }
+	}
 
-	// async removeFriend(userID: number, friendID: number): Promise<void> {
-	// 	const friendship = await this.friendshipRepository.findOne({
-	// 		where: [{friended }]
-	// 	})
-	// }
+//   async removeFriend(userID: number, friendID: number): Promise<void> {
+// 	await this.friendshipRepository.delete({
+// 		"friendedId"
+// 112427: friendID,
+// 		friendedById: userID
+// 	});
+// 	}
 
 	async getFriends(userID: number) {
 		return this.userRepository.createQueryBuilder('user')
@@ -96,5 +100,20 @@ export class UsersService {
 		.where('follower.id = :userID', { userID} )
 		.select(['folloewr.id', 'follower.username'])
 		.getMany();
+	}
+
+	async addBlocked(userID: number, toBlockID: number): Promise<void> {
+		const user = await this.userRepository.findOne({where: {id: userID}});
+		const blockedUser = await this.userRepository.findOne({where: {id: toBlockID}});
+
+		if (!user || !blockedUser){
+			throw new Error('User or target User not found');
+		}
+
+		const blocked = new Blocked();
+		blocked.blockedBy = user;
+		blocked.blocked = blockedUser;
+
+		await this.blockedRepository.save(blocked);
 	}
 }

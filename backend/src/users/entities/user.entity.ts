@@ -1,4 +1,5 @@
 import { Friendship } from 'src/friends/entity/friends.entity';
+import { Blocked } from 'src/ingores/ignores.entity.ts/ignores.entity';
 import { Column, Entity, PrimaryColumn, ManyToMany, JoinTable, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('Users')
@@ -33,10 +34,10 @@ export class User {
 	beingfriended: Friendship[];
 
 
-	@ManyToMany(() => User, (user) => user.ignoredUsers)
-	ignoredUsers: User[];
+	@OneToMany(() => Blocked, (blocked) => blocked.blocked)
+	blocks: Blocked[];
 	
-	@ManyToMany(() => User, (user) => user.ignoredBy)
-	ignoredBy: User[];
+	@OneToMany(() => Blocked, (blocked) => blocked.blockedBy)
+	beingblocked: Blocked[];
 
 }
