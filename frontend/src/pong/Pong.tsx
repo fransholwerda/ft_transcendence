@@ -44,7 +44,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	const switchGameMode = () => {
 		if (gameMode === 'default') {
-			setGameMode('custom');
+			setGameMode('Speed Surge');
 		} else {
 			setGameMode('default');
 		}

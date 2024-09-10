@@ -120,7 +120,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		let p1, p2;
 		let isCustom = false;
 		const defaultQueue = this.queue.filter((q) => q.gameMode === 'default');
-		const customQueue = this.queue.filter((q) => q.gameMode === 'custom');
+		const customQueue = this.queue.filter((q) => q.gameMode === 'Speed Surge');
 		if (defaultQueue.length >= 2) {
 			console.log('NestJS pong checkQueue: Found 2 default players');
 			p1 = defaultQueue.shift();
