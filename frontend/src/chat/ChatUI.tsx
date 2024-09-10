@@ -263,7 +263,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 </button>
               ))}
             </div>
-            <div className="add-chat-form">
+            <div className="add-channel-form">
               <input
                 type="text"
                 value={newChannelName}
@@ -272,7 +272,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 placeholder="New channel name"
               />
             </div>
-            <div className="add-chat-form">
+            <div className="add-channel-form">
               <input
                 type="password"
                 value={channelPassword}
@@ -299,7 +299,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 </button>
               ))}
             </div>
-            <div className="add-chat-form">
+            <div className="add-dm-form">
               <input
                 type="text"
                 value={newDmName}
