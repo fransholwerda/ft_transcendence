@@ -26,6 +26,10 @@ export class ChatUser {
     this.clientIDs = this.clientIDs.filter(id => id !== clientID);
   }
 
+  isEmptyClientIDs(): boolean {
+    return this.clientIDs.length === 0;
+  }
+
   addRoom(room: ChatRoom) {
     if (!this.rooms.includes(room)) {
       this.rooms.push(room);

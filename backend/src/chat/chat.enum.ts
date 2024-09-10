@@ -1,7 +1,13 @@
 export enum ChatRoomEnum {
   AddedToRoom,
+  AlreadyInRoom,
   Banned,
   NotInvited,
-  WrongPass,
-  AlreadyInRoom
+  WrongPass
+}
+
+export enum ChannelType {
+  Private,
+  Protected,
+  Public
 }
