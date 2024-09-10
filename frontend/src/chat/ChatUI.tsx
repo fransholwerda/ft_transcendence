@@ -15,12 +15,22 @@ interface ChatUIProps {
   user: User;
 }
 
+enum ChannelType {
+  Private,
+  Protected,
+  Public
+}
+
+
 const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
   const [channels, setChannels] = useState<Tab[]>([]);
   const [dms, setDms] = useState<Tab[]>([]);
   const [activeTabId, setActiveTabId] = useState<number>(0);
   const [activeType, setActiveType] = useState<'channel' | 'dm'>('channel');
   const [newChannelName, setNewChannelName] = useState<string>('');
+  const [inviteUser, setInviteUser] = useState<string>('');
+  const [channelPassword, setChannelPassword] = useState<string>('');
+  const [protectedPassword, setProtectedPassword] = useState<string>('');
   const [newDmName, setNewDmName] = useState<string>('');
   const [messages, setMessages] = useState<{ channel: string, message: string, username: string }[]>([]);
   const [currentMessage, setCurrentMessage] = useState<string>('');
@@ -125,8 +135,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       alert('Channel name can only contain alphanumeric characters, dashes (-), and underscores (_).');
       return;
     }
-    socket.emit('joinChannel', { channel: newChannelName });
+    socket.emit('joinChannel', { channel: newChannelName, password: channelPassword });
     setNewChannelName('');
+    setChannelPassword('');
   };
 
   const joinDM = () => {
@@ -182,6 +193,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
     }
   };
 
+  const channelInviteUser = (title: string, userInvite: string) => {
+    socket.emit('channelInviteUser', { channel: title, userInvite: userInvite });
+    setInviteUser('');
+  }
+
+  const setChannelType = (title: string, type: number, password: string) => {
+    socket.emit ('setChannelType', { channel: title, type: type, password: password });
+    setProtectedPassword('');
+  }
+
   const handleUserAction = (action: string, username: string) => {
     switch (action) {
       case 'ignore':
@@ -220,9 +241,22 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                   <Popup className='chat-channel-popup' trigger={<span>⚙</span>}>
                     <div className='chat-channel-popup-content'>
                       <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Close Channel</span>
-                      <span className="private-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Set Private</span>
-                      <span className="password-button" onClick={(e) => { e.stopPropagation(); deleteTab(channel.id, 'channel', channel.title); }}>Set Password</span>
-                      <input className="password-input"></input>
+                      <span className="public-button" onClick={(e) => { e.stopPropagation(); setChannelType(channel.title, ChannelType.Public, ""); }}>Set Public</span>
+                      <span className="private-button" onClick={(e) => { e.stopPropagation(); setChannelType(channel.title, ChannelType.Private, ""); }}>Set Private</span>
+                      <span className="invite-button" onClick={(e) => { e.stopPropagation(); channelInviteUser(channel.title, inviteUser)}}>Invite user</span>
+                      <input
+                        type="text"
+                        value={inviteUser}
+                        onChange={(e) => setInviteUser(e.target.value)}
+                        placeholder="Invite user"
+                      />
+                      <span className="password-button" onClick={(e) => { e.stopPropagation(); setChannelType(channel.title, ChannelType.Protected, protectedPassword); }}>Set Password</span>
+                      <input
+                        type="password"
+                        value={protectedPassword}
+                        onChange={(e) => setProtectedPassword(e.target.value)}
+                        placeholder="Password"
+                      />
                     </div>
                   </Popup>
                   {channel.title}
@@ -236,6 +270,15 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 onChange={(e) => setNewChannelName(e.target.value)}
                 onKeyDown={(e) => handleKeyDown('channel', e)}
                 placeholder="New channel name"
+              />
+            </div>
+            <div className="add-chat-form">
+              <input
+                type="password"
+                value={channelPassword}
+                onChange={(e) => setChannelPassword(e.target.value)}
+                onKeyDown={(e) => handleKeyDown('channel', e)}
+                placeholder="Password"
               />
             </div>
           </div>

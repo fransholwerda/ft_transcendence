@@ -212,9 +212,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('setChannelType')
-  handleSetPrivate(client: Socket, payload: { channel: string, type: number, password: string }) {
-    // Make sure channel name is has proper characters in it
+  handleSetChannelType(client: Socket, payload: { channel: string, type: number, password: string }) {
+    // Make sure channel name has proper characters in it
     const { channel, type, password } = payload;
+
     if (!this.ChatRooms.has(channel)) {
       client.emit('chatError', 'Channel does not exist.');
       return;
@@ -244,6 +245,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return;
         }
         chatroom.setProtected(password);
+        console.log(channel + " is now protected by password: " + password);
         break;
       case ChannelType.Public:
         if (chatroom.isPublic()) {
@@ -255,5 +257,47 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       default:
         client.emit('chatError', 'Channel type does not exist.');
     }
+  }
+
+  @SubscribeMessage('channelInviteUser')
+  handleChannelInviteUser(client: Socket, payload: { channel: string, userInvite: string }) {
+    // Make sure channel name has proper characters in it
+    const { channel, userInvite } = payload;
+
+    if (!this.ChatRooms.has(channel)) {
+      client.emit('chatError', 'Channel does not exist.');
+      return;
+    }
+
+    const chatroom = this.ChatRooms.get(channel);
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+    if (!chatroom.isAdmin(user)) {
+      client.emit('chatError', 'You do not have permission to perform this action.');
+      return;
+    }
+
+    if (!this.ChatUsers.has(userInvite)) {
+      client.emit('chatError', 'User is not online or does not exist.');
+      return;
+    }
+    const userToInvite = this.ChatUsers.get(userInvite);
+
+    if (chatroom.isInRoom(userToInvite)) {
+      client.emit('chatError', 'User is already in this channel.');
+      return;
+    }
+
+    if (chatroom.isInvited(userToInvite)) {
+      client.emit('chatError', 'User is already invited to this channel.');
+      return;
+    }
+
+    if (chatroom.isBanned(userToInvite)) {
+      client.emit('chatError', 'User is banned from this channel.');
+      return;
+    }
+
+    chatroom.inviteUser(userToInvite);
+    this.server.to('@' + userToInvite.username).emit('chatAlert', { message: user.username + ' has invited you to join channel: ' + channel });
   }
 }
