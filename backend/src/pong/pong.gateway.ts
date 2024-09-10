@@ -186,6 +186,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return null;
 	}
 
+	private paddleBounce(p: Paddle, b: Ball, sign: number) {
+		let collisionPercentage = this.paddleCollisionPercentage(p, b);
+		if (collisionPercentage !== null) {
+			if (collisionPercentage < 0) collisionPercentage = 0;
+			if (collisionPercentage > 100) collisionPercentage = 100;
+			// b.speedY = (collisionPercentage - 50) / 50 * PongC.BA
+			b.speedX *= -1;
+			b.x += PongC.PADDLE_WIDTH * sign;
+			// Use collisionPercentage to adjust ball behavior
+			console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
+		}
+	}
+
 	@SubscribeMessage('requestGameUpdate')
 	handleRequestGameUpdate(client: Socket) {
 		// pongPrint(`NestJS pong: ${client.id}: requested game update`);
@@ -254,21 +267,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			sesh.ball.y = PongC.CANVAS_HEIGHT - sesh.ball.height - diff;
 		}
 		if (sesh.ball.speedX < 0) {
-			const collisionPercentage = this.paddleCollisionPercentage(sesh.p1.paddle, sesh.ball);
-			if (collisionPercentage !== null) {
-				sesh.ball.speedX *= -1;
-				sesh.ball.x += PongC.PADDLE_WIDTH;
-				// Use collisionPercentage to adjust ball behavior
-				console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
-			}
-		} else if (sesh.ball.speedX > 0) {
-			const collisionPercentage = this.paddleCollisionPercentage(sesh.p2.paddle, sesh.ball);
-			if (collisionPercentage !== null) {
-				sesh.ball.speedX *= -1;
-				sesh.ball.x -= PongC.PADDLE_WIDTH;
-				// Use collisionPercentage to adjust ball behavior
-				console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
-			}
+			this.paddleBounce(sesh.p1.paddle, sesh.ball, -1);
+		} 
+		else if (sesh.ball.speedX > 0) {
+			this.paddleBounce(sesh.p2.paddle, sesh.ball, 1);
 		}
 		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 	}

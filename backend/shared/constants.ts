@@ -23,7 +23,7 @@ export class PongC {
 
 	public static PADDLE_WIDTH = 5;
 	public static PADDLE_HEIGHT = 100;
-	public static PADDLE_SPEED = 15;
+	public static PADDLE_SPEED = 10;
 
 	public static SCORE_SIZE = 50;
 
