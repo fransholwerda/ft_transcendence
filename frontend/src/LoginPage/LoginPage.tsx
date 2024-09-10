@@ -43,7 +43,7 @@ async function requestIntraUser(access_token: object) {
 const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
   const navigate = useNavigate();
 
-  const client_id = "u-s4t2ud-d65b8708fe160cee8d25bff3aadbe733bd913f884d1fc2ad79cf4091132d661f";
+  const client_id = process.env.CLIENT_ID;
   const redirect_uri = `http%3A%2F%2F${Constants.FRONTEND_HOST_HOSTNAME}%3A8080`;
   const scope = "profile public";
   const response_type = "code";
