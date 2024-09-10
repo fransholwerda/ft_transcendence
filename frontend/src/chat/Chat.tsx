@@ -27,9 +27,14 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
       alert(message);
     });
 
+    socket.on('chatAlert', ({ message }: { message: string }) => {
+      alert(message);
+    });
+
     return () => {
       socket.off('chatJoined');
       socket.off('chatError');
+      socket.off('chatAlert');
     };
   });
 
@@ -37,7 +42,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
     setLoading(true);
     setError(null);
     
-    socket.emit('joinChat', { username: user.username });
+    socket.emit('joinChat', { userId: user.id, username: user.username });
   };
 
   return (
