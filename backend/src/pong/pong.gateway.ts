@@ -181,7 +181,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			
 			const relativeY = ballCenterY - paddleTopY;
 			const percentage = (relativeY / p.height) * 100;
-			Math.round(percentage);
+			return Math.round(percentage);
 		}
 		return null;
 	}
