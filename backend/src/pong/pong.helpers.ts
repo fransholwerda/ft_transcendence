@@ -2,7 +2,7 @@ import { GameSession, User } from './pong.types';
 import { pongPrint } from './pong.constants';
 import { PongC } from '../../shared/constants';
 
-export function fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string): GameSession {
+export function fillGameSession(p1: { clientId: string, user: User }, p2: { clientId: string, user: User }, roomId: string, isCustom: boolean): GameSession {
     pongPrint(`NestJS pong: Filling game session for room ${roomId}`);
     const sesh: GameSession = {
         p1: {
@@ -43,7 +43,11 @@ export function fillGameSession(p1: { clientId: string, user: User }, p2: { clie
             height: PongC.BALL_HEIGHT,
             speedX: PongC.BALL_SPEEDX,
             speedY: PongC.BALL_SPEEDY
-        }
+        },
+        lastUpdateTime: Date.now(),
+        timeSinceLastScore: 0,
+        ballDelay: 2,
+        isCustom: isCustom
     };
     return sesh;
 }
@@ -67,13 +71,13 @@ export function printGames(games: GameSession[]) {
     });
 }
 
-export function removeFromQueue(queue: { clientId: string, user: User }[], clientId: string) {
+export function removeFromQueue(queue: { clientId: string, user: User, gameMode: string }[], clientId: string) {
     pongPrint(`NestJS pong: ${clientId} removing client from queue`);
     return queue.filter((q) => q.clientId !== clientId);
 }
 
 export function findGameSessionByClientId(games: GameSession[], clientId: string): GameSession | null {
-    pongPrint(`NestJS pong: findGameSessionByClientId ${clientId}`);
+    // pongPrint(`NestJS pong: findGameSessionByClientId ${clientId}`);
     const gameSession = games.find((game) => game.p1.clientid === clientId || game.p2.clientid === clientId);
     if (!gameSession) {
         pongPrint(`NestJS pong: Could not find game session for user ${clientId}`);

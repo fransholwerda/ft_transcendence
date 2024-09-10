@@ -49,6 +49,17 @@ export class UsersController {
 	}
   }
 
+//   @Delete(':UserID/friend/:FriendID')
+//   async removeFriend(@Param('UserID') userID: number, @Param('FriendID') friendID: number) {
+// 	try {
+// 		await this.usersService.removeFriend(+userID, +friendID);
+// 	}
+// 	catch (error) {
+// 		console.log('something went wrong with removing friend. Unfortunate.');
+// 		throw (error);
+// 	}
+//   }
+
   @Get(':UserID/friends')
   async getFriends(@Param('UserID', ParseIntPipe) userID: number) {
 	try {

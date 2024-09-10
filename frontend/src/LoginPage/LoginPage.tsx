@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-
 import './LoginPage.css';
 
 import { Constants } from '../../shared/constants';
@@ -68,8 +67,10 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
 
   return (
     <div className="login-container">
-      <h2>ft_transcendence</h2>
-      <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>Login</button>
+      <h2>ft_transcendance</h2>
+      <button onClick={() => authorize(client_id, redirect_uri, scope, response_type)}>
+        Login
+      </button>
     </div>
   );
 };

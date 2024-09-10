@@ -11,14 +11,23 @@ export class Match {
 
 	@Column({ type: 'varchar', length: 30 })
 		player1: string;
+	
+	@Column({ type: 'int'})
+		player1ID: number;
 
 	@Column({ type: 'int'})
 		player1Score: number;
 
 	@Column({ type: 'varchar', length: 30})
 		player2: string;
+
+	@Column({ type: 'int'})
+		player2ID: number;
 	
 	@Column({ type: 'int'})
 		player2Score: number;
+
+	@Column({ type: 'varchar'})
+		winner: string;
 
 }

@@ -49,8 +49,8 @@ services:
   restart: unless-stopped
   ports:
    - 3003:3003
-  volumes:
-   - ./backend/app:/app
+  # volumes:
+  #  - ./backend/app:/app
   networks:
    - db
 
@@ -66,8 +66,8 @@ services:
    context: ./frontend
   ports:
    - 8080:8080
-  volumes:
-   - ./frontend/app:/app
+  # volumes:
+  #  - ./frontend/app:/app
 
 networks:
  db:

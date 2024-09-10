@@ -7,6 +7,7 @@ import {
     Matches
 } from 'class-validator';
 import { IsUnique } from 'src/validation/is-unique';
+import { User } from '../entities/user.entity';
 
 export class CreateUserData {
     id: number;
@@ -27,4 +28,8 @@ export class CreateUserData {
     TwoFactorEnabled: boolean;
 
     TwoFactorSecret: string;
+
+	friends: User[];
+
+	friendedBy: User[];
 }

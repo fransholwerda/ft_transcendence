@@ -30,6 +30,10 @@ export interface GameSession {
 	p2: player;
 	roomId: string;
 	ball: Ball;
+	lastUpdateTime: number;
+	timeSinceLastScore: number;
+	ballDelay: number;
+	isCustom: boolean;
 }
 
 export interface User {

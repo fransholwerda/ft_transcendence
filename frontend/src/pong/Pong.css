@@ -45,13 +45,6 @@
 	padding-bottom: 0.5vh;
 }
 
-.pong-info button, .pong-waiting button {
-	min-height: 8vh;
-	height: 8vh;
-	max-height: 8vh;
-	font-size: 6vh;
-}
-
 .pong-info select, option {
 	min-height: 6vh;
 	height: 6vh;
@@ -60,12 +53,19 @@
 }
 
 .pong-game {
-	/* background-color: var(--ponginner); */
 	border-radius: 5%;
 	overflow: hidden;
 }
 
-.pong-container button {
+.pong-info button {
+	margin-bottom: 2vh;
+}
+
+.pong-info button, .pong-waiting button {
+	min-height: 8vh;
+	height: 8vh;
+	max-height: 8vh;
+	font-size: 6vh;
 	background-color: var(--pongtext);
 	border: none;
 	border-radius: 5%;
@@ -75,7 +75,7 @@
 	transition: background-color 0.3s ease;
 }
 
-.pong-container button:hover {
+.pong-info button:hover, .pong-waiting button:hover {
 	background-color: var(--pongbg);
 }
 
@@ -84,6 +84,7 @@
 	object-fit: contain;
 	min-width: 80px;
 	min-height: 50px;
+	max-height: 60vh;
 }
 
 .pong-game .player-score {
@@ -93,21 +94,39 @@
 }
 
 .player-score h6 {
-	font-size: 4vh;
+	font-size: 8vh;
 	margin: 0 2vw;
 }
 
 .pong-game .player-score {
+	max-height: 16vh;
+}
+
+.pong-game button {
+	min-height: 8vh;
+	height: 8vh;
 	max-height: 8vh;
+	font-size: 6vh;
+	background-color: var(--pongtext);
+	border: none;
+	border-radius: 5%;
+	color: var(--ponginner);
+	cursor: pointer;
+	padding: 0.75vh 2vw;
+	transition: background-color 0.3s ease;
 }
 
-.pong-game canvas {
-	max-height: 70vh;
+.pong-game button:hover {
+	background-color: var(--ponginner);
+	color: var(--pongbg);
 }
 
-.pong-game .button {
-	min-height: 7vh;
-	height: 7vh;
-	max-height: 7vh;
-	font-size: 5vh;
+.pong-game .below-canvas {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.p1-arrow h6, .p2-arrow h6{
+	font-size: 8vh;
 }
