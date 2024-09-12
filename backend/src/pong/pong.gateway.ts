@@ -193,7 +193,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		let signY = Math.sign(b.speedY);
 		let signX = Math.sign(b.speedX);
 		let speedDistance = Math.sqrt(absSpeedX ** 2 + absSpeedY ** 2);
-
+	
 		if (collisionPercentage >= 34 && collisionPercentage <= 66) { // middle
 			console.log('Ball hit paddle in the middle, no change in speed');
 			return;
@@ -217,11 +217,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 		}
 		console.log(`speedDistance: ${speedDistance}`);
+		console.log(`before sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
 		absSpeedY = Math.abs(b.speedY);
-		b.speedX = Math.sqrt(Math.abs(speedDistance ** 2 - absSpeedY ** 2)) * signX;
+		b.speedX = Math.sqrt(speedDistance ** 2 - absSpeedY ** 2) * signX;
 		b.speedY *= signY;
 		console.log(`after sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
-		console.log(`new speedDistance: ${Math.sqrt(Math.abs(b.speedX) ** 2 + Math.abs(b.speedY) ** 2)}`);
+		console.log(`new speedDistance: ${Math.sqrt(b.speedX ** 2 + b.speedY ** 2)}`);
 	}
 
 	private paddleBounce(p: Paddle, b: Ball, sign: number) {
