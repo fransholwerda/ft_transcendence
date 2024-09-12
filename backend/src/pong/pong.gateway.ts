@@ -188,7 +188,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private modifyBallSpeed(b: Ball, collisionPercentage: number) {
-		// let absSpeedX = Math.abs(b.speedX);
+		let absSpeedX = Math.abs(b.speedX);
 		let absSpeedY = Math.abs(b.speedY);
 		let signY = Math.sign(b.speedY);
 		
@@ -199,21 +199,22 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		else if (collisionPercentage < 34) { // top
 			console.log('Ball hit paddle near the top');
 			if (signY === -1) { // moving up
-				b.speedY = b.speedX * 3;
+				b.speedY = absSpeedX * 3;
 			}
 			else { // moving down
-				b.speedY = b.speedX / 3;
+				b.speedY = absSpeedX / 3;
 			}
 		}
 		else if (collisionPercentage > 66) { // bottom
 			console.log('Ball hit paddle near the bottom');
 			if (signY === -1) { // moving up
-				b.speedY = b.speedX / 3;
+				b.speedY = absSpeedX / 3;
 			}
 			else { // moving down
-				b.speedY = b.speedX * 3;
+				b.speedY = absSpeedX * 3;
 			}
 		}
+		b.speedY *= signY;
 	}
 
 	private paddleBounce(p: Paddle, b: Ball, sign: number) {
