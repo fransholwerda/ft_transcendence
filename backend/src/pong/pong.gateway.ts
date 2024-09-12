@@ -216,7 +216,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				b.speedY = absSpeedX * 3;
 			}
 		}
-		b.speedX = Math.sqrt(speedDistance ** 2 - b.speedY ** 2) * signX;
+		b.speedX = Math.sqrt(Math.abs(speedDistance ** 2 - b.speedY ** 2)) * signX;
 		b.speedY *= signY;
 	}
 
