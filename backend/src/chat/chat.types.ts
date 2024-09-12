@@ -182,6 +182,16 @@ export class ChatRoom {
     }
   }
 
+  hasHigherPermissions(user: ChatUser, target: ChatUser) {
+    if (this.isOwner(target)) {
+      return false;
+    } else if (this.isOwner(user)) {
+      return true;
+    } else if (this.isAdmin(user) && !this.isOwner(target) && !this.isAdmin(target))
+      return true;
+    return false;
+  }
+
   isBanned(user: ChatUser): boolean {
     return this.banned.includes(user.id);
   }
@@ -202,7 +212,7 @@ export class ChatRoom {
   }
 
   isMuted(user: ChatUser): boolean {
-    return this.banned.includes(user.id);
+    return this.muted.includes(user.id);
   }
 
   muteUser(user: ChatUser) {
