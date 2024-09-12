@@ -1,4 +1,4 @@
-const HOST_HOSTNAME = '10.11.3.19';
+const HOST_HOSTNAME = 'kevin-pc';
 
 export class Constants {
 	public static FRONTEND_HOST_PROTOCOL = 'http://';
@@ -23,7 +23,7 @@ export class PongC {
 
 	public static PADDLE_WIDTH = 5;
 	public static PADDLE_HEIGHT = 100;
-	public static PADDLE_SPEED = 15;
+	public static PADDLE_SPEED = 10;
 
 	public static SCORE_SIZE = 50;
 
