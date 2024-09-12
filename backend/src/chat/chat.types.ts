@@ -1,3 +1,4 @@
+import { isatty } from 'tty';
 import { ChatRoomEnum } from './chat.enum';
 
 export class ChatUser {
@@ -190,6 +191,22 @@ export class ChatRoom {
     } else if (this.isAdmin(user) && !this.isOwner(target) && !this.isAdmin(target))
       return true;
     return false;
+  }
+
+  promoteUser(target: ChatUser) {
+    if (this.isAdmin(target)) {
+      return false;
+    }
+    this.admins.push(target);
+    return true;
+  }
+
+  demoteUser(target: ChatUser) {
+    if (this.isOwner(target) || !this.isAdmin(target)) {
+      return false;
+    }
+    this.admins = this.admins.filter(demote => demote !== target);
+    return true;
   }
 
   isBanned(user: ChatUser): boolean {

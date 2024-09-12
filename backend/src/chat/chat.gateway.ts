@@ -378,6 +378,28 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           socket.emit('chatAlert', { message: 'You have been banned from channel: ' + chatroom.roomId } );
         }
         break;
+      case ActionType.Promote:
+        if (!chatroom.isOwner(user)) {
+          client.emit('chatAlert', { message: 'You do not have permission to perform this action.' });
+        }
+        if (chatroom.promoteUser(target)) {
+          for (const clientID of target.clientIDs) {
+            const socket = this.ClientIDSockets.get(clientID);
+            socket.emit('chatAlert', { message: 'You have been promoted on channel: ' + chatroom.roomId });
+          }
+        }
+        break;
+      case ActionType.Demote:
+        if (!chatroom.isOwner(user)) {
+          client.emit('chatAlert', { message: 'You do not have permission to perform this action.' });
+        }
+        if (chatroom.demoteUser(target)) {
+          for (const clientID of target.clientIDs) {
+            const socket = this.ClientIDSockets.get(clientID);
+            socket.emit('chatAlert', { message: 'You have been demoted on channel: ' + chatroom.roomId });
+          }
+        }
+        break;
       default:
         client.emit('chatAlert', { message: 'Action not recognized.' });
     }
