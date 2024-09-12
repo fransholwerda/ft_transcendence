@@ -11,3 +11,13 @@ export enum ChannelType {
   Protected,
   Public
 }
+
+export enum ActionType {
+  Ignore,
+  Kick,
+  Mute,
+  Unmute,
+  Ban,
+  Promote,
+  Demote
+}
