@@ -186,9 +186,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return null;
 	}
 
+	private modifyBallSpeed(b: Ball, collisionPercentage: number) {
+	}
+
 	private paddleBounce(p: Paddle, b: Ball, sign: number) {
 		let collisionPercentage = this.paddleCollisionPercentage(p, b);
 		if (collisionPercentage !== null) {
+			console.log(`Ball hit at ${b.x} ${b.y}`);
 			if (sign === -1) b.x = p.x + p.width;
 			else b.x = p.x - b.width;
 			b.speedX *= -1;
