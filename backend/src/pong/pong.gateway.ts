@@ -216,8 +216,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				b.speedY = absSpeedX * 3;
 			}
 		}
-		b.speedX = Math.sqrt(Math.abs(speedDistance ** 2 - b.speedY ** 2)) * signX;
+		console.log(`speedDistance: ${speedDistance}`);
+		absSpeedY = Math.abs(b.speedY);
+		b.speedX = Math.sqrt(Math.abs(speedDistance ** 2 - absSpeedY ** 2)) * signX;
 		b.speedY *= signY;
+		console.log(`after sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
+		console.log(`new speedDistance: ${Math.sqrt(Math.abs(b.speedX) ** 2 + Math.abs(b.speedY) ** 2)}`);
 	}
 
 	private paddleBounce(p: Paddle, b: Ball, sign: number) {
@@ -232,7 +236,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (collisionPercentage < 0) collisionPercentage = 0;
 			if (collisionPercentage > 100) collisionPercentage = 100;
 			this.modifyBallSpeed(b, collisionPercentage);
-			console.log(`after SpeedX: ${b.speedX} SpeedY: ${b.speedY}`);
 		}
 	}
 
