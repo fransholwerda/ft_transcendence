@@ -19,6 +19,7 @@ import {
 
 import { MatchService } from '../matches/matches.service';
 import { MatchModule } from '../matches/matches.module';
+import { sign } from 'crypto';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -187,20 +188,47 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	private modifyBallSpeed(b: Ball, collisionPercentage: number) {
+		// let absSpeedX = Math.abs(b.speedX);
+		let absSpeedY = Math.abs(b.speedY);
+		let signY = Math.sign(b.speedY);
+		
+		if (collisionPercentage >= 34 && collisionPercentage <= 66) { // middle
+			console.log('Ball hit paddle in the middle, no change in speed');
+			return;
+		}
+		else if (collisionPercentage < 34) { // top
+			console.log('Ball hit paddle near the top');
+			if (signY === -1) { // moving up
+				b.speedY = b.speedX * 3;
+			}
+			else { // moving down
+				b.speedY = b.speedX / 3;
+			}
+		}
+		else if (collisionPercentage > 66) { // bottom
+			console.log('Ball hit paddle near the bottom');
+			if (signY === -1) { // moving up
+				b.speedY = b.speedX / 3;
+			}
+			else { // moving down
+				b.speedY = b.speedX * 3;
+			}
+		}
 	}
 
 	private paddleBounce(p: Paddle, b: Ball, sign: number) {
 		let collisionPercentage = this.paddleCollisionPercentage(p, b);
 		if (collisionPercentage !== null) {
 			console.log(`Ball hit at ${b.x} ${b.y}`);
-			console.log(`SpeedX: ${b.speedX} SpeedY: ${b.speedY}`);
+			console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
+			console.log(`before SpeedX: ${b.speedX} SpeedY: ${b.speedY}`);
 			if (sign === -1) b.x = p.x + p.width;
 			else b.x = p.x - b.width;
 			b.speedX *= -1;
 			if (collisionPercentage < 0) collisionPercentage = 0;
 			if (collisionPercentage > 100) collisionPercentage = 100;
-			
-			console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
+			this.modifyBallSpeed(b, collisionPercentage);
+			console.log(`after SpeedX: ${b.speedX} SpeedY: ${b.speedY}`);
 		}
 	}
 
