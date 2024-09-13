@@ -23,17 +23,12 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
       setLoading(false);
     })
 
-    socket.on('chatError', ({ message }: { message: string }) => {
-      alert(message);
-    });
-
     socket.on('chatAlert', ({ message }: { message: string }) => {
       alert(message);
     });
 
     return () => {
       socket.off('chatJoined');
-      socket.off('chatError');
       socket.off('chatAlert');
     };
   });
