@@ -188,13 +188,18 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 	// print all and calc more
 	private modifyBallSpeed(b: Ball, collisionPercentage: number) {
-		console.log(`----------------------------------------`);
+		console.log(`-----------------BALLMOD--------------`);
 		let absSpeedX = Math.abs(b.speedX);
 		let absSpeedY = Math.abs(b.speedY);
 		let signY = Math.sign(b.speedY);
 		let signX = Math.sign(b.speedX);
+		console.log(`absSpeedX: ${absSpeedX} absSpeedY: ${absSpeedY}`);
+		console.log(`signX: ${signX} signY: ${signY}`);
+		console.log(`**2 absSpeedX: ${absSpeedX**2} absSpeedY: ${absSpeedY**2}`);
 		let speedDistance = Math.sqrt(absSpeedX ** 2 + absSpeedY ** 2);
+		console.log(`start speedDistance: ${speedDistance}`);
 	
+		let testY = b.speedY;
 		if (collisionPercentage >= 34 && collisionPercentage <= 66) { // middle
 			console.log('Ball hit paddle in the middle, no change in speed');
 			return;
@@ -202,30 +207,30 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		else if (collisionPercentage < 34) { // top
 			console.log('Ball hit paddle near the top');
 			if (signY === -1) { // moving up
-				b.speedY = absSpeedX * 3;
+				testY = absSpeedX * 3;
 			}
 			else { // moving down
-				b.speedY = absSpeedX / 3;
+				testY = absSpeedX / 3;
 			}
 		}
 		else if (collisionPercentage > 66) { // bottom
 			console.log('Ball hit paddle near the bottom');
 			if (signY === -1) { // moving up
-				b.speedY = absSpeedX / 3;
+				testY = absSpeedX / 3;
 			}
 			else { // moving down
-				b.speedY = absSpeedX * 3;
+				testY = absSpeedX * 3;
 			}
 		}
-		console.log(`speedDistance: ${speedDistance}`);
-		console.log(`before sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
-		absSpeedY = Math.abs(b.speedY);
-		let speedDistanceNew = Math.sqrt(absSpeedX ** 2 + absSpeedY ** 2);
-		b.speedX = Math.sqrt(speedDistance ** 2 - absSpeedY ** 2) * signX;
-		b.speedY *= signY;
-		console.log(`after sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
-		console.log(`new speedDistance: ${Math.sqrt(b.speedX ** 2 + b.speedY ** 2)}`);
-		console.log(`----------------------------------------`);
+		console.log(`testY: ${testY}`);
+		// console.log(`before sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
+		// absSpeedY = Math.abs(b.speedY);
+		// let speedDistanceNew = Math.sqrt(absSpeedX ** 2 + absSpeedY ** 2);
+		// b.speedX = Math.sqrt(speedDistance ** 2 - absSpeedY ** 2) * signX;
+		// b.speedY *= signY;
+		// console.log(`after sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
+		// console.log(`new speedDistance: ${Math.sqrt(b.speedX ** 2 + b.speedY ** 2)}`);
+		console.log(`-----------------BALLMOD--------------`);
 	}
 
 	private paddleBounce(p: Paddle, b: Ball, sign: number) {
