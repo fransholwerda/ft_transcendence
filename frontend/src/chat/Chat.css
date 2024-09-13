@@ -23,8 +23,45 @@
 	font-size: 16px;
 	cursor: pointer;
 }
-  
+
 .error-message {
 	color: red;
 	margin-top: 10px;
+}
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.modal-content {
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	text-align: center;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+	margin-bottom: 10px;
+}
+
+.modal-content button {
+	margin: 10px;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.modal-content button:hover {
+	background-color: #ddd;
 }

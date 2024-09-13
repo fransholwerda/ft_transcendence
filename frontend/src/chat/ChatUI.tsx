@@ -31,7 +31,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-
     socket.on('channelCreated', ({ channel }: { channel: string }) => {
       const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
       setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
@@ -199,7 +198,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
 
   const handleUserAction = (action: number, username: string) => {
     const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
-    socket.emit('actionUser', { channel: activeTab?.title, targetUser: username, action: action });
+    switch (action) {
+      case ActionType.Invite:
+        socket.emit('actionUser', { targetUser: username, action: action });
+        break;
+      case ActionType.Ignore:
+        socket.emit('actionUser', { targetUser: username, action: action });
+        break;
+      default:
+        socket.emit('channelActionUser', { channel: activeTab?.title, targetUser: username, action: action });
+    }
   };
 
   return (
@@ -316,6 +324,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                       <>
                           {activeType === 'channel' ? (
                             <>
+                              <button onClick={() => handleUserAction(ActionType.Invite, msg.username)}>Invite</button>
                               <button onClick={() => handleUserAction(ActionType.Ignore, msg.username)}>Ignore</button>
                               <button onClick={() => handleUserAction(ActionType.Kick, msg.username)}>Kick</button>
                               <button onClick={() => handleUserAction(ActionType.Mute, msg.username)}>Mute</button>
