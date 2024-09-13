@@ -200,7 +200,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		let speedDistance = Math.sqrt(absSpeedX ** 2 + absSpeedY ** 2);
 		console.log(`start speedDistance: ${speedDistance}`);
 	
-		let testY = b.speedY;
+		let angle: number;
+		// let testY = b.speedY;
 		if (collisionPercentage >= 34 && collisionPercentage <= 66) { // middle
 			console.log('Ball hit paddle in the middle, no change in speed');
 			return;
@@ -209,28 +210,39 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			console.log('Ball hit paddle near the top');
 			if (signY === -1) { // moving up
 				// go to an angle of 60 degrees
-				testY = absSpeedX * 3;
+				// testY = absSpeedX * 3;
+				angle = Math.PI / 3;
 			}
 			else { // moving down
 				// go to an angle of 15 degrees
-				testY = absSpeedX / 3;
+				// testY = absSpeedX / 3;
+				angle = Math.PI / 12;
 			}
 		}
 		else if (collisionPercentage > 66) { // bottom
 			console.log('Ball hit paddle near the bottom');
 			if (signY === -1) { // moving up
 				// go to an angle of 15 degrees
-				testY = absSpeedX / 3;
+				// testY = absSpeedX / 3;
+				angle = Math.PI / 12;
 			}
 			else { // moving down
 				// go to an angle of 60 degrees
-				testY = absSpeedX * 3;
+				// testY = absSpeedX * 3;
+				angle = Math.PI / 3;
 			}
 		}
-		console.log(`testY: ${testY}`);
-		console.log(`TEST **2 absSpeedX: ${absSpeedX**2} testY: ${testY**2}`);
-		speedDistance = Math.sqrt(absSpeedX ** 2 + testY ** 2);
-		console.log(`TEST speedDistance: ${speedDistance}`);
+		let newSpeedX = Math.cos(angle) * speedDistance;
+		let newSpeedY = Math.sin(angle) * speedDistance;
+		console.log(`angle: ${angle} newSpeedX: ${newSpeedX} newSpeedY: ${newSpeedY}`);
+		console.log(`new **2 newSpeedX: ${newSpeedX**2} newSpeedY: ${newSpeedY**2}`);
+		console.log(`new speedDistance: ${Math.sqrt(newSpeedX ** 2 + newSpeedY ** 2)}`);
+
+		// console.log(`testY: ${testY}`);
+		// console.log(`TEST **2 absSpeedX: ${absSpeedX**2} testY: ${testY**2}`);
+		// speedDistance = Math.sqrt(absSpeedX ** 2 + testY ** 2);
+		// console.log(`TEST speedDistance: ${speedDistance}`);
+
 		// console.log(`before sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
 		// absSpeedY = Math.abs(b.speedY);
 		// let speedDistanceNew = Math.sqrt(absSpeedX ** 2 + absSpeedY ** 2);
