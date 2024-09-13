@@ -186,6 +186,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		return null;
 	}
+
 	// print all and calc more
 	private modifyBallSpeed(b: Ball, collisionPercentage: number) {
 		console.log(`-----------------BALLMOD--------------`);
