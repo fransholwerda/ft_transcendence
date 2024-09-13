@@ -12,19 +12,19 @@
   }
   
   .login-container h2 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
+    font-size: 2vw;
+    margin-bottom: 1.5vw;
     color: #333;
   }
   
   .login-container input {
     width: 80%;
-    max-width: 400px;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
+    max-width: 40vw;
+    padding: 0.75vw;
+    margin-bottom: 1vw;
+    border: 1vw solid #ccc;
+    border-radius: 0.5vw;
+    font-size: 4vw;
   }
   
   .login-container input:focus {
@@ -34,13 +34,13 @@
   
   .login-container button {
     width: 80%;
-    max-width: 400px;
-    padding: 0.75rem;
+    max-width: 20vw;
+    padding: 0.75vw;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 1rem;
+    border-radius: 0.5vw;
+    font-size: 1vw;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
