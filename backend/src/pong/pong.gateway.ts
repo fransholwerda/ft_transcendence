@@ -207,6 +207,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		let absSpeedY = Math.abs(b.speedY);
 		let signY = Math.sign(b.speedY);
 		let signX = Math.sign(b.speedX);
+		pongPrint(`start b.speedX: ${b.speedX} b.speedY: ${b.speedY}`);
 		console.log(`absSpeedX: ${absSpeedX} absSpeedY: ${absSpeedY}`);
 		console.log(`signX: ${signX} signY: ${signY}`);
 		console.log(`**2 absSpeedX: ${absSpeedX**2} absSpeedY: ${absSpeedY**2}`);
@@ -271,7 +272,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (collisionPercentage !== null) {
 			console.log(`Ball hit at ${b.x} ${b.y}`);
 			console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
-			console.log(`before SpeedX: ${b.speedX} SpeedY: ${b.speedY}`);
 			if (sign === -1) b.x = p.x + p.width;
 			else b.x = p.x - b.width;
 			b.speedX *= -1;
