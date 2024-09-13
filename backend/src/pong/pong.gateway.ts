@@ -28,6 +28,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private queue: { clientId: string, user: User, gameMode: string }[] = [];	
 	private games: GameSession[] = [];
+	private ClientIDSockets = new Map<string, Socket>();
 
 	constructor(private readonly matchService: MatchService) {}
 
@@ -53,14 +54,26 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	handleConnection(client: Socket) {
 		pongPrint(`NestJS pong: connected: ${client.id}`);
+		this.ClientIDSockets.set(client.id, client);
 	}
 
 	handleDisconnect(client: Socket) {
 		pongPrint(`NestJS pong: disconnected: ${client.id}`);
+		this.ClientIDSockets.delete(client.id);
 		this.queue = removeFromQueue(this.queue, client.id);
 		this.leavingGame(client);
 		disconnectFromGame(this.server, this.games, client.id);
 	}
+
+	// @SubscribeMessage('invitedMatch')
+	// handleJoinQueue(client: Socket, data: { player1SocketID: string, player1ID: string, player1Username: string, player2ID:string, player2Username: string }) {
+	// 	if (!this.ClientIDSockets.has(player1SocketID)) {
+	// 		client.emit('chatAlert', { message: 'Player not found.' });
+	// 		return;
+	// 	}
+	// 	// GAME WILL COMMENCE BETWEEN PLAYER1 AND PLAYER2
+	// 	const client2 = this.ClientIDSockets.get(player1ID);
+	// }
 
 	@SubscribeMessage('joinQueue')
 	handleJoinQueue(client: Socket, data: { user: User, gameMode: string }) {

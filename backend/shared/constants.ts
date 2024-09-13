@@ -18,8 +18,8 @@ export class PongC {
 	public static BALL_HEIGHT = 20;
 	public static BALL_SPEEDX = 50;
 	public static BALL_SPEEDY = 50;
-	public static BALL_MAX_SPEEDX = 700;
-	public static BALL_MAX_SPEEDY = 700;
+	public static BALL_MAX_SPEEDX = 800;
+	public static BALL_MAX_SPEEDY = 800;
 
 	public static PADDLE_WIDTH = 5;
 	public static PADDLE_HEIGHT = 100;
