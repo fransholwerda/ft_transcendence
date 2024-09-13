@@ -246,12 +246,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				angle = Math.PI / 3;
 			}
 		}
-		let newSpeedX = Math.cos(angle) * speedDistance;
-		let newSpeedY = Math.sin(angle) * speedDistance;
-		console.log(`angle: ${angle} newSpeedX: ${newSpeedX} newSpeedY: ${newSpeedY}`);
+		let newSpeedX = Math.cos(angle) * speedDistance * signX;
+		let newSpeedY = Math.sin(angle) * speedDistance * signY;
+		console.log(`angle: ${angle}`);
+		console.log(`new absSpeedX: ${Math.abs(newSpeedX)} absSpeedY: ${Math.abs(newSpeedY)}`);
+		console.log(`newSpeedX: ${newSpeedX} newSpeedY: ${newSpeedY}`);
 		console.log(`new **2 newSpeedX: ${newSpeedX**2} newSpeedY: ${newSpeedY**2}`);
 		console.log(`new speedDistance: ${Math.sqrt(newSpeedX ** 2 + newSpeedY ** 2)}`);
-
+		b.speedX = newSpeedX;
+		b.speedY = newSpeedY;
 		// console.log(`testY: ${testY}`);
 		// console.log(`TEST **2 absSpeedX: ${absSpeedX**2} testY: ${testY**2}`);
 		// speedDistance = Math.sqrt(absSpeedX ** 2 + testY ** 2);
