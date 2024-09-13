@@ -207,22 +207,29 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		else if (collisionPercentage < 34) { // top
 			console.log('Ball hit paddle near the top');
 			if (signY === -1) { // moving up
+				// go to an angle of 60 degrees
 				testY = absSpeedX * 3;
 			}
 			else { // moving down
+				// go to an angle of 15 degrees
 				testY = absSpeedX / 3;
 			}
 		}
 		else if (collisionPercentage > 66) { // bottom
 			console.log('Ball hit paddle near the bottom');
 			if (signY === -1) { // moving up
+				// go to an angle of 15 degrees
 				testY = absSpeedX / 3;
 			}
 			else { // moving down
+				// go to an angle of 60 degrees
 				testY = absSpeedX * 3;
 			}
 		}
 		console.log(`testY: ${testY}`);
+		console.log(`TEST **2 absSpeedX: ${absSpeedX**2} testY: ${testY**2}`);
+		speedDistance = Math.sqrt(absSpeedX ** 2 + testY ** 2);
+		console.log(`TEST speedDistance: ${speedDistance}`);
 		// console.log(`before sqrt speedX: ${b.speedX} speedY: ${b.speedY}`);
 		// absSpeedY = Math.abs(b.speedY);
 		// let speedDistanceNew = Math.sqrt(absSpeedX ** 2 + absSpeedY ** 2);
