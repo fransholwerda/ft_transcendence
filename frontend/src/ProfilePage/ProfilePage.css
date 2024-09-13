@@ -6,28 +6,27 @@
   padding: 20px;
   background-color: #ffffff;
   background-image: url('../img/bg_vector_bg.jpg');
-  background-size: 100%;
-
-
-
+  background-size: cover;
 }
 
 .profile_header {
   height: 5vh;
   text-align: center;
   justify-content: center;
-  /* padding-bottom: 20px;
-  margin-bottom: 10px; */
+  text-decoration: underline;
+  text-decoration-color: rgb(0, 0, 0);
+  color: #000000; /* Set to black */
   margin-top: 10px;
   font-size: 1rem;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  /* line-height: 1.5;
-  font-weight: 400; */
-  color: #000000;
+}
+.profile_header h1 {
+  color:#222;
 }
 
-/* .profile_header p {
-} */
+.profile_header span.username { /* Added for username styling */
+  color: #000000; /* Set to black */
+}
 
 .profile_content {
   display: grid;
@@ -39,30 +38,31 @@
 }
 
 .profile_section {
-  background-color: #efefef;
+  background-color: rgba(239, 239, 239, 0.5); /* 50% transparency */
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: top;
+  justify-content: flex-start;
   align-items: center;
 }
 
 .profile_section p1 {
-  font-size: 1.0rem;
-  color: #333;
+  font-size: 1rem;
+  color: #070000;
   margin-bottom: 10px;
 }
+
 .profile_section h2 {
   font-size: 1.5rem;
-  color: #333;
+  color: #222;
   margin-bottom: 10px;
 }
 
 .profile_section h3 {
   font-size: 1.2rem;
-  color: #6c6c6c;
+  color: #666;
 }
 
 .friend_item {
@@ -75,7 +75,7 @@
   height: 12px;
   border-radius: 50%;
   margin-right: 10px;
-  background-color: #f00; /* Default to red */
+  background-color: #ccc;
 }
 
 .status_circle.online {
