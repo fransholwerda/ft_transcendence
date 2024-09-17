@@ -19,6 +19,7 @@ import {
 
 import { MatchService } from '../matches/matches.service';
 import { MatchModule } from '../matches/matches.module';
+import { sign } from 'crypto';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -27,6 +28,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private queue: { clientId: string, user: User, gameMode: string }[] = [];	
 	private games: GameSession[] = [];
+	private ClientIDSockets = new Map<string, Socket>();
 
 	constructor(private readonly matchService: MatchService) {}
 
@@ -52,14 +54,26 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	handleConnection(client: Socket) {
 		pongPrint(`NestJS pong: connected: ${client.id}`);
+		this.ClientIDSockets.set(client.id, client);
 	}
 
 	handleDisconnect(client: Socket) {
 		pongPrint(`NestJS pong: disconnected: ${client.id}`);
+		this.ClientIDSockets.delete(client.id);
 		this.queue = removeFromQueue(this.queue, client.id);
 		this.leavingGame(client);
 		disconnectFromGame(this.server, this.games, client.id);
 	}
+
+	// @SubscribeMessage('invitedMatch')
+	// handleJoinQueue(client: Socket, data: { player1SocketID: string, player1ID: string, player1Username: string, player2ID:string, player2Username: string }) {
+	// 	if (!this.ClientIDSockets.has(player1SocketID)) {
+	// 		client.emit('chatAlert', { message: 'Player not found.' });
+	// 		return;
+	// 	}
+	// 	// GAME WILL COMMENCE BETWEEN PLAYER1 AND PLAYER2
+	// 	const client2 = this.ClientIDSockets.get(player1ID);
+	// }
 
 	@SubscribeMessage('joinQueue')
 	handleJoinQueue(client: Socket, data: { user: User, gameMode: string }) {
@@ -169,14 +183,88 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
-	private paddleCollision(p: Paddle, b: Ball) {
+	private paddleCollisionPercentage(p: Paddle, b: Ball): number | null {
+		const ballCenterY = b.y + b.height / 2;
+		const paddleTopY = p.y;
+		const paddleBottomY = p.y + p.height;
+	
 		if (b.x < p.x + p.width &&
 			b.x + b.width > p.x &&
 			b.y < p.y + p.height &&
 			b.y + b.height > p.y) {
-			return true;
+			
+			const relativeY = ballCenterY - paddleTopY;
+			const percentage = (relativeY / p.height) * 100;
+			return Math.round(percentage);
 		}
-		return false;
+		return null;
+	}
+
+	// print all and calc more
+	private modifyBallSpeed(b: Ball, collisionPercentage: number) {
+		console.log(`-----------------BALLMOD--------------`);
+		let absSpeedX = Math.abs(b.speedX);
+		let absSpeedY = Math.abs(b.speedY);
+		let signY = Math.sign(b.speedY);
+		let signX = Math.sign(b.speedX);
+		pongPrint(`start b.speedX: ${b.speedX} b.speedY: ${b.speedY}`);
+		console.log(`absSpeedX: ${absSpeedX} absSpeedY: ${absSpeedY}`);
+		console.log(`signX: ${signX} signY: ${signY}`);
+		console.log(`**2 absSpeedX: ${absSpeedX**2} absSpeedY: ${absSpeedY**2}`);
+		let speedDistance = Math.sqrt(absSpeedX ** 2 + absSpeedY ** 2);
+		console.log(`start speedDistance: ${speedDistance}`);
+	
+		let angle: number;
+		if (collisionPercentage >= 34 && collisionPercentage <= 66) { // middle
+			console.log('Ball hit paddle in the middle, no change in speed');
+			return;
+		}
+		else if (collisionPercentage < 34) { // top
+			console.log('Ball hit paddle near the top');
+			if (signY === -1) { // moving up
+				// go to an angle of 60 degrees
+				angle = Math.PI / 3;
+			}
+			else { // moving down
+				// go to an angle of 15 degrees
+				angle = Math.PI / 12;
+			}
+		}
+		else if (collisionPercentage > 66) { // bottom
+			console.log('Ball hit paddle near the bottom');
+			if (signY === -1) { // moving up
+				// go to an angle of 15 degrees
+				angle = Math.PI / 12;
+			}
+			else { // moving down
+				// go to an angle of 60 degrees
+				angle = Math.PI / 3;
+			}
+		}
+		let newSpeedX = Math.cos(angle) * speedDistance * signX;
+		let newSpeedY = Math.sin(angle) * speedDistance * signY;
+		console.log(`angle: ${angle}`);
+		console.log(`new absSpeedX: ${Math.abs(newSpeedX)} absSpeedY: ${Math.abs(newSpeedY)}`);
+		console.log(`newSpeedX: ${newSpeedX} newSpeedY: ${newSpeedY}`);
+		console.log(`new **2 newSpeedX: ${newSpeedX**2} newSpeedY: ${newSpeedY**2}`);
+		console.log(`new speedDistance: ${Math.sqrt(newSpeedX ** 2 + newSpeedY ** 2)}`);
+		b.speedX = newSpeedX;
+		b.speedY = newSpeedY;
+		console.log(`-----------------BALLMOD--------------`);
+	}
+
+	private paddleBounce(p: Paddle, b: Ball, sign: number) {
+		let collisionPercentage = this.paddleCollisionPercentage(p, b);
+		if (collisionPercentage !== null) {
+			console.log(`Ball hit at ${b.x} ${b.y}`);
+			console.log(`Ball hit paddle at ${collisionPercentage}% from the top`);
+			if (sign === -1) b.x = p.x + p.width;
+			else b.x = p.x - b.width;
+			b.speedX *= -1;
+			if (collisionPercentage < 0) collisionPercentage = 0;
+			if (collisionPercentage > 100) collisionPercentage = 100;
+			this.modifyBallSpeed(b, collisionPercentage);
+		}
 	}
 
 	@SubscribeMessage('requestGameUpdate')
@@ -246,14 +334,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			let diff = (sesh.ball.y + sesh.ball.height) - PongC.CANVAS_HEIGHT;
 			sesh.ball.y = PongC.CANVAS_HEIGHT - sesh.ball.height - diff;
 		}
-		// Check collision with paddles
-		if (sesh.ball.speedX < 0 && this.paddleCollision(sesh.p1.paddle, sesh.ball)) {
-			sesh.ball.speedX *= -1;
-			sesh.ball.x += PongC.PADDLE_WIDTH;
-		}
-		else if (sesh.ball.speedX > 0 && this.paddleCollision(sesh.p2.paddle, sesh.ball)) {
-			sesh.ball.speedX *= -1;
-			sesh.ball.x -= PongC.PADDLE_WIDTH;
+		if (sesh.ball.speedX < 0) {
+			this.paddleBounce(sesh.p1.paddle, sesh.ball, -1);
+		} 
+		else if (sesh.ball.speedX > 0) {
+			this.paddleBounce(sesh.p2.paddle, sesh.ball, 1);
 		}
 		this.server.to(sesh.roomId).emit('gameUpdate', { sesh: sesh });
 	}
