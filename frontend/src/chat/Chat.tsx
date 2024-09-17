@@ -66,12 +66,14 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
         player2ID: user.id,
         player2Username: user.username,
       });
-      setIsInviteModalOpen(false);
+      // setIsInviteModalOpen(false);
+      socket.emit('closeInvitationModal');
     }
   };
 
   const handleDenyInvite = () => {
     setIsInviteModalOpen(false);
+    socket.emit('closeInvitationModal');
     // Additional logic for denying the invite can go here (e.g., notifying the server) !!!
   };
 

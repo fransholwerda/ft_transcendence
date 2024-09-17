@@ -424,4 +424,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @SubscribeMessage('closeInvitationModal')
+  handleCloseInviteModal(client: Socket) {
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+    this.server.to("@" + user.username).emit('closeInvitationModal');
+  }
+
 }

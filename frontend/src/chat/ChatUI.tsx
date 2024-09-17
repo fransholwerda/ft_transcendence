@@ -335,6 +335,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                             </>
                           ) : (
                             <>
+                              <button onClick={() => handleUserAction(ActionType.Invite, msg.username)}>Invite</button>
+                              <button onClick={() => handleUserAction(ActionType.Invite, msg.username)}>Invite</button>
                               <button onClick={() => handleUserAction(ActionType.Ignore, msg.username)}>Ignore</button>
                             </>
                           )}
