@@ -105,13 +105,13 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// remove them from active game or queue
 		this.queue = removeFromQueue(this.queue, data.player1SocketID);
 		this.queue = removeFromQueue(this.queue, data.player2SocketID);
-		this.leavingGame(data.player1SocketID);
-		this.leavingGame(data.player2SocketID);
+		this.leavingGame(this.ClientIDSockets.get(data.player1SocketID));
+		this.leavingGame(this.ClientIDSockets.get(data.player2SocketID));
 		// fill information
 		const gameMode = data.gameType === 1 ? 'default' : 'Speed Surge';
 		const isCustom = data.gameType === 2;
-		const p1 = { clientId: data.player1SocketID, user: { id: data.player1ID, username: data.player1Username }, gameMode: gameMode };
-		const p2 = { clientId: data.player2SocketID, user: { id: data.player2ID, username: data.player2Username }, gameMode: gameMode };
+		const p1 = { clientId: data.player1SocketID, user: { id: data.player1ID, username: data.player1Username, avatarURL: '' }, gameMode: gameMode };
+		const p2 = { clientId: data.player2SocketID, user: { id: data.player2ID, username: data.player2Username, avatarURL: '' }, gameMode: gameMode };
 		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
 		const gameSession = fillGameSession(p1, p2, roomId, isCustom);
 		// start game
