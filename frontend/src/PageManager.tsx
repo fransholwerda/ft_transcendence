@@ -106,20 +106,70 @@ const PageManager: React.FC = () => {
     <Router>
       <LocationHandler />
       <Routes>
-        <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+        <Route
+          path="/"
+          element={<LoginPage onLogin={handleLogin} />}
+        />
 
-	      <Route path="/auth" element={<AuthenticationPage user={user} />} />
-        
-        <Route path="/pong" element={user ? <MainGrid contentComponent="Pong" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
-        
-        <Route path="/settings" element={user ? <MainGrid contentComponent="SettingsPage" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
-        
-        <Route path="/profile" element={user ? <MainGrid contentComponent="ProfilePage" user={user} pSock={pSock} onLogout={handleLogout} /> : <Navigate replace to="/" />} />
-        
-        <Route path="*" element={<Navigate replace to="/" />} />
+        <Route
+          path="/auth"
+          element={<AuthenticationPage user={user} />}
+        />
+
+        <Route
+          path="/pong"
+          element={
+            user ?
+              <MainGrid
+                contentComponent="Pong"
+                user={user}
+                pSock={pSock}
+                onLogout={handleLogout}
+              />
+            :
+              <Navigate replace to="/" />
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            user ?
+              <MainGrid
+                contentComponent="SettingsPage"
+                user={user}
+                pSock={pSock}
+                onLogout={handleLogout}
+              />
+            :
+              <Navigate replace to="/" />
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            user ?
+              <MainGrid
+                contentComponent="ProfilePage"
+                user={user}
+                pSock={pSock}
+                onLogout={handleLogout}
+              />
+            :
+              <Navigate replace to="/" />
+          }
+        />
+
+        <Route
+          path="*"
+          element={<Navigate replace to="/" />} 
+        />
       </Routes>
     </Router>
   );
 };
 
 export default PageManager;
+// over multiple lines
+// profile/id
