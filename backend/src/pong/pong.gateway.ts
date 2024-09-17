@@ -65,15 +65,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		disconnectFromGame(this.server, this.games, client.id);
 	}
 
-	// @SubscribeMessage('invitedMatch')
-	// handleJoinQueue(client: Socket, data: { player1SocketID: string, player1ID: string, player1Username: string, player2ID:string, player2Username: string }) {
-	// 	if (!this.ClientIDSockets.has(player1SocketID)) {
-	// 		client.emit('chatAlert', { message: 'Player not found.' });
-	// 		return;
-	// 	}
-	// 	// GAME WILL COMMENCE BETWEEN PLAYER1 AND PLAYER2
-	// 	const client2 = this.ClientIDSockets.get(player1ID);
-	// }
+	@SubscribeMessage('invitedMatch')
+	handleJoinQueue(client: Socket, data: { player1SocketID: string, player1ID: string, player1Username: string, player2SocketID: string, player2ID:string, player2Username: string, gameType: number }) {
+		if (!this.ClientIDSockets.has(player1SocketID)) {
+			client.emit('chatAlert', { message: 'Player not found.' });
+			return;
+		}
+		// match the two socket ids together with their respective user ids
+		
+
+	}
 
 	@SubscribeMessage('joinQueue')
 	handleJoinQueue(client: Socket, data: { user: User, gameMode: string }) {
