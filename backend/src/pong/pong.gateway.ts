@@ -52,6 +52,24 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.games = removeGameSession(this.games, sesh.roomId);
 	}
 
+	private leavingGame(client: Socket) {
+		pongPrint(`NestJS pong leaveGame: ${client.id}`);
+		const sesh = findGameSessionByClientId(this.games, client.id);
+		if (!sesh) {
+			pongPrint(`NestJS pong leaveGame: ${client.id} leaveGame listener !sesh`);
+			return;
+		}
+		pongPrint(`NestJS pong leaveGame: ${sesh.roomId}`);
+		pongPrint(`NestJS pong leaveGame: ${client.id} left room ${sesh.roomId}`);
+		if (sesh.p1.clientid === client.id) {
+			sesh.p2.score = MAX_SCORE;
+		} else if (sesh.p2.clientid === client.id) {
+			sesh.p1.score = MAX_SCORE;
+		}
+		printGameSession(sesh);
+		this.gameEnd(sesh);
+	}
+
 	handleConnection(client: Socket) {
 		pongPrint(`NestJS pong: connected: ${client.id}`);
 		this.ClientIDSockets.set(client.id, client);
@@ -84,9 +102,27 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('chatAlert', { message: 'The clientid who invited went offline' });
 			return;
 		}
-		// match the two socket ids together with their respective user ids
-
-
+		// remove them from active game or queue
+		this.queue = removeFromQueue(this.queue, data.player1SocketID);
+		this.queue = removeFromQueue(this.queue, data.player2SocketID);
+		this.leavingGame(data.player1SocketID);
+		this.leavingGame(data.player2SocketID);
+		// fill information
+		const gameMode = data.gameType === 1 ? 'default' : 'Speed Surge';
+		const isCustom = data.gameType === 2;
+		const p1 = { clientId: data.player1SocketID, user: { id: data.player1ID, username: data.player1Username }, gameMode: gameMode };
+		const p2 = { clientId: data.player2SocketID, user: { id: data.player2ID, username: data.player2Username }, gameMode: gameMode };
+		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
+		const gameSession = fillGameSession(p1, p2, roomId, isCustom);
+		// start game
+		this.games.push(gameSession);
+		printGameSession(gameSession);
+		this.server.to(p1.clientId).emit('gameStart', { sesh: gameSession });
+		this.server.to(p2.clientId).emit('gameStart', { sesh: gameSession });
+		this.server.in(p1.clientId).socketsJoin(roomId);
+		this.server.in(p2.clientId).socketsJoin(roomId);
+		pongPrint(`NestJS pong invitedMatch: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
+		printGames(this.games);
 	}
 
 	@SubscribeMessage('joinQueue')
@@ -112,24 +148,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	handleLeaveQueue(client: Socket) {
 		pongPrint(`NestJS pong: ${client.id} left the queue`);
 		this.queue = removeFromQueue(this.queue, client.id);
-	}
-
-	private leavingGame(client: Socket) {
-		pongPrint(`NestJS pong leaveGame: ${client.id}`);
-		const sesh = findGameSessionByClientId(this.games, client.id);
-		if (!sesh) {
-			pongPrint(`NestJS pong leaveGame: ${client.id} leaveGame listener !sesh`);
-			return;
-		}
-		pongPrint(`NestJS pong leaveGame: ${sesh.roomId}`);
-		pongPrint(`NestJS pong leaveGame: ${client.id} left room ${sesh.roomId}`);
-		if (sesh.p1.clientid === client.id) {
-			sesh.p2.score = MAX_SCORE;
-		} else if (sesh.p2.clientid === client.id) {
-			sesh.p1.score = MAX_SCORE;
-		}
-		printGameSession(sesh);
-		this.gameEnd(sesh);
 	}
 	
 	@SubscribeMessage('leaveGame')
