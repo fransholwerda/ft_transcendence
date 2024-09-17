@@ -57,14 +57,16 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
     socket.emit('joinChat', { userId: user.id, username: user.username });
   };
 
-  const handleAcceptInvite = () => {
+  const handleAcceptInvite = (gameType: number) => {
     if (invitationData) {
       socket.emit('invitedMatch', {
         player1SocketID: invitationData.player1SocketID,
         player1ID: invitationData.player1ID,
         player1Username: invitationData.player1Username,
+        player2SocketID: socket.id,
         player2ID: user.id,
         player2Username: user.username,
+        gameType: gameType
       });
       // setIsInviteModalOpen(false);
       socket.emit('closeInvitationModal');
@@ -84,7 +86,8 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
           <div className="modal-content">
             <h2>Game Invitation</h2>
             <p>{invitationData.player1Username} has invited you to play pong. Do you accept?</p>
-            <button onClick={handleAcceptInvite}>Accept</button>
+            <button onClick={() => handleAcceptInvite(1)}>Accept (Normal game)</button>
+            <button onClick={() => handleAcceptInvite(2)}>Accept (Speed game)</button>
             <button onClick={handleDenyInvite}>Deny</button>
           </div>
         </div>
