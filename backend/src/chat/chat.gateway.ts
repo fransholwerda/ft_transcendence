@@ -77,7 +77,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     const chatuser = this.ChatUsers.get(this.SocketUsernames.get(client.id));
     chatuser.removeClientID(client.id);
-    // DELETE LATER vvv (once cookie identification is implemented)
+    // DELETE LATER vvv (once cookie identification is implemented) !!!
     this.SocketUsernames.delete(client.id);
     // DELETE LATER ^^^
     if (chatuser.isEmptyClientIDs()) {
@@ -89,10 +89,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('joinChat')
   handleJoinChat(client: Socket, payload: { userId: string, username: string }) {
-    // Username validation?
+    // Username validation? !!!
     const { userId, username } = payload;
 
-    // DELETE LATER vvv (once cookie identification is implemented)
+    // DELETE LATER vvv (once cookie identification is implemented) !!!
     this.SocketUsernames.set(client.id, username);
     console.log('SocketID to Username: ' + client.id + ' = ' + this.SocketUsernames.get(client.id));
     // DELETE LATER ^^^
@@ -179,16 +179,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.ChatRooms.delete(channel);
       }
     }
-    // EMIT TO USER THAT YOU LEAVE CHANNEL SO THEY LEAVE ON ALL SOCKETS
   }
 
   @SubscribeMessage('joinDM')
   handleJoinDM(client: Socket, payload: { user: string, targetUser: string }) {
     const { user, targetUser } = payload;
-    // ADD USER CHECK TO DATABASE
-    // IS TARGETUSER BLOCKED?
-    // DID TARGETUSER BLOCK YOU?
-    // IS TARGETUSER ONLINE?
+    // ADD USER CHECK TO DATABASE !!!
+    // IS TARGETUSER BLOCKED? !!!
+    // DID TARGETUSER BLOCK YOU? !!!
+    // IS TARGETUSER ONLINE? !!!
     // if (this.server.sockets.adapter.rooms.has('@' + targetUser)) {
     this.server.to('@' + user).emit('dmCreated', { dm: '@' + targetUser });
     // SEND EMIT TO OTHER USER USING THEIR USER ID
@@ -228,7 +227,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('setChannelType')
   handleSetChannelType(client: Socket, payload: { channel: string, type: number, password: string }) {
-    // Make sure channel name has proper characters in it
+    // Make sure channel name has proper characters in it !!!
     const { channel, type, password } = payload;
 
     if (!this.ChatRooms.has(channel)) {
@@ -276,7 +275,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('channelInviteUser')
   handleChannelInviteUser(client: Socket, payload: { channel: string, userInvite: string }) {
-    // Make sure channel name has proper characters in it
+    // Make sure channel name has proper characters in it !!!
     const { channel, userInvite } = payload;
 
     if (!this.ChatRooms.has(channel)) {
@@ -316,8 +315,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.to('@' + userToInvite.username).emit('chatAlert', { message: user.username + ' has invited you to join channel: ' + channel });
   }
 
-  @SubscribeMessage('actionUser')
-  handleActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
+  @SubscribeMessage('channelActionUser')
+  handleChannelActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
     const { channel, targetUser, action } = payload;
 
     if (!this.ChatRooms.has(channel)) {
@@ -345,9 +344,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     switch (action) {
-      case ActionType.Ignore:
-        // TALK TO ALEX ABOUT THIS
-        break;
       case ActionType.Kick:
         chatroom.removeUser(target);
         for (const clientID of target.clientIDs) {
@@ -403,6 +399,35 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       default:
         client.emit('chatAlert', { message: 'Action not recognized.' });
     }
+  }
+
+  @SubscribeMessage('actionUser')
+  handleActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
+    const { channel, targetUser, action } = payload;
+
+    if (!this.ChatUsers.has(targetUser)) {
+      client.emit('Target user is not online.');
+      return;
+    }
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+    const target = this.ChatUsers.get(targetUser);
+
+    switch (action) {
+      case ActionType.Invite:
+        this.server.to('@' + target.username).emit('inviteToGame', { player1SocketID: client.id, player1ID: user.id, player1Username: user.username });
+        break;
+      case ActionType.Ignore:
+        // TALK TO ALEX !!!
+        break;
+      default:
+        client.emit('chatAlert', { message: 'Action not recognized.' });
+    }
+  }
+
+  @SubscribeMessage('closeInvitationModal')
+  handleCloseInviteModal(client: Socket) {
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+    this.server.to("@" + user.username).emit('closeInvitationModal');
   }
 
 }

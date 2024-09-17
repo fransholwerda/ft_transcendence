@@ -11,9 +11,17 @@ interface ChatProps {
   socket: Socket;
 }
 
+interface InvitationData {
+  player1SocketID: string;
+  player1ID: string;
+  player1Username: string;
+}
+
 const Chat: React.FC<ChatProps> = ({ user, socket }) => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);  // For game invite modal
+  const [invitationData, setInvitationData] = useState<InvitationData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,6 +34,15 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
     socket.on('chatAlert', ({ message }: { message: string }) => {
       alert(message);
     });
+
+    socket.on('inviteToGame', ({ player1SocketID, player1ID, player1Username }: InvitationData) => {
+      setInvitationData({ player1SocketID, player1ID, player1Username });
+      setIsInviteModalOpen(true);
+    });
+
+    socket.on('closeInvitationModal', () => {
+      setIsInviteModalOpen(false);
+    })
 
     return () => {
       socket.off('chatJoined');
@@ -40,8 +57,39 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
     socket.emit('joinChat', { userId: user.id, username: user.username });
   };
 
+  const handleAcceptInvite = () => {
+    if (invitationData) {
+      socket.emit('invitedMatch', {
+        player1SocketID: invitationData.player1SocketID,
+        player1ID: invitationData.player1ID,
+        player1Username: invitationData.player1Username,
+        player2ID: user.id,
+        player2Username: user.username,
+      });
+      // setIsInviteModalOpen(false);
+      socket.emit('closeInvitationModal');
+    }
+  };
+
+  const handleDenyInvite = () => {
+    setIsInviteModalOpen(false);
+    socket.emit('closeInvitationModal');
+    // Additional logic for denying the invite can go here (e.g., notifying the server) !!!
+  };
+
   return (
     <div className="chat-container-wrapper">
+      {isInviteModalOpen && invitationData && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Game Invitation</h2>
+            <p>{invitationData.player1Username} has invited you to play pong. Do you accept?</p>
+            <button onClick={handleAcceptInvite}>Accept</button>
+            <button onClick={handleDenyInvite}>Deny</button>
+          </div>
+        </div>
+      )}
+
       {!isConnected && (
         <div className="overlay">
           <button onClick={handleConnect} disabled={loading} className="connect-button">
@@ -50,6 +98,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
           {error && <p className="error-message">{error}</p>}
         </div>
       )}
+
       {isConnected && (
         <ChatUI
           socket={socket}
