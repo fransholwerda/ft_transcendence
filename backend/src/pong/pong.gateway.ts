@@ -65,14 +65,27 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		disconnectFromGame(this.server, this.games, client.id);
 	}
 
+	private printMatchData(data: { player1SocketID: string, player1ID: string, player1Username: string, player2SocketID: string, player2ID:string, player2Username: string, gameType: number }) {
+		console.log('NestJS pong: printMatchData');
+		console.log(`player1SocketID: ${data.player1SocketID}`);
+		console.log(`player1ID: ${data.player1ID}`);
+		console.log(`player1Username: ${data.player1Username}`);
+		console.log(`player2SocketID: ${data.player2SocketID}`);
+		console.log(`player2ID: ${data.player2ID}`);
+		console.log(`player2Username: ${data.player2Username}`);
+		console.log(`gameType: ${data.gameType}`);
+	}
+
 	@SubscribeMessage('invitedMatch')
-	handleJoinQueue(client: Socket, data: { player1SocketID: string, player1ID: string, player1Username: string, player2SocketID: string, player2ID:string, player2Username: string, gameType: number }) {
-		if (!this.ClientIDSockets.has(player1SocketID)) {
+	handleGameInvite(client: Socket, data: { player1SocketID: string, player1ID: string, player1Username: string, player2SocketID: string, player2ID:string, player2Username: string, gameType: number }) {
+		console.log('NestJS pong: invitedMatch');
+		this.printMatchData(data);
+		if (!this.ClientIDSockets.has(data.player1SocketID)) {
 			client.emit('chatAlert', { message: 'Player not found.' });
 			return;
 		}
 		// match the two socket ids together with their respective user ids
-		
+
 
 	}
 
