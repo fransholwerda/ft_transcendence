@@ -5,6 +5,7 @@ export enum ChannelType {
   }
 
 export enum ActionType {
+  Profile,
   Invite,
   Ignore,
   Kick,
