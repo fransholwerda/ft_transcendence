@@ -81,7 +81,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log('NestJS pong: invitedMatch');
 		this.printMatchData(data);
 		if (!this.ClientIDSockets.has(data.player1SocketID)) {
-			client.emit('chatAlert', { message: 'Player not found.' });
+			client.emit('chatAlert', { message: 'The clientid who invited went offline' });
 			return;
 		}
 		// match the two socket ids together with their respective user ids
