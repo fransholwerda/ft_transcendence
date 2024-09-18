@@ -99,9 +99,12 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user }) => {
       await fetch(`${Constants.FRONTEND_HOST_URL}/user/${user.id}`, {
           method: 'PATCH',
           body: JSON.stringify({
-              username: currentUsername,
-              avatarURL: currentAvatar
-          })
+              "username": currentUsername,
+              "avatarURL": currentAvatar
+          }),
+          headers: {
+              "Content-Type": "application/json"
+          }
       });
   }
 
