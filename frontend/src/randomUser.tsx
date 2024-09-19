@@ -1,7 +1,7 @@
 import { User } from './PageManager';
 
 // TURN ON/OFF RANDOM USER DEBUG
-export const randomDebug = false;
+export const randomDebug = true;
 // TURN ON/OFF RANDOM USER DEBUG
 
 const randomNames = [

@@ -5,6 +5,7 @@ import './Chat.css';
 import { User } from '../PageManager';
 import ChatUI from './ChatUI.tsx';
 // import Popup from 'reactjs-popup';
+import { useNavigate } from 'react-router-dom';
 
 interface ChatProps {
   user: User;
@@ -23,6 +24,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);  // For game invite modal
   const [invitationData, setInvitationData] = useState<InvitationData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Update with user validation from backend?
@@ -42,7 +44,11 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
 
     socket.on('closeInvitationModal', () => {
       setIsInviteModalOpen(false);
-    })
+    });
+
+    socket.on('profilePage', ({ targetUserID }) => {
+      navigate(`/profile/${targetUserID}`);
+    });
 
     return () => {
       socket.off('chatJoined');
