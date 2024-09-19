@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Equal } from 'typeorm';
 import { CreateUserData } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -7,8 +8,8 @@ import { UserRepository } from './user.repository';
 import { QueryFailedError} from 'typeorm/error/QueryFailedError'
 import { Friendship } from 'src/friends/entity/friends.entity';
 import { FriendshipRepository } from 'src/friends/friends.repository';
-import { BlockedRepository } from 'src/ingores/ignores.repostiory';
-import { Blocked } from 'src/ingores/ignores.entity.ts/ignores.entity';
+import { BlockedRepository } from 'src/ignores/ignores.repostiory';
+import { Blocked } from 'src/ignores/ignores.entity.ts/ignores.entity';
 
 @Injectable()
 export class UsersService {
@@ -72,19 +73,19 @@ export class UsersService {
 	}
 
 	const friendship = new Friendship();
-	friendship.friendedBy = user;
-	friendship.friended = friend;
+	friendship.follower = user;
+	friendship.followedUser = friend;
 
 	await this.friendshipRepository.save(friendship);
 	}
 
-//   async removeFriend(userID: number, friendID: number): Promise<void> {
-// 	await this.friendshipRepository.delete({
-// 		"friendedId"
-// 112427: friendID,
-// 		friendedById: userID
-// 	});
-// 	}
+  async removeFriend(userID: number, friendID: number): Promise<void> {
+		const friendship = await this.friendshipRepository.findOne({
+			where: { follower: Equal(userID), followedUser: Equal(friendID) }
+		});
+
+		await this.friendshipRepository.delete(friendship.id);
+	}
 
 	async getFriends(userID: number) {
 		return this.userRepository.createQueryBuilder('user')
@@ -111,9 +112,27 @@ export class UsersService {
 		}
 
 		const blocked = new Blocked();
-		blocked.blockedBy = user;
-		blocked.blocked = blockedUser;
+		blocked.user = user;
+		blocked.blockedUser = blockedUser;
 
 		await this.blockedRepository.save(blocked);
+	}
+
+	async removeBlock(userID: number, blockedID: number): Promise<void> {
+		const blocked = await this.blockedRepository.findOne({
+			where: { user: Equal(userID), blockedUser: Equal(blockedID)}
+		})
+
+		await this.blockedRepository.delete(blocked.id);
+	}
+
+	async checkIfBlocked(userID: number, blockedID: number): Promise<Boolean> {
+		const blocked = await this.blockedRepository.findOne({
+			where: { user: Equal(userID), blockedUser: Equal(blockedID)}
+		})
+		
+		if (blocked)
+			return true;
+		return false;
 	}
 }

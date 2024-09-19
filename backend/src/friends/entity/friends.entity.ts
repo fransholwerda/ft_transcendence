@@ -6,9 +6,9 @@ export class Friendship{
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@ManyToOne(() => User, (user) => user.friends)
-	friended: User;
+	@ManyToOne(() => User, (user) => user.followers)
+	follower: User;
 
-	@ManyToOne(() => User, (user) => user.beingfriended)
-	friendedBy: User;
+	@ManyToOne(() => User, (friendedBy) => friendedBy.followedUsers)
+	followedUser: User;
 }
