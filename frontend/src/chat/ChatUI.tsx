@@ -3,6 +3,7 @@ import { Socket } from 'socket.io-client';
 import './ChatUI.css';
 import { User } from '../PageManager';
 import Popup from 'reactjs-popup';
+import { ActionType, ChannelType } from './chat.enum';
 
 interface Tab {
   id: number;
@@ -14,13 +15,6 @@ interface ChatUIProps {
   socket: Socket;
   user: User;
 }
-
-enum ChannelType {
-  Private,
-  Protected,
-  Public
-}
-
 
 const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
   const [channels, setChannels] = useState<Tab[]>([]);
@@ -37,7 +31,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-
     socket.on('channelCreated', ({ channel }: { channel: string }) => {
       const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
       setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
@@ -203,25 +196,17 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
     setProtectedPassword('');
   }
 
-  const handleUserAction = (action: string, username: string) => {
+  const handleUserAction = (action: number, username: string) => {
+    const activeTab = channels.find(channel => channel.id === activeTabId) || dms.find(dm => dm.id === activeTabId);
     switch (action) {
-      case 'ignore':
-        alert(`Ignoring ${username}`);
+      case ActionType.Invite:
+        socket.emit('actionUser', { targetUser: username, action: action });
         break;
-      case 'kick':
-        alert(`Kicking ${username}`);
-        break;
-      case 'mute':
-        alert(`Muting ${username}`);
-        break;
-      case 'ban':
-        alert(`Banning ${username}`);
-        break;
-      case 'report':
-        alert(`Reporting ${username}`);
+      case ActionType.Ignore:
+        socket.emit('actionUser', { targetUser: username, action: action });
         break;
       default:
-        break;
+        socket.emit('channelActionUser', { channel: activeTab?.title, targetUser: username, action: action });
     }
   };
 
@@ -263,7 +248,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 </button>
               ))}
             </div>
-            <div className="add-chat-form">
+            <div className="add-channel-form">
               <input
                 type="text"
                 value={newChannelName}
@@ -272,7 +257,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 placeholder="New channel name"
               />
             </div>
-            <div className="add-chat-form">
+            <div className="add-channel-form">
               <input
                 type="password"
                 value={channelPassword}
@@ -299,7 +284,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                 </button>
               ))}
             </div>
-            <div className="add-chat-form">
+            <div className="add-dm-form">
               <input
                 type="text"
                 value={newDmName}
@@ -337,19 +322,24 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
                     <div className="user-actions-popup">
                     {msg.username !== user.username ? (
                       <>
-                        {activeType === 'channel' ? (
-                          <>
-                            <button onClick={() => handleUserAction('ignore', msg.username)}>Ignore</button>
-                            <button onClick={() => handleUserAction('kick', msg.username)}>Kick</button>
-                            <button onClick={() => handleUserAction('mute', msg.username)}>Mute</button>
-                            <button onClick={() => handleUserAction('ban', msg.username)}>Ban</button>
-                          </>
-                        ) : (
-                          <>
-                            <button onClick={() => handleUserAction('ignore', msg.username)}>Ignore</button>
-                            <button onClick={() => handleUserAction('report', msg.username)}>Report</button>
-                          </>
-                        )}
+                          {activeType === 'channel' ? (
+                            <>
+                              <button onClick={() => handleUserAction(ActionType.Invite, msg.username)}>Invite</button>
+                              <button onClick={() => handleUserAction(ActionType.Ignore, msg.username)}>Ignore</button>
+                              <button onClick={() => handleUserAction(ActionType.Kick, msg.username)}>Kick</button>
+                              <button onClick={() => handleUserAction(ActionType.Mute, msg.username)}>Mute</button>
+                              <button onClick={() => handleUserAction(ActionType.Unmute, msg.username)}>Unmute</button>
+                              <button onClick={() => handleUserAction(ActionType.Ban, msg.username)}>Ban</button>
+                              <button onClick={() => handleUserAction(ActionType.Promote, msg.username)}>Promote</button>
+                              <button onClick={() => handleUserAction(ActionType.Demote, msg.username)}>Demote</button>
+                            </>
+                          ) : (
+                            <>
+                              <button onClick={() => handleUserAction(ActionType.Invite, msg.username)}>Invite</button>
+                              <button onClick={() => handleUserAction(ActionType.Invite, msg.username)}>Invite</button>
+                              <button onClick={() => handleUserAction(ActionType.Ignore, msg.username)}>Ignore</button>
+                            </>
+                          )}
                       </>
                     ) : (
                       // Optional: You can add a button or message for your own username here if needed

@@ -2,7 +2,7 @@ import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatUser, ChatRoom } from './chat.types'
-import { ChatRoomEnum, ChannelType } from './chat.enum';
+import { ChatRoomEnum, ChannelType, ActionType } from './chat.enum';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*'} })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -77,7 +77,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     const chatuser = this.ChatUsers.get(this.SocketUsernames.get(client.id));
     chatuser.removeClientID(client.id);
-    // DELETE LATER vvv (once cookie identification is implemented)
+    // DELETE LATER vvv (once cookie identification is implemented) !!!
     this.SocketUsernames.delete(client.id);
     // DELETE LATER ^^^
     if (chatuser.isEmptyClientIDs()) {
@@ -89,10 +89,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('joinChat')
   handleJoinChat(client: Socket, payload: { userId: string, username: string }) {
-    // Username validation?
+    // Username validation? !!!
     const { userId, username } = payload;
 
-    // DELETE LATER vvv (once cookie identification is implemented)
+    // DELETE LATER vvv (once cookie identification is implemented) !!!
     this.SocketUsernames.set(client.id, username);
     console.log('SocketID to Username: ' + client.id + ' = ' + this.SocketUsernames.get(client.id));
     // DELETE LATER ^^^
@@ -138,16 +138,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           this.server.to('@' + chatuser.username).emit('channelJoined', { channel: channel });
           break;
         case ChatRoomEnum.AlreadyInRoom:
-          client.emit('chatError', { message: 'You already joined this channel' });
+          client.emit('chatAlert', { message: 'You already joined this channel' });
           break;
         case ChatRoomEnum.Banned:
-          client.emit('chatError', { message: 'You are banned from this channel' });
+          client.emit('chatAlert', { message: 'You are banned from this channel' });
           break;
         case ChatRoomEnum.NotInvited:
-          client.emit('chatError', { message: 'You are not invited to this channel' });
+          client.emit('chatAlert', { message: 'You are not invited to this channel' });
           break;
         case ChatRoomEnum.WrongPass:
-          client.emit('chatError', { message: 'This is the wrong password for this channel' });
+          client.emit('chatAlert', { message: 'This is the wrong password for this channel' });
           break;
         default:
           break;
@@ -179,16 +179,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.ChatRooms.delete(channel);
       }
     }
-    // EMIT TO USER THAT YOU LEAVE CHANNEL SO THEY LEAVE ON ALL SOCKETS
   }
 
   @SubscribeMessage('joinDM')
   handleJoinDM(client: Socket, payload: { user: string, targetUser: string }) {
     const { user, targetUser } = payload;
-    // ADD USER CHECK TO DATABASE
-    // IS TARGETUSER BLOCKED?
-    // DID TARGETUSER BLOCK YOU?
-    // IS TARGETUSER ONLINE?
+    // ADD USER CHECK TO DATABASE !!!
+    // IS TARGETUSER BLOCKED? !!!
+    // DID TARGETUSER BLOCK YOU? !!!
+    // IS TARGETUSER ONLINE? !!!
     // if (this.server.sockets.adapter.rooms.has('@' + targetUser)) {
     this.server.to('@' + user).emit('dmCreated', { dm: '@' + targetUser });
     // SEND EMIT TO OTHER USER USING THEIR USER ID
@@ -201,47 +200,62 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   // @MessageBody() data: messageDto,
   handleMessage(client: Socket, payload: { channel: string, message: string, username: string }) {
     const { channel, message, username } = payload;
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+
     if ( channel[0] === '@' ) {
       this.server.to('@' + username).emit('dmJoined', { dm: channel });
       this.server.to('@' + username).emit('message', { channel, message, username });
       this.server.to(channel).emit('dmJoined', { dm: '@' + username });
-      this.server.to(channel).emit('message', { channel: '@' + username, message, username })
-    } else {
-      this.server.to(channel).emit('message', { channel, message, username })
+      this.server.to(channel).emit('message', { channel: '@' + username, message: message, username: user.username })
+      return;
     }
+    if (!this.ChatRooms.has(channel)) {
+      client.emit('chatAlert', { message: 'This channel does not exist.' })
+      return;
+    }
+    const chatroom = this.ChatRooms.get(channel);
+    if (!chatroom.isInRoom(user)) {
+      client.emit('chatAlert', { message: 'You are not in this channel.' })
+      return;
+    } else if (chatroom.isMuted(user)) {
+      client.emit('chatAlert', { message: 'You are muted in this channel.' })
+      return;
+    }
+    this.server.to(channel).emit('message', { channel: channel, message: message, username: user.username })
+    return;
   }
 
   @SubscribeMessage('setChannelType')
   handleSetChannelType(client: Socket, payload: { channel: string, type: number, password: string }) {
-    // Make sure channel name has proper characters in it
+    // Make sure channel name has proper characters in it !!!
     const { channel, type, password } = payload;
 
     if (!this.ChatRooms.has(channel)) {
-      client.emit('chatError', 'Channel does not exist.');
+      client.emit('chatAlert', { message: 'Channel does not exist.' });
       return;
     }
 
     const chatroom = this.ChatRooms.get(channel);
     const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
     if (!chatroom.isAdmin(user)) {
-      client.emit('chatError', 'You do not have permission to perform this action.');
+      client.emit('chatAlert', { message: 'You do not have permission to perform this action.' });
       return;
     }
 
     switch (type) {
       case ChannelType.Private:
         if (chatroom.isPrivate()) {
-          client.emit('chatError', 'Channel is already private.');
+          client.emit('chatAlert', { message: 'Channel is already private.' });
           return;
         }
         chatroom.setPrivate();
         break;
       case ChannelType.Protected:
         if (chatroom.isProtected()) {
-          client.emit('chatError', 'Channel is already password protected.');
+          client.emit('chatAlert', { message: 'Channel is already password protected.' });
           return;
         }  else if (password.length < 1 || password.length > 40) {
-          client.emit('chatError', 'Password must be between 1 and 40 characters long.');
+          client.emit('chatAlert', { message: 'Password must be between 1 and 40 characters long.' });
           return;
         }
         chatroom.setProtected(password);
@@ -249,55 +263,171 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         break;
       case ChannelType.Public:
         if (chatroom.isPublic()) {
-          client.emit('chatError', 'Channel is already public.');
+          client.emit('chatAlert', { message: 'Channel is already public.' });
           return;
         }
         chatroom.setPublic();
         break;
       default:
-        client.emit('chatError', 'Channel type does not exist.');
+        client.emit('chatAlert', { message: 'Channel type does not exist.' });
     }
   }
 
   @SubscribeMessage('channelInviteUser')
   handleChannelInviteUser(client: Socket, payload: { channel: string, userInvite: string }) {
-    // Make sure channel name has proper characters in it
+    // Make sure channel name has proper characters in it !!!
     const { channel, userInvite } = payload;
 
     if (!this.ChatRooms.has(channel)) {
-      client.emit('chatError', 'Channel does not exist.');
+      client.emit('chatAlert', { message: 'Channel does not exist.' });
       return;
     }
 
     const chatroom = this.ChatRooms.get(channel);
     const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
     if (!chatroom.isAdmin(user)) {
-      client.emit('chatError', 'You do not have permission to perform this action.');
+      client.emit('chatAlert', { message: 'You do not have permission to perform this action.' });
       return;
     }
 
     if (!this.ChatUsers.has(userInvite)) {
-      client.emit('chatError', 'User is not online or does not exist.');
+      client.emit('chatAlert', { message: 'User is not online or does not exist.' });
       return;
     }
     const userToInvite = this.ChatUsers.get(userInvite);
 
     if (chatroom.isInRoom(userToInvite)) {
-      client.emit('chatError', 'User is already in this channel.');
+      client.emit('chatAlert', { message: 'User is already in this channel.' });
       return;
     }
 
     if (chatroom.isInvited(userToInvite)) {
-      client.emit('chatError', 'User is already invited to this channel.');
+      client.emit('chatAlert', { message: 'User is already invited to this channel.' });
       return;
     }
 
     if (chatroom.isBanned(userToInvite)) {
-      client.emit('chatError', 'User is banned from this channel.');
+      client.emit('chatAlert', { message: 'User is banned from this channel.' });
       return;
     }
 
     chatroom.inviteUser(userToInvite);
     this.server.to('@' + userToInvite.username).emit('chatAlert', { message: user.username + ' has invited you to join channel: ' + channel });
   }
+
+  @SubscribeMessage('channelActionUser')
+  handleChannelActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
+    const { channel, targetUser, action } = payload;
+
+    if (!this.ChatRooms.has(channel)) {
+      client.emit('chatAlert', { message: 'Channel does not exist.' });
+      return;
+    }
+
+    if (!this.ChatUsers.has(targetUser)) {
+      client.emit('Target user is not online.');
+      return;
+    }
+
+    const chatroom = this.ChatRooms.get(channel);
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+    const target = this.ChatUsers.get(targetUser);
+    if (!chatroom.isInRoom(user)) {
+      client.emit('chatAlert', { message: 'You are not in this channel.' });
+      return;
+    } else if (!chatroom.isInRoom(target)) {
+      client.emit('chatAlert', { message: 'Target user is not in this channel.' });
+      return;
+    } else if (!chatroom.hasHigherPermissions(user, target)) {
+      client.emit('chatAlert', { message: 'You do not have permission to perform this action.' });
+      return;
+    }
+
+    switch (action) {
+      case ActionType.Kick:
+        chatroom.removeUser(target);
+        for (const clientID of target.clientIDs) {
+          const socket = this.ClientIDSockets.get(clientID);
+          socket.emit('channelLeft', { channel: chatroom.roomId });
+          socket.emit('chatAlert', { message: 'You have been kicked from channel: ' + chatroom.roomId } );
+        }
+        break;
+      case ActionType.Mute:
+        chatroom.muteUser(target);
+        for (const clientID of target.clientIDs) {
+          const socket = this.ClientIDSockets.get(clientID);
+          socket.emit('chatAlert', { message: 'You have been muted on channel: ' + chatroom.roomId } );
+        }
+        break;
+      case ActionType.Unmute:
+        chatroom.unmuteUser(target);
+        for (const clientID of target.clientIDs) {
+          const socket = this.ClientIDSockets.get(clientID);
+          socket.emit('chatAlert', { message: 'You have been unmuted on channel: ' + chatroom.roomId } );
+        }
+        break;
+      case ActionType.Ban:
+        chatroom.banUser(target);
+        for (const clientID of target.clientIDs) {
+          const socket = this.ClientIDSockets.get(clientID);
+          socket.emit('channelLeft', { channel: chatroom.roomId });
+          socket.emit('chatAlert', { message: 'You have been banned from channel: ' + chatroom.roomId } );
+        }
+        break;
+      case ActionType.Promote:
+        if (!chatroom.isOwner(user)) {
+          client.emit('chatAlert', { message: 'You do not have permission to perform this action.' });
+        }
+        if (chatroom.promoteUser(target)) {
+          for (const clientID of target.clientIDs) {
+            const socket = this.ClientIDSockets.get(clientID);
+            socket.emit('chatAlert', { message: 'You have been promoted on channel: ' + chatroom.roomId });
+          }
+        }
+        break;
+      case ActionType.Demote:
+        if (!chatroom.isOwner(user)) {
+          client.emit('chatAlert', { message: 'You do not have permission to perform this action.' });
+        }
+        if (chatroom.demoteUser(target)) {
+          for (const clientID of target.clientIDs) {
+            const socket = this.ClientIDSockets.get(clientID);
+            socket.emit('chatAlert', { message: 'You have been demoted on channel: ' + chatroom.roomId });
+          }
+        }
+        break;
+      default:
+        client.emit('chatAlert', { message: 'Action not recognized.' });
+    }
+  }
+
+  @SubscribeMessage('actionUser')
+  handleActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
+    const { channel, targetUser, action } = payload;
+
+    if (!this.ChatUsers.has(targetUser)) {
+      client.emit('Target user is not online.');
+      return;
+    }
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+    const target = this.ChatUsers.get(targetUser);
+
+    switch (action) {
+      case ActionType.Invite:
+        this.server.to('@' + target.username).emit('inviteToGame', { player1SocketID: client.id, player1ID: user.id, player1Username: user.username });
+        break;
+      case ActionType.Ignore:
+        // TALK TO ALEX !!!
+        break;
+      default:
+        client.emit('chatAlert', { message: 'Action not recognized.' });
+    }
+  }
+
+  @SubscribeMessage('closeInvitationModal')
+  handleCloseInviteModal(client: Socket) {
+    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+    this.server.to("@" + user.username).emit('closeInvitationModal');
+  }
+
 }

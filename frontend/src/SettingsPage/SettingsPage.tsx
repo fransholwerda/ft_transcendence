@@ -8,35 +8,23 @@ interface SettingsPageProps {
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = ({ user }) => {
-  const [currentAvatar, setCurrentAvatar] = useState<string>('https://via.placeholder.com/100');
-  const [currentUsername, setCurrentUsername] = useState<string>('JohnDoe');
-  const [username, setUsername] = useState<string>(currentUsername);
+  const [currentAvatar, setCurrentAvatar] = useState<string>(user.avatarURL);
+  const [currentUsername, setCurrentUsername] = useState<string>(user.username);
   const [twoStepSecret, setTwoStepSecret] = useState<any>({});
   const [verificationCode, setVerificationCode] = useState<string>('');
   const [hasGeneratedCode, setHasGeneratedCode] = useState<boolean>(false);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const fileUrl = URL.createObjectURL(file);
-      setCurrentAvatar(fileUrl);
-    }
+    setCurrentAvatar(e.target.value);
   };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value);
+    setCurrentUsername(e.target.value);
   };
 
   const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVerificationCode(e.target.value);
   };
-
-  const handleUsernameSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setCurrentUsername(username);
-  };
-
-  
 
   async function generate2faSecret() {
     const response = await fetch(`${Constants.FRONTEND_HOST_URL}/twostep/secret`, {
@@ -107,21 +95,27 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user }) => {
     }
   }
 
+  async function applyChanges() {
+      await fetch(`${Constants.FRONTEND_HOST_URL}/user/${user.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+              "username": currentUsername,
+              "avatarURL": currentAvatar
+          }),
+          headers: {
+              "Content-Type": "application/json"
+          }
+      });
+  }
+
   return (
     <div className="settings-container">
       {/* Frame 1: Profile Avatar */}
       <div className="avatar-frame">
-        <img src={currentAvatar} alt="Profile Avatar" />
-        <input type="file" accept="image/*" onChange={handleAvatarChange} />
-      </div>
-
-      {/* Frame 2: Username Change Form */}
-      <div className="username-frame">
-        <h3>Current Username: {currentUsername}</h3>
-        <form onSubmit={handleUsernameSubmit}>
-          <input type="text" value={username} onChange={handleUsernameChange} />
-          <button type="submit">Change Username</button>
-        </form>
+        <img src={currentAvatar} />
+        <input type="text" value={currentAvatar} onChange={handleAvatarChange} />
+        <input type="text" value={currentUsername} onChange={handleUsernameChange} />
+        <button type="button" onClick={applyChanges}>Apply Changes</button>
       </div>
 
       {/* Frame 3: 2FA Trigger Button */}
