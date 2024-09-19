@@ -1,5 +1,6 @@
 import React from 'react';
 import './ProfilePage.css';
+import { useParams } from 'react-router-dom';
 import { User } from '../PageManager.tsx';
 
 interface ProfilePageProps {
@@ -7,10 +8,12 @@ interface ProfilePageProps {
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
+  const { id } = useParams<{ id: string }>();
+
   return (
     <div className="profile_container">
       <div className="profile_header">
-        <h1>Welcome to profile page of "{user.username}"</h1>
+        <h1>Welcome to profile page of "{id}"</h1>
       </div>
       <div className="profile_content">
         <div className="profile_section profile_friends">

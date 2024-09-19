@@ -147,7 +147,7 @@ const PageManager: React.FC = () => {
         />
 
         <Route
-          path="/profile"
+          path="/profile/:id"
           element={
             user ?
               <MainGrid
