@@ -1,13 +1,8 @@
 import React from 'react';
 import './ProfilePage.css';
 import { useParams } from 'react-router-dom';
-import { User } from '../PageManager.tsx';
 
-interface ProfilePageProps {
-  user: User;
-}
-
-const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
+const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   return (
