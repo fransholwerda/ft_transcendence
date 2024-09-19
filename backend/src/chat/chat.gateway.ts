@@ -87,6 +87,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.ClientIDSockets.delete(client.id);
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinChat')
   handleJoinChat(client: Socket, payload: { userId: string, username: string }) {
     // Username validation? !!!
@@ -119,6 +120,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinChannel')
   handleJoinChannel(client: Socket, payload: { channel: string, password: string }) {
     const { channel, password } = payload;
@@ -167,6 +169,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('leaveChannel')
   handleLeaveChannel(client: Socket, payload: { channel: string }) {
     const { channel } = payload;
@@ -181,6 +184,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinDM')
   handleJoinDM(client: Socket, payload: { user: string, targetUser: string }) {
     const { user, targetUser } = payload;
@@ -195,7 +199,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   // LOOK AT https://github.com/Bde-meij/Codam_Transcendence/blob/development/api/src/chat/chatRoom.dto.ts#L98
   // @UseFilters(WsExceptionFilter)
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('sendMessage')
   // @MessageBody() data: messageDto,
   handleMessage(client: Socket, payload: { channel: string, message: string, username: string }) {
@@ -225,6 +229,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     return;
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('setChannelType')
   handleSetChannelType(client: Socket, payload: { channel: string, type: number, password: string }) {
     // Make sure channel name has proper characters in it !!!
@@ -273,6 +278,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('channelInviteUser')
   handleChannelInviteUser(client: Socket, payload: { channel: string, userInvite: string }) {
     // Make sure channel name has proper characters in it !!!
@@ -315,6 +321,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.to('@' + userToInvite.username).emit('chatAlert', { message: user.username + ' has invited you to join channel: ' + channel });
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('channelActionUser')
   handleChannelActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
     const { channel, targetUser, action } = payload;
@@ -401,6 +408,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('actionUser')
   handleActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
     const { channel, targetUser, action } = payload;
