@@ -1,11 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './ProfilePage.css';
 import { useParams } from 'react-router-dom';
+import { Constants } from '../../shared/constants';
+
+interface Match {
+  id: string;
+  player1: string;
+  player1Score: number;
+  player2: string;
+  player2Score: number;
+  winner: string;
+}
 
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [matchHistory, setMatchHistory] = useState<Match[]>([]);
 
-  
+  async function fetchMatchHistory(playerID: string) {
+    const response = await fetch(`${Constants.FRONTEND_HOST_URL}/match/${playerID}/matchHistory`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = await response.json();
+    return result;
+  }
+
+  useEffect(() => {
+    async function loadMatchHistory() {
+      try {
+        const history = await fetchMatchHistory(id);
+        setMatchHistory(history);
+      } catch (error) {
+        console.error('Error fetching match history:', error);
+      }
+    }
+
+    loadMatchHistory();
+  }, [id]);
 
   return (
     <div className="profile_container">
@@ -16,16 +49,13 @@ const ProfilePage: React.FC = () => {
         <div className="profile_section profile_friends">
           <h2>Profile Friends</h2>
           <div className="friend_item">
-            {/* <span className={`status_circle ${user.status === 'online' ? 'online' : 'offline'}`}></span>   */}
             <span className="status_circle offline"></span>
             <h3>Friend_1</h3>
           </div>
-
           <div className="friend_item">
             <span className="status_circle offline"></span>
             <h3>Friend_2</h3>
           </div>
-
           <div className="friend_item">
             <span className="status_circle online"></span>
             <h3>Friend_3</h3>
@@ -37,7 +67,18 @@ const ProfilePage: React.FC = () => {
         </div>
         <div className="profile_section profile_game_history">
           <h2>Game History</h2>
-          <h3>Game_1</h3>
+          {matchHistory.length > 0 ? (
+            matchHistory.map((match) => (
+              <div key={match.id}>
+                <h3>Game ID: {match.id}</h3>
+                <p>Player 1: {match.player1} (Score: {match.player1Score})</p>
+                <p>Player 2: {match.player2} (Score: {match.player2Score})</p>
+                <p>Winner: {match.winner}</p>
+              </div>
+            ))
+          ) : (
+            <p>No match history available.</p>
+          )}
         </div>
       </div>
     </div>
