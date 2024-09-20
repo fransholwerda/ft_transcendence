@@ -29,11 +29,13 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     async function loadMatchHistory() {
-      try {
-        const history = await fetchMatchHistory(id);
-        setMatchHistory(history);
-      } catch (error) {
-        console.error('Error fetching match history:', error);
+      if (id) {
+        try {
+          const history = await fetchMatchHistory(id);
+          setMatchHistory(history);
+        } catch (error) {
+          console.error('Error fetching match history:', error);
+        }
       }
     }
 
