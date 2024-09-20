@@ -424,6 +424,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const target = this.ChatUsers.get(targetUser);
 
     switch (action) {
+      case ActionType.Profile:
+        client.emit('profilePage', { targetUserID: target.id });
+        break;
       case ActionType.Invite:
         this.server.to('@' + target.username).emit('inviteToGame', { player1SocketID: client.id, player1ID: user.id, player1Username: user.username });
         break;

@@ -4,7 +4,6 @@ export const MAX_SCORE = 10;
 // ------------------------------
 // CUSTOM PRINTING
 const pongPrintColors = [
-    '\x1b[91m', // Bright Red
     '\x1b[92m', // Bright Green
     '\x1b[93m', // Bright Yellow
     '\x1b[94m', // Bright Blue

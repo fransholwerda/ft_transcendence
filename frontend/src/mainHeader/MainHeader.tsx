@@ -20,7 +20,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ user, onLogout }) => {
       </div>
 
       <div className="header-buttons">
-        <Link to="/profile">
+        <Link to={`/profile/${user.id}`}>
           <button className="header-button">
             Profile
           </button>
