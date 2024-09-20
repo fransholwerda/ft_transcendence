@@ -17,6 +17,7 @@ const ProfilePage: React.FC = () => {
   const [matchHistory, setMatchHistory] = useState<Match[]>([]);
 
   async function fetchMatchHistory(playerID: string) {
+    console.log('Fetching match history for player:', playerID);
     const response = await fetch(`${Constants.FRONTEND_HOST_URL}/match/${playerID}/matchHistory`, {
       method: 'GET',
       headers: {
@@ -29,8 +30,10 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     async function loadMatchHistory() {
+      console.log('Loading match history for player:', id);
       if (id) {
         try {
+          console.log('Trying to fetch match history for: ', id);
           const history = await fetchMatchHistory(id);
           setMatchHistory(history);
         } catch (error) {
