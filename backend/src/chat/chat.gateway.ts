@@ -1,10 +1,13 @@
-import { UsePipes, ValidationPipe } from '@nestjs/common';
-import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatUser, ChatRoom } from './chat.types'
 import { ChatRoomEnum, ChannelType, ActionType } from './chat.enum';
+import { JoinChatDto, SendMessageDto } from './chat.dto';
+import { WsValidationExceptionFilter } from './exception';
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*'} })
+@UseFilters(new WsValidationExceptionFilter())
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
@@ -89,9 +92,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinChat')
-  handleJoinChat(client: Socket, payload: { userId: string, username: string }) {
+  handleJoinChat(@MessageBody() joinChatDto: JoinChatDto, @ConnectedSocket() client: Socket) {
     // Username validation? !!!
-    const { userId, username } = payload;
+    const { userId, username } = joinChatDto;
 
     // DELETE LATER vvv (once cookie identification is implemented) !!!
     this.SocketUsernames.set(client.id, username);
@@ -197,13 +200,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // SEND EMIT TO OTHER USER USING THEIR USER ID
   }
 
+  //handleJoinChannel(@MessageBody() joinChannelDto: JoinChannelDto, @ConnectedSocket() client: any) {
+
   // LOOK AT https://github.com/Bde-meij/Codam_Transcendence/blob/development/api/src/chat/chatRoom.dto.ts#L98
-  // @UseFilters(WsExceptionFilter)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('sendMessage')
-  // @MessageBody() data: messageDto,
-  handleMessage(client: Socket, payload: { channel: string, message: string, username: string }) {
-    const { channel, message, username } = payload;
+  handleMessage(@MessageBody() sendMessageDto: SendMessageDto, @ConnectedSocket() client: Socket) {
+    const { channel, message, username } = sendMessageDto;
     const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
 
     if ( channel[0] === '@' ) {

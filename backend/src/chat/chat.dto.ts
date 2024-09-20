@@ -2,13 +2,13 @@ import { IsNotEmpty, IsString, Matches, IsOptional, IsEnum, IsNumber, Length } f
 import { ChannelType, ActionType } from './chat.enum';
 
 export class JoinChatDto {
-  id: number;
+  userId: number;
 
   @IsString()
   @Length(2, 30, { message: 'Name must be between 2 and 30 characters' })
   @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens' })
   @IsNotEmpty({ message: 'A name is required.' })
-  user: string;
+  username: string;
 }
 
 export class JoinChannelDto {
