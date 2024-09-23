@@ -40,7 +40,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			player2: sesh.p2.username,
 			player2ID: Number(sesh.p2.userid),
 			player2Score: sesh.p2.score,
-			winner: sesh.p1.score === MAX_SCORE ? sesh.p1.userid : sesh.p2.userid
+			winner: sesh.p1.score === MAX_SCORE ? sesh.p1.username : sesh.p2.username
 		};
 		await this.matchService.createNewMatch(createMatchDto);
 	}
