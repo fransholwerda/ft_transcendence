@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UsePipes, 
 import { UsersService } from '../users.service';
 import { CreateUserData } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { User } from '../entities/user.entity';
 
 @Controller('user')
 export class UsersController {
@@ -61,9 +62,10 @@ export class UsersController {
   }
 
   @Get(':UserID/friends')
-  async getFriends(@Param('UserID', ParseIntPipe) userID: number) {
+  async getFriends(@Param('UserID', ParseIntPipe) userID: number): Promise<User[]> {
 	try {
-		await this.usersService.getFriends(+userID);
+		const friends = await this.usersService.getFriends(+userID);
+		return(friends);
 	}
 	catch (error) {
 		console.log('something went wrong with finding friends list. Unlucky.');
@@ -109,5 +111,11 @@ export class UsersController {
   async checkBlocked(@Param('UserID') userID: number, @Param('BlockID') blockID: number): Promise<{checkBlocked: Boolean}> {
     const result = await this.usersService.checkIfBlocked(+userID, +blockID);
     return { checkBlocked: result };
+  }
+
+  @Get(':UserID/blocked')
+  async getBlocked(@Param('UserID') userID: number): Promise<User[]> {
+	const result = await this.usersService.getBlocked(+userID);
+	return result;
   }
 }
