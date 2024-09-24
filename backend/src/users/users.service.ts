@@ -93,21 +93,13 @@ export class UsersService {
 	}
 
 	async getFriends(userID: number): Promise<User[]>{
-		const friendedUsers = await this.friendshipRepository.createQueryBuilder('Friendship')
+		const friendedUsers = await this.friendshipRepository.createQueryBuilder('friendship')
 		.leftJoinAndSelect('friendship.followedUser', 'followedUser')
-		.where('Friendship.userID = :userID', { userID })
+		.where('friendship.followerId = :userID', { userID })
 		.getMany();
 
 		return friendedUsers.map(entry => entry.followedUser);
 	}
-	
-	// async getFriendedBy(userID: number) {
-	// 	return this.userRepository.createQueryBuilder('user')
-	// 	.leftJoinAndSelect('user.friendedBy', 'follower')
-	// 	.where('follower.id = :userID', { userID} )
-	// 	.select(['folloewr.id', 'follower.username'])
-	// 	.getMany();
-	// }
 
 	async addBlocked(userID: number, toBlockID: number): Promise<void> {
 		const user = await this.userRepository.findOne({where: {id: userID}});
@@ -143,11 +135,11 @@ export class UsersService {
 	}
 
 	async getBlocked(userID: number): Promise<User[]> {
-		const ignoredUsers = await this.blockedRepository.createQueryBuilder('Blocked')
-		.innerJoinAndSelect('Blocked.blockedUser', 'blockedUser')
-		.where('Blocked.userID = :userID', { userID })
+		const blockedUsers = await this.blockedRepository.createQueryBuilder('blocked')
+		.innerJoinAndSelect('blocked.blockedUser', 'blockedUser')
+		.where('blocked.userId = :userID', { userID })
 		.getMany();
 
-		return ignoredUsers.map(entry => entry.blockedUser);
+		return blockedUsers.map(entry => entry.blockedUser);
 	}
 }
