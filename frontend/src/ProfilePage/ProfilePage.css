@@ -15,7 +15,7 @@
 
   padding: 0;
   margin: 0;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .profile_header {
@@ -49,7 +49,7 @@
   display: grid;
   grid-template-columns: 20vw 25vw 30vw;
   grid-template-rows: 1fr;
-  overflow: auto;
+  /* overflow: auto; */
 }
 
 .profile_section {
@@ -61,7 +61,7 @@
   min-height: var(--maingrid_content_height) - 5vh;
   max-height: var(--maingrid_content_height) - 5vh;
   height: var(--maingrid_content_height) - 5vh;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 .profile_section p {
@@ -100,6 +100,10 @@
   background-color: #ff0000;
 }
 
+.profile_game_history {
+  overflow-y: auto;
+}
+
 .profile_game_history h2, .profile_game_history p, .profile_game_history h3 {
   color: #222;
 }
@@ -109,7 +113,7 @@
   max-width: 30vw;
   width: 30vw;
   display: grid;
-  grid-template-columns: 12vw 6vw 12vw;
+  grid-template-columns: 10vw 6vw 10vw;
   grid-template-rows: 4vh 4vh;
   border: black 2px solid; 
 }
