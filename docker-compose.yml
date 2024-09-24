@@ -15,7 +15,6 @@ services:
   user: postgres
   volumes:
       - ./database/data:/data/postgres
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
   networks:
     - db
 
