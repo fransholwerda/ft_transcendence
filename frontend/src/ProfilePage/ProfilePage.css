@@ -1,8 +1,10 @@
+@import url('../maincssroot.css');
+
 .profile_container {
   display: grid;
   grid-template-rows: auto 1fr;
   grid-template-columns: 1fr;
-  height: 85vh;
+  height: var(--maingrid_content_height);
   padding: 20px;
   background-color: #ffffff;
   background-image: url('../img/bg_vector_bg.jpg');
@@ -88,4 +90,40 @@
 
 .profile_game_history h2, .profile_game_history p, .profile_game_history h3 {
   color: #222;
+}
+
+.profile_game_history {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* top left */
+#gh_player1 {
+  grid-area: 1 / 1 / 2 / 2;
+  background-color: red;
+}
+
+/* bottom left */
+#gh_score1 {
+  grid-area: 2 / 1 / 3 / 2;
+  background-color: green;
+}
+
+/* middle */
+#gh_status {
+  grid-area: 1 / 2 / 3 / 3;
+  background-color: blue;
+}
+
+/* top right */
+#gh_player2 {
+  grid-area: 1 / 3 / 2 / 4;
+  background-color: yellow;
+}
+
+/* bottom right */
+#gh_score2 {
+  grid-area: 2 / 3 / 3 / 4;
+  background-color: purple;
 }
