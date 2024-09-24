@@ -29,7 +29,7 @@ const MainGrid: React.FC<MainGridProps & { contentComponent: string }> = ({ user
       case 'SettingsPage':
         return <SettingsPage user={user} />;
       case 'ProfilePage':
-        return <ProfilePage user={user} />;
+        return <ProfilePage />;
       default:
         return <Pong user={user} pSock={pSock}/>;
     }
