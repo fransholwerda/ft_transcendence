@@ -47,6 +47,8 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  max-height: var(--maingrid_content_height)-5vh;
+  overflow-y: scroll;
 }
 
 .profile_section p {
