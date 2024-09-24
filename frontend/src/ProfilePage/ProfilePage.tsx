@@ -78,7 +78,7 @@ const ProfilePage: React.FC = () => {
                 <h3>Game ID: {match.id}</h3>
                 <p>Player 1: {match.player1} (Score: {match.player1Score})</p>
                 <p>Player 2: {match.player2} (Score: {match.player2Score})</p>
-                <p>Winner: {match.winner}</p>
+                <p>{id === match.winner ? 'Win' : 'Loss'}</p>
               </div>
             ))
           ) : (

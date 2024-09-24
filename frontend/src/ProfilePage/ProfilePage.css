@@ -86,6 +86,6 @@
   background-color: #ff0000;
 }
 
-.profile_game_history h1, .profile_game_history h2, .profile_game_history h3, .profile_game_history h4, .profile_game_history h5, .profile_game_history h6 {
+.profile_game_history h2, .profile_game_history p, .profile_game_history h3 {
   color: #222;
 }
