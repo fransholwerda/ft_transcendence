@@ -74,11 +74,15 @@ const ProfilePage: React.FC = () => {
           <h2>Game History</h2>
           {matchHistory.length > 0 ? (
             matchHistory.map((match) => (
-              <div key={match.id}>
-                <h3>Game ID: {match.id}</h3>
-                <p>Player 1: {match.player1} (Score: {match.player1Score})</p>
-                <p>Player 2: {match.player2} (Score: {match.player2Score})</p>
-                <p>{id === match.winner ? 'Win' : 'Loss'}</p>
+              <div
+                key={match.id}
+                className={`game_item ${id === match.winner ? 'win' : 'loss'}`}
+              >
+                <p id="gh_status">{id === match.winner ? 'Win' : 'Loss'}</p>
+                <p id="gh_player1">{match.player1}</p>
+                <p id="gh_score1">{match.player1Score}</p>
+                <p id="gh_player2">{match.player2}</p>
+                <p id="gh_score2">{match.player2Score}</p>
               </div>
             ))
           ) : (
