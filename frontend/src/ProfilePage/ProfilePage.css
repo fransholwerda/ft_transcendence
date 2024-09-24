@@ -15,7 +15,6 @@
 
   padding: 0;
   margin: 0;
-  /* overflow: hidden; */
 }
 
 .profile_header {
@@ -42,14 +41,13 @@
   max-width: var(--maingrid_content_width);
   width: var(--maingrid_content_width);
 
-  min-height: var(--maingrid_content_height) - 5vh;
-  max-height: var(--maingrid_content_height) - 5vh;
-  height: var(--maingrid_content_height) - 5vh;
+  min-height: calc(var(--maingrid_content_height) - 5vh);
+  max-height: calc(var(--maingrid_content_height) - 5vh);
+  height: calc(var(--maingrid_content_height) - 5vh);
 
   display: grid;
   grid-template-columns: 20vw 25vw 30vw;
   grid-template-rows: 1fr;
-  /* overflow: auto; */
 }
 
 .profile_section {
@@ -58,10 +56,9 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  min-height: var(--maingrid_content_height) - 5vh;
-  max-height: var(--maingrid_content_height) - 5vh;
-  height: var(--maingrid_content_height) - 5vh;
-  /* overflow-y: auto; */
+  min-height: calc(var(--maingrid_content_height) - 5vh);
+  max-height: calc(var(--maingrid_content_height) - 5vh);
+  height: calc(var(--maingrid_content_height) - 5vh);
 }
 
 .profile_section p {
@@ -101,7 +98,8 @@
 }
 
 .profile_game_history {
-  overflow-y: auto;
+  overflow-y: auto; /* Enable scrolling for game items */
+  max-height: 100%;  /* Ensure game history stays within the section */
 }
 
 .profile_game_history h2, .profile_game_history p, .profile_game_history h3 {
@@ -115,7 +113,8 @@
   display: grid;
   grid-template-columns: 10vw 6vw 10vw;
   grid-template-rows: 4vh 4vh;
-  border: black 2px solid; 
+  border: black 2px solid;
+  margin-bottom: 1vh; /* Add space between game items */
 }
 
 #gh_player1, #gh_score1, #gh_status, #gh_player2, #gh_score2 {
