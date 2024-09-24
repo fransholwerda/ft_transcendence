@@ -79,19 +79,19 @@ const ProfilePage: React.FC = () => {
                 className={`game_item ${id === match.winner ? 'win' : 'loss'}`}
               >
                 <div id="gh_player1">
-                  {match.player1}
+                  <p>{match.player1}</p>
                 </div>
                 <div id="gh_score1">
-                  {match.player1Score}
+                  <p>{match.player1Score}</p>
                 </div>
                 <div id="gh_status">
-                  {id === match.winner ? 'Win' : 'Loss'}
+                  <p>{id === match.winner ? 'Win' : 'Loss'}</p>
                 </div>
                 <div id="gh_player2">
-                  {match.player2}
+                  <p>{match.player2}</p>
                 </div>
                 <div id="gh_score2">
-                  {match.player2Score}
+                  <p>{match.player2Score}</p>
                 </div>
               </div>
             ))
