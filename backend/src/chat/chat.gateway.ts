@@ -155,12 +155,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       return;
     }
     this.server.to('@' + user).emit('dmCreated', { dm: '@' + targetUser });
-    // SEND EMIT TO OTHER USER USING THEIR USER ID
+    this.server.to('@' + targetUser).emit('dmCreated', { dm: '@' + user });
   }
 
-  //handleJoinChannel(@MessageBody() joinChannelDto: JoinChannelDto, @ConnectedSocket() client: any) {
-
-  // LOOK AT https://github.com/Bde-meij/Codam_Transcendence/blob/development/api/src/chat/chatRoom.dto.ts#L98
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('sendMessage')
   handleMessage(@MessageBody() sendMessageDto: SendMessageDto, @ConnectedSocket() client: Socket) {
@@ -397,7 +394,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.server.to('@' + target.username).emit('inviteToGame', { player1SocketID: client.id, player1ID: user.id, player1Username: user.username });
         break;
       case ActionType.Ignore:
-        // TALK TO ALEX !!!
+        
         break;
       default:
         client.emit('chatAlert', { message: 'Action not recognized.' });
