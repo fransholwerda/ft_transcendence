@@ -1,14 +1,20 @@
 @import url('../maincssroot.css');
 
 .profile_container {
-  display: grid;
-  grid-template-rows: 20vw 25vw 30vw;
-  grid-template-columns: 1fr;
+  min-width: var(--maingrid_content_width);
+  max-width: var(--maingrid_content_width);
+  width: var(--maingrid_content_width);
+
+  min-height: var(--maingrid_content_height);
+  max-height: var(--maingrid_content_height);
   height: var(--maingrid_content_height);
-  padding: 2vh 2vw;
+
   background-color: #ffffff;
   background-image: url('../img/bg_vector_bg.jpg');
   background-size: cover;
+
+  padding: 0;
+  margin: 0;
 }
 
 .profile_header {
@@ -21,6 +27,7 @@
   font-size: 0.625vw;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
+
 .profile_header h1 {
   color: #222;
 }
@@ -30,25 +37,29 @@
 }
 
 .profile_content {
+  min-width: var(--maingrid_content_width);
+  max-width: var(--maingrid_content_width);
+  width: var(--maingrid_content_width);
+
+  min-height: var(--maingrid_content_height) - 5vh;
+  max-height: var(--maingrid_content_height) - 5vh;
+  height: var(--maingrid_content_height) - 5vh;
+
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 0.78vw;
-  height: 100%;
-  border-radius: 0.31vw;
-  box-shadow: 0 0.16vw 0.31vw rgba(0, 0, 0, 0.1);
+  grid-template-columns: 20vw 25vw 30vw;
+  grid-template-rows: 1fr;
 }
 
 .profile_section {
   background-color: rgba(239, 239, 239, 0.5);
-  border-radius: 0.31vw;
-  box-shadow: 0 0.16vw 0.31vw rgba(0, 0, 0, 0.1);
-  padding: 0.78vw;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  max-height: var(--maingrid_content_height)-5vh;
-  overflow-y: scroll;
+  min-height: var(--maingrid_content_height) - 5vh;
+  max-height: var(--maingrid_content_height) - 5vh;
+  height: var(--maingrid_content_height) - 5vh;
+  overflow-y: auto;
 }
 
 .profile_section p {
@@ -96,8 +107,15 @@
   max-width: 30vw;
   width: 30vw;
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 12vw 6vw 12vw;
+  grid-template-rows: 4vh 4vh;
+  border: black 2px solid; 
+}
+
+#gh_player1, #gh_score1, #gh_status, #gh_player2, #gh_score2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* top left */
@@ -114,7 +132,7 @@
 
 /* middle */
 #gh_status {
-  grid-area: 1 / 2 / 3 / 3;
+  grid-area: 1 / 2 / 3 / 4;
   background-color: blue;
 }
 
