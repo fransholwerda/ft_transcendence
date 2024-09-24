@@ -68,6 +68,11 @@ export class UsersService {
 	const user = await this.userRepository.findOne({where: {id: userID}});
 	const friend = await this.userRepository.findOne({where: {id: friendID}});
 
+	console.log('in addFriend');
+	console.log(user);
+	console.log(userID);
+	console.log(friend);
+	console.log(friendID);
 	if (!user || !friend) {
 		throw new Error ('User or friend not found');
 	}

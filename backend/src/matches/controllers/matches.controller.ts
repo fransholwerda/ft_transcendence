@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Delete, Get, Param, HttpCode, ParseIntPipe } from "@nestjs/common";
 import { MatchService } from "../matches.service";
 import { CreateMatch } from "../dto/create-match.dto";
-
+import { Match } from "../entity/matches.entity";
 
 @Controller('match')
 export class MatchController {
@@ -28,15 +28,16 @@ export class MatchController {
 		return this.matchService.removeMatch(+id);
 	}
 
-	@Get(':playerID/matchHistory')
-	async findPlayersMatches(@Param('playerID', ParseIntPipe) playerID: number) {
-		try {
-			await this.matchService.findPlayersMatches(+playerID);
-		}
-		catch (error) {
-			console.log('something went wrong with finding match list. Unlucky.');
-			throw (error);
-		}
-	}
-
+    @Get(':playerID/matchHistory')
+    async findPlayersMatches(@Param('playerID', ParseIntPipe) playerID: number): Promise<Match[]> {
+        try {
+            const matches = await this.matchService.findPlayersMatches(+playerID);
+            console.log(matches);
+            return matches;
+        }
+        catch (error) {
+            console.log('something went wrong with finding match list. Unlucky.');
+            throw (error);
+        }
+    }
 }
