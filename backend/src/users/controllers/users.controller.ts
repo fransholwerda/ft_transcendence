@@ -49,16 +49,16 @@ export class UsersController {
 	}
   }
 
-//   @Delete(':UserID/friend/:FriendID')
-//   async removeFriend(@Param('UserID') userID: number, @Param('FriendID') friendID: number) {
-// 	try {
-// 		await this.usersService.removeFriend(+userID, +friendID);
-// 	}
-// 	catch (error) {
-// 		console.log('something went wrong with removing friend. Unfortunate.');
-// 		throw (error);
-// 	}
-//   }
+  @Delete(':UserID/friend/:FriendID')
+  async removeFriend(@Param('UserID') userID: number, @Param('FriendID') friendID: number) {
+	try {
+		await this.usersService.removeFriend(+userID, +friendID);
+	}
+	catch (error) {
+		console.log('something went wrong with removing friend. Unfortunate.');
+		throw (error);
+	}
+  }
 
   @Get(':UserID/friends')
   async getFriends(@Param('UserID', ParseIntPipe) userID: number) {
@@ -80,5 +80,34 @@ export class UsersController {
 		console.log('something went wrong with finding friendedBy list. Unlucky.');
 		throw (error);
 	}
+  }
+
+
+  @Post(':UserID/block/:BlockID')
+  async addBlocked(@Param('UserID') userID: number, @Param('BlockID') blockID: number) {
+	try {
+		await this.usersService.addBlocked(+userID, +blockID);
+	}
+	catch (error) {
+		console.log('something went wrong with adding user to block list. Unlucky.');
+		throw (error);
+	}
+  }
+
+  @Delete(':UserID/block/:BlockID')
+  async removeBlocked(@Param('UserID') userID: number, @Param('BlockID') blockID: number) {
+    try {
+      await this.usersService.removeBlock(+userID, +blockID);
+    }
+    catch (error) {
+      console.log('something went wrong with removing blocked user.');
+      throw (error);
+    }
+  }
+
+  @Get(':UserID/block/:BlockID')
+  async checkBlocked(@Param('UserID') userID: number, @Param('BlockID') blockID: number): Promise<{checkBlocked: Boolean}> {
+    const result = await this.usersService.checkIfBlocked(+userID, +blockID);
+    return { checkBlocked: result };
   }
 }
