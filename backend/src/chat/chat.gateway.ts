@@ -5,6 +5,8 @@ import { ChatUser, ChatRoom } from './chat.types'
 import { ChatRoomEnum, ChannelType, ActionType } from './chat.enum';
 import { ActionUserDto, ChannelActionUserDto, ChannelInviteUserDto, JoinChannelDto, JoinChatDto, JoinDmDto, LeaveChannelDto, SendMessageDto, SetChannelTypeDto } from './chat.dto';
 import { WsValidationExceptionFilter } from './exception';
+import { UsersModule } from 'src/users/users.module';
+import { UsersService } from 'src/users/users.service';
 
 // HASH ALL PASSWORDS !!!
 
@@ -17,6 +19,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   private ChatRooms = new Map<string, ChatRoom>();
   private SocketUsernames = new Map<string, string>();
   private ClientIDSockets = new Map<string, Socket>();
+  constructor(private readonly userService: UsersService) {}
 
   afterInit(server: Server) {
     this.server = server;
@@ -394,7 +397,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.server.to('@' + target.username).emit('inviteToGame', { player1SocketID: client.id, player1ID: user.id, player1Username: user.username });
         break;
       case ActionType.Ignore:
-        
+        this.userService.addBlocked(user.id, target.id);
+        const blockedList = this.userService.getBlocked(user.id);
+        console.log('---------------------');
+        console.log(blockedList);
+        console.log('---------------------');
         break;
       default:
         client.emit('chatAlert', { message: 'Action not recognized.' });
