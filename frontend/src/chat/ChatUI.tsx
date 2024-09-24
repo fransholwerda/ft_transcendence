@@ -192,7 +192,11 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
   }
 
   const setChannelType = (title: string, type: number, password: string) => {
+    if (password == '') {
+      socket.emit ('setChannelType', { channel: title, type: type });
+    } else {
     socket.emit ('setChannelType', { channel: title, type: type, password: password });
+    }
     setProtectedPassword('');
   }
 
