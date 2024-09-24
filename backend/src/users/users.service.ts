@@ -9,7 +9,7 @@ import { QueryFailedError} from 'typeorm/error/QueryFailedError'
 import { Friendship } from 'src/friends/entity/friends.entity';
 import { FriendshipRepository } from 'src/friends/friends.repository';
 import { BlockedRepository } from 'src/ignores/ignores.repostiory';
-import { Blocked } from 'src/ignores/ignores.entity.ts/ignores.entity';
+import { Blocked } from 'src/ignores/entities/ignores.entity';
 
 @Injectable()
 export class UsersService {

@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Blocked } from "./ignores.entity.ts/ignores.entity";
+import { Blocked } from "./entities/ignores.entity";
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Blocked])],

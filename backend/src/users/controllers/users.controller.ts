@@ -71,16 +71,16 @@ export class UsersController {
 	}
   }
 
-  @Get(':UserID/friendedby')
-  async getFriendedBy(@Param('UserID', ParseIntPipe) userID: number) {
-	try {
-		await this.usersService.getFriendedBy(+userID);
-	}
-	catch (error) {
-		console.log('something went wrong with finding friendedBy list. Unlucky.');
-		throw (error);
-	}
-  }
+//   @Get(':UserID/friendedby')
+//   async getFriendedBy(@Param('UserID', ParseIntPipe) userID: number) {
+// 	try {
+// 		await this.usersService.getFriendedBy(+userID);
+// 	}
+// 	catch (error) {
+// 		console.log('something went wrong with finding friendedBy list. Unlucky.');
+// 		throw (error);
+// 	}
+//   }
 
 
   @Post(':UserID/block/:BlockID')
