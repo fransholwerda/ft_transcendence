@@ -100,15 +100,6 @@ export class UsersService {
 
 		return friendedUsers.map(entry => entry.followedUser);
 	}
-	
-	// async getBlocked(userID: number): Promise<User[]> {
-	// 	const blockedUsers = await this.blockedRepository.createQueryBuilder('blocked')
-	// 	.innerJoinAndSelect('blocked.blockedUser', 'blockedUser')
-	// 	.where('blocked.userId = :userID', { userID })
-	// 	.getMany();
-
-	// 	return blockedUsers.map(entry => entry.blockedUser);
-	// }
 
 	async addBlocked(userID: number, toBlockID: number): Promise<void> {
 		const user = await this.userRepository.findOne({where: {id: userID}});
