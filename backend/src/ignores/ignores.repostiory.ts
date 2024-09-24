@@ -1,6 +1,6 @@
 import { DataSource, Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
-import { Blocked } from "./ignores.entity.ts/ignores.entity";
+import { Blocked } from "./entities/ignores.entity";
 
 @Injectable()
 export class BlockedRepository extends Repository<Blocked> {
