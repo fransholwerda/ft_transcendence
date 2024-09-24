@@ -2,6 +2,8 @@ import { IsNotEmpty, IsString, Matches, IsOptional, IsEnum, IsNumber, Length } f
 import { ChannelType, ActionType } from './chat.enum';
 
 export class JoinChatDto {
+  @IsNumber()
+  @IsNotEmpty({ message: 'No empty ID numbers.' })
   userId: number;
 
   @IsString()
@@ -46,7 +48,7 @@ export class JoinDmDto {
 export class SendMessageDto {
   @IsNotEmpty()
   @IsString()
-  @Matches(/^[a-zA-Z0-9-_]+$/, { message: 'Channel name can only contain letters, numbers, hyphens and underscores.' })
+  @Matches(/^[a-zA-Z0-9@_-]+$/, { message: 'Channel name can only contain letters, numbers, hyphens, underscores and the @ symbol.' })
   channel: string;
 
   @IsNotEmpty()

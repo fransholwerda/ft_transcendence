@@ -59,7 +59,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
   const handleConnect = async () => {
     setLoading(true);
     setError(null);
-    
+
     socket.emit('joinChat', { userId: user.id, username: user.username });
   };
 

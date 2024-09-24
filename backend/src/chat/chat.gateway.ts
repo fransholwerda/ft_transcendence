@@ -60,6 +60,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log('SocketID to Username: ' + client.id + ' = ' + this.SocketUsernames.get(client.id));
     // DELETE LATER ^^^
 
+    console.log('userid: ' + userId);
+
     if (!this.ChatUsers.has(username)) {
       // User is connecting for the first time
       this.ChatUsers.set(username, new ChatUser(userId, username));
@@ -398,10 +400,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         break;
       case ActionType.Ignore:
         this.userService.addBlocked(user.id, target.id);
-        const blockedList = this.userService.getBlocked(user.id);
+        // const blockedList = this.userService.getBlocked(user.id);
         console.log('---------------------');
-        console.log(blockedList);
+        // console.log(blockedList);
         console.log('---------------------');
+        console.log(user.id);
+        console.log(target.id);
+        console.log(this.ChatUsers);
         break;
       default:
         client.emit('chatAlert', { message: 'Action not recognized.' });
