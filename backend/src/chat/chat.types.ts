@@ -2,12 +2,12 @@ import { isatty } from 'tty';
 import { ChatRoomEnum } from './chat.enum';
 
 export class ChatUser {
-  id: string;
+  id: number;
   username: string;
   rooms: ChatRoom[];
   clientIDs: string[];
 
-  constructor(id: string,
+  constructor(id: number,
               username: string,
               rooms: ChatRoom[] = [],
               clientIDs: string[] = []) {
@@ -58,9 +58,9 @@ export class ChatRoom {
   privatized: boolean;
   protect: boolean;
   password: string;
-  banned: string[];
-  muted: string[];
-  invited: string[];
+  banned: number[];
+  muted: number[];
+  invited: number[];
 
   constructor(roomId: string,
               users: ChatUser[] = [],
@@ -69,9 +69,9 @@ export class ChatRoom {
               privatized: boolean = false,
               protect: boolean = false,
               password: string = '',
-              banned: string[] = [],
-              muted: string[] = [],
-              invited: string[] = []) {
+              banned: number[] = [],
+              muted: number[] = [],
+              invited: number[] = []) {
     this.roomId = roomId;
     this.users = users;
     this.owner = owner;
