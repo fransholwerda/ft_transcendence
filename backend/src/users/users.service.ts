@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Equal } from 'typeorm';
 import { CreateUserData } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -8,11 +8,14 @@ import { UserRepository } from './user.repository';
 import { QueryFailedError} from 'typeorm/error/QueryFailedError'
 import { Friendship } from 'src/friends/entity/friends.entity';
 import { FriendshipRepository } from 'src/friends/friends.repository';
+import { BlockedRepository } from 'src/ignores/ignores.repostiory';
+import { Blocked } from 'src/ignores/entities/ignores.entity';
 
 @Injectable()
 export class UsersService {
 	constructor(@InjectRepository(User) public userRepository: UserRepository,
-	@InjectRepository(Friendship) private friendshipRepository: FriendshipRepository
+	@InjectRepository(Friendship) private friendshipRepository: FriendshipRepository,
+	@InjectRepository(Blocked) private blockedRepository: BlockedRepository
 	){}
 
 	//This function should create a User in User Entity. the createUserData paramater will create an object
@@ -75,31 +78,76 @@ export class UsersService {
 	}
 
 	const friendship = new Friendship();
-	friendship.friendedBy = user;
-	friendship.friended = friend;
+	friendship.follower = user;
+	friendship.followedUser = friend;
 
 	await this.friendshipRepository.save(friendship);
-  }
-
-	// async removeFriend(userID: number, friendID: number): Promise<void> {
-	// 	const friendship = await this.friendshipRepository.findOne({
-	// 		where: [{friended }]
-	// 	})
-	// }
-
-	async getFriends(userID: number) {
-		return this.userRepository.createQueryBuilder('user')
-		.leftJoinAndSelect('user.friends', 'friend')
-		.where('user.id = :userID', { userID })
-		.select(['friend.id', 'friend.username'])
-		.getMany();
 	}
 
-	async getFriendedBy(userID: number) {
-		return this.userRepository.createQueryBuilder('user')
-		.leftJoinAndSelect('user.friendedBy', 'follower')
-		.where('follower.id = :userID', { userID} )
-		.select(['folloewr.id', 'follower.username'])
+  async removeFriend(userID: number, friendID: number): Promise<void> {
+		const friendship = await this.friendshipRepository.findOne({
+			where: { follower: Equal(userID), followedUser: Equal(friendID) }
+		});
+
+		await this.friendshipRepository.delete(friendship.id);
+	}
+
+	async getFriends(userID: number): Promise<User[]>{
+		const friendedUsers = await this.friendshipRepository.createQueryBuilder('Friendship')
+		.leftJoinAndSelect('friendship.followedUser', 'followedUser')
+		.where('Friendship.userID = :userID', { userID })
 		.getMany();
+
+		return friendedUsers.map(entry => entry.followedUser);
+	}
+	
+	// async getFriendedBy(userID: number) {
+	// 	return this.userRepository.createQueryBuilder('user')
+	// 	.leftJoinAndSelect('user.friendedBy', 'follower')
+	// 	.where('follower.id = :userID', { userID} )
+	// 	.select(['folloewr.id', 'follower.username'])
+	// 	.getMany();
+	// }
+
+	async addBlocked(userID: number, toBlockID: number): Promise<void> {
+		const user = await this.userRepository.findOne({where: {id: userID}});
+		const blockedUser = await this.userRepository.findOne({where: {id: toBlockID}});
+
+		if (!user || !blockedUser){
+			throw new Error('User or target User not found');
+		}
+
+		const blocked = new Blocked();
+		blocked.user = user;
+		blocked.blockedUser = blockedUser;
+
+		await this.blockedRepository.save(blocked);
+	}
+
+	async removeBlock(userID: number, blockedID: number): Promise<void> {
+		const blocked = await this.blockedRepository.findOne({
+			where: { user: Equal(userID), blockedUser: Equal(blockedID)}
+		})
+
+		await this.blockedRepository.delete(blocked.id);
+	}
+
+	async checkIfBlocked(userID: number, blockedID: number): Promise<Boolean> {
+		const blocked = await this.blockedRepository.findOne({
+			where: { user: Equal(userID), blockedUser: Equal(blockedID)}
+		})
+		
+		if (blocked)
+			return true;
+		return false;
+	}
+
+	async getBlocked(userID: number): Promise<User[]> {
+		const ignoredUsers = await this.blockedRepository.createQueryBuilder('Blocked')
+		.innerJoinAndSelect('Blocked.blockedUser', 'blockedUser')
+		.where('Blocked.userID = :userID', { userID })
+		.getMany();
+
+		return ignoredUsers.map(entry => entry.blockedUser);
 	}
 }

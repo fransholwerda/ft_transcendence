@@ -1,10 +1,15 @@
-import { UsePipes, ValidationPipe } from '@nestjs/common';
-import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatUser, ChatRoom } from './chat.types'
 import { ChatRoomEnum, ChannelType, ActionType } from './chat.enum';
+import { ActionUserDto, ChannelActionUserDto, ChannelInviteUserDto, JoinChannelDto, JoinChatDto, JoinDmDto, LeaveChannelDto, SendMessageDto, SetChannelTypeDto } from './chat.dto';
+import { WsValidationExceptionFilter } from './exception';
+
+// HASH ALL PASSWORDS !!!
 
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*'} })
+@UseFilters(new WsValidationExceptionFilter())
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
@@ -18,54 +23,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log('NestJS Chat Gateway Init');
   }
 
-// CHECK THIS OUT FOR PROPER SECURITY https://github.com/Bde-meij/Codam_Transcendence/blob/development/api/src/game/game.gateway.ts
-// async handleConnection(client: Socket)
-// 	{
-// 		try 
-// 		{
-// 			// console.log("Game connection: " + client.id);
-// 			var cookies = client.handshake.headers.cookie?.split('; ');
-// 			if (!cookies)
-// 				throw new NotAcceptableException();
-// 			var token: string;
-// 			for (var cookie of cookies)
-// 			{
-// 				var [key, value] = cookie.split('=');
-// 				if (key === 'access_token')
-// 				{
-// 					token = value;
-// 					break;
-// 				}
-// 			}
-// 			if (!token)
-// 				throw new NotAcceptableException();
-// 			var payload = await this.authService.verifyJwtAccessToken(token);
-// 			var user = await this.userService.findUserById(payload.id);
-// 			if (!user)
-// 				throw new NotAcceptableException();
-// 			client.data.userid = user.id;
-// 			client.data.nick = user.nickname;
-// 			client.data.key = user.roomKey;
-// 			await this.userService.updateStatus(client.data.userid, "in game");
-
-// 			client.emit("connectSignal");
-// 		}
-// 		catch
-// 		{
-// 			// console.log(client.id, "Game connection refused"); 
-// 			client.disconnect();
-// 			return;
-// 		}
-// 	}
-
   handleConnection(client: Socket, ...args: any[]) {
     const username = client.handshake.query.username as string;
 
     console.log(`NestJS Chat Gateway Username is: ${username}`);
-    // this.clients.add(client.id);
-    // client.join('@' + username);
-    // if (!this.rooms.has('@' + username))
-    //   this.rooms.add('@' + username);
     this.ClientIDSockets.set(client.id, client);
     console.log(`NestJS Chat Gateway Client connected: ${client.id}`);
   }
@@ -77,9 +38,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     const chatuser = this.ChatUsers.get(this.SocketUsernames.get(client.id));
     chatuser.removeClientID(client.id);
-    // DELETE LATER vvv (once cookie identification is implemented) !!!
     this.SocketUsernames.delete(client.id);
-    // DELETE LATER ^^^
     if (chatuser.isEmptyClientIDs()) {
       chatuser.removeUserFromAllRooms();
       this.ChatUsers.delete(chatuser.username);
@@ -87,10 +46,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.ClientIDSockets.delete(client.id);
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinChat')
-  handleJoinChat(client: Socket, payload: { userId: string, username: string }) {
+  handleJoinChat(@MessageBody() joinChatDto: JoinChatDto, @ConnectedSocket() client: Socket) {
     // Username validation? !!!
-    const { userId, username } = payload;
+    const { userId, username } = joinChatDto;
 
     // DELETE LATER vvv (once cookie identification is implemented) !!!
     this.SocketUsernames.set(client.id, username);
@@ -119,9 +79,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinChannel')
-  handleJoinChannel(client: Socket, payload: { channel: string, password: string }) {
-    const { channel, password } = payload;
+  handleJoinChannel(@MessageBody() joinChannelDto: JoinChannelDto, @ConnectedSocket() client: Socket) {
+    const { channel, password } = joinChannelDto;
     const chatuser = this.ChatUsers.get(this.SocketUsernames.get(client.id));
 
     if (this.ChatRooms.has(channel)) {
@@ -167,9 +128,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('leaveChannel')
-  handleLeaveChannel(client: Socket, payload: { channel: string }) {
-    const { channel } = payload;
+  handleLeaveChannel(@MessageBody() leaveChannelDto: LeaveChannelDto, @ConnectedSocket() client: Socket) {
+    const { channel } = leaveChannelDto;
     const chatuser = this.ChatUsers.get(this.SocketUsernames.get(client.id));
     if (this.ChatRooms.has(channel)) {
       const chatroom = this.ChatRooms.get(channel);
@@ -181,25 +143,28 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinDM')
-  handleJoinDM(client: Socket, payload: { user: string, targetUser: string }) {
-    const { user, targetUser } = payload;
+  handleJoinDM(@MessageBody() joinDmDto: JoinDmDto, @ConnectedSocket() client: Socket) {
+    const { user, targetUser } = joinDmDto;
     // ADD USER CHECK TO DATABASE !!!
     // IS TARGETUSER BLOCKED? !!!
     // DID TARGETUSER BLOCK YOU? !!!
-    // IS TARGETUSER ONLINE? !!!
-    // if (this.server.sockets.adapter.rooms.has('@' + targetUser)) {
+    if (!this.ChatUsers.has(targetUser)) {
+      client.emit('chatAlert', { message: 'Target user is not online, has blocked you or does not exist.' });
+      return;
+    }
     this.server.to('@' + user).emit('dmCreated', { dm: '@' + targetUser });
     // SEND EMIT TO OTHER USER USING THEIR USER ID
   }
 
+  //handleJoinChannel(@MessageBody() joinChannelDto: JoinChannelDto, @ConnectedSocket() client: any) {
+
   // LOOK AT https://github.com/Bde-meij/Codam_Transcendence/blob/development/api/src/chat/chatRoom.dto.ts#L98
-  // @UseFilters(WsExceptionFilter)
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('sendMessage')
-  // @MessageBody() data: messageDto,
-  handleMessage(client: Socket, payload: { channel: string, message: string, username: string }) {
-    const { channel, message, username } = payload;
+  handleMessage(@MessageBody() sendMessageDto: SendMessageDto, @ConnectedSocket() client: Socket) {
+    const { channel, message, username } = sendMessageDto;
     const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
 
     if ( channel[0] === '@' ) {
@@ -225,10 +190,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     return;
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('setChannelType')
-  handleSetChannelType(client: Socket, payload: { channel: string, type: number, password: string }) {
+  handleSetChannelType(@MessageBody() setChannelTypeDto: SetChannelTypeDto, @ConnectedSocket() client: Socket) {
     // Make sure channel name has proper characters in it !!!
-    const { channel, type, password } = payload;
+    const { channel, type, password } = setChannelTypeDto;
 
     if (!this.ChatRooms.has(channel)) {
       client.emit('chatAlert', { message: 'Channel does not exist.' });
@@ -249,17 +215,24 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return;
         }
         chatroom.setPrivate();
+        client.emit('message', { channel: channel, message: 'Channel is now private.', username: '#Server' });
         break;
       case ChannelType.Protected:
-        if (chatroom.isProtected()) {
-          client.emit('chatAlert', { message: 'Channel is already password protected.' });
+        if (password == undefined) {
+          if (chatroom.isPublic()) {
+            client.emit('chatAlert', { message: 'Channel is already public.' });
+            return;
+          }
+          chatroom.setPublic();
+          client.emit('message', { channel: channel, message: 'Channel is now public.', username: '#Server' });
           return;
-        }  else if (password.length < 1 || password.length > 40) {
-          client.emit('chatAlert', { message: 'Password must be between 1 and 40 characters long.' });
+        } else if (chatroom.isProtected()) {
+          chatroom.setProtected(password);
+          client.emit('message', { channel: channel, message: 'Channel password has been updated.', username: '#Server' });
           return;
         }
         chatroom.setProtected(password);
-        console.log(channel + " is now protected by password: " + password);
+        client.emit('message', { channel: channel, message: 'Channel is now password protected.', username: '#Server' });
         break;
       case ChannelType.Public:
         if (chatroom.isPublic()) {
@@ -267,16 +240,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return;
         }
         chatroom.setPublic();
+        client.emit('message', { channel: channel, message: 'Channel is now public.', username: '#Server' });
         break;
       default:
         client.emit('chatAlert', { message: 'Channel type does not exist.' });
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('channelInviteUser')
-  handleChannelInviteUser(client: Socket, payload: { channel: string, userInvite: string }) {
+  handleChannelInviteUser(@MessageBody() channelInviteUserDto: ChannelInviteUserDto, @ConnectedSocket() client: Socket) {
     // Make sure channel name has proper characters in it !!!
-    const { channel, userInvite } = payload;
+    const { channel, userInvite } = channelInviteUserDto;
 
     if (!this.ChatRooms.has(channel)) {
       client.emit('chatAlert', { message: 'Channel does not exist.' });
@@ -315,9 +290,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.to('@' + userToInvite.username).emit('chatAlert', { message: user.username + ' has invited you to join channel: ' + channel });
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('channelActionUser')
-  handleChannelActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
-    const { channel, targetUser, action } = payload;
+  handleChannelActionUser(@MessageBody() channelActionUserDto: ChannelActionUserDto, @ConnectedSocket() client: Socket) {
+    const { channel, targetUser, action } = channelActionUserDto;
 
     if (!this.ChatRooms.has(channel)) {
       client.emit('chatAlert', { message: 'Channel does not exist.' });
@@ -401,9 +377,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('actionUser')
-  handleActionUser(client: Socket, payload: { channel: string, targetUser: string, action: number }) {
-    const { channel, targetUser, action } = payload;
+  handleActionUser(@MessageBody() actionUserDto: ActionUserDto, @ConnectedSocket() client: Socket) {
+    const { targetUser, action } = actionUserDto;
 
     if (!this.ChatUsers.has(targetUser)) {
       client.emit('Target user is not online.');
