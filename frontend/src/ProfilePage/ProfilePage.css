@@ -113,7 +113,7 @@
   display: grid;
   grid-template-columns: 11vw 6vw 11vw;
   grid-template-rows: 4vh 4vh;
-  border: black 2px transparent;
+  border: black 2px solid;
   margin-bottom: 1vh; /* Add space between game items */
   border-radius: 5%;
 }
@@ -156,12 +156,13 @@
 
 .game_item p {
   color: white;
+  font-size: 2.5vh;
 }
 
-.game_item #win {
+.game_item.win {
   background-color: rgb(35, 201, 35);
 }
 
-.game_item #loss {
+.game_item.loss {
   background-color: rgb(209, 58, 58);
 }
