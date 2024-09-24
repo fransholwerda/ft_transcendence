@@ -15,6 +15,7 @@
 
   padding: 0;
   margin: 0;
+  overflow: hidden;
 }
 
 .profile_header {
@@ -48,6 +49,7 @@
   display: grid;
   grid-template-columns: 20vw 25vw 30vw;
   grid-template-rows: 1fr;
+  overflow: auto;
 }
 
 .profile_section {
@@ -132,7 +134,7 @@
 
 /* middle */
 #gh_status {
-  grid-area: 1 / 2 / 3 / 4;
+  grid-area: 1 / 2 / 3 / 3;
   background-color: blue;
 }
 
