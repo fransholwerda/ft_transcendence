@@ -5,8 +5,8 @@ export class JoinChatDto {
   userId: number;
 
   @IsString()
-  @Length(2, 30, { message: 'Name must be between 2 and 30 characters' })
-  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens' })
+  @Length(2, 30, { message: 'Name must be between 2 and 30 characters.' })
+  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens.' })
   @IsNotEmpty({ message: 'A name is required.' })
   username: string;
 }
@@ -31,14 +31,14 @@ export class LeaveChannelDto {
 
 export class JoinDmDto {
   @IsString()
-  @Length(2, 30, { message: 'Name must be between 2 and 30 characters' })
-  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens' })
+  @Length(2, 30, { message: 'Name must be between 2 and 30 characters.' })
+  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens.' })
   @IsNotEmpty({ message: 'A name is required.' })
   targetUser: string;
 
   @IsString()
-  @Length(2, 30, { message: 'Name must be between 2 and 30 characters' })
-  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens' })
+  @Length(2, 30, { message: 'Name must be between 2 and 30 characters.' })
+  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens.' })
   @IsNotEmpty({ message: 'A name is required.' })
   user: string;
 }
@@ -55,8 +55,8 @@ export class SendMessageDto {
   message: string;
 
   @IsString()
-  @Length(2, 30, { message: 'Name must be between 2 and 30 characters' })
-  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens' })
+  @Length(2, 30, { message: 'Name must be between 2 and 30 characters.' })
+  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens.' })
   @IsNotEmpty({ message: 'A name is required.' })
   username: string;
 }
@@ -73,6 +73,8 @@ export class SetChannelTypeDto {
 
   @IsOptional()
   @IsString()
+  @Length(3, 40, { message: 'Password must be between 3 and 40 characters long.' })
+  @Matches(/^[a-zA-Z0-9]+$/, { message: 'Password can only contain letters and numbers.' })
   password?: string;
   }
 
@@ -83,8 +85,8 @@ export class ChannelInviteUserDto {
   channel: string;
 
   @IsString()
-  @Length(2, 30, { message: 'Name must be between 2 and 30 characters' })
-  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens' })
+  @Length(2, 30, { message: 'Name must be between 2 and 30 characters.' })
+  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens.' })
   @IsNotEmpty({ message: 'A name is required.' })
   userInvite: string;
 }
@@ -96,8 +98,8 @@ export class ChannelActionUserDto {
   channel:string;
 
   @IsString()
-  @Length(2, 30, { message: 'Name must be between 2 and 30 characters' })
-  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens' })
+  @Length(2, 30, { message: 'Name must be between 2 and 30 characters.' })
+  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens.' })
   @IsNotEmpty({ message: 'A name is required.' })
   targetUser: string;
 
@@ -105,9 +107,11 @@ export class ChannelActionUserDto {
   action: number;
 }
 
-export class UserActionDto {
-  @IsNotEmpty()
+export class ActionUserDto {
   @IsString()
+  @Length(2, 30, { message: 'Name must be between 2 and 30 characters.' })
+  @Matches(/^[a-zA-Z0-9-]+$/, { message: 'Username can only contain letters, numbers, and hyphens.' })
+  @IsNotEmpty({ message: 'A name is required.' })
   targetUser: string;
 
   @IsNotEmpty()
