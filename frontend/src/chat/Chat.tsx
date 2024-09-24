@@ -90,11 +90,11 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
       {isInviteModalOpen && invitationData && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2>Game Invitation</h2>
-            <p>{invitationData.player1Username} has invited you to play pong. Do you accept?</p>
-            <button onClick={() => handleAcceptInvite(1)}>Accept (Normal game)</button>
-            <button onClick={() => handleAcceptInvite(2)}>Accept (Speed game)</button>
-            <button onClick={handleDenyInvite}>Deny</button>
+            <h1>Game Invitation</h1>
+            <p>{invitationData.player1Username} <h1>has invited you to play pong. Do you accept?</h1></p>
+            <button onClick={() => handleAcceptInvite(1)}><h3>Accept (Normal game)</h3></button>
+            <button onClick={() => handleAcceptInvite(2)}><h3>Accept (Speed game)</h3></button>
+            <button onClick={handleDenyInvite}><h3>Deny</h3></button>
           </div>
         </div>
       )}
@@ -112,6 +112,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
         <ChatUI
           socket={socket}
           user={user}
+
         />
       )}
     </div>
