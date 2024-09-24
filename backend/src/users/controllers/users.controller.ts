@@ -11,6 +11,7 @@ export class UsersController {
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   async createUser(@Body() userData: CreateUserData) {
+    console.log('Creating new user with data:', userData);
     return await this.usersService.createNewUser(userData);
   }
 
@@ -40,13 +41,13 @@ export class UsersController {
 
   @Post(':UserID/friend/:FriendID')
   async addFriend(@Param('UserID') userID: number, @Param('FriendID') friendID: number) {
-	try {
-		await this.usersService.addFriend(+userID, +friendID);
-	}
-	catch (error) {
-		console.log('something went wrong with adding friend. Unlucky.');
-		throw (error);
-	}
+    try {
+      await this.usersService.addFriend(+userID, +friendID);
+    }
+    catch (error) {
+      console.log('something went wrong with adding friend. Unlucky.');
+      throw (error);
+    }
   }
 
   @Delete(':UserID/friend/:FriendID')

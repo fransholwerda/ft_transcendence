@@ -33,10 +33,11 @@ export class MatchService {
 
 	async findPlayersMatches(playerID: number): Promise<Match[]> {
 		const playerMatches = this.matchRepository.createQueryBuilder('matches')
-		.where('(matches.player1ID = :playerID OR matches.player2ID = :playerID)', { playerID });
+		.where('(matches.player1ID = :playerID OR matches.player2ID = :playerID)', { playerID }).getMany();
 
-		//console.log(playerMatches.getMany());
+		console.log(playerMatches);
+		console.log("hello this is a test");
 
-		return playerMatches.getMany();
+		return playerMatches;
 	}
 }
