@@ -13,6 +13,9 @@ import { randomDebug, createRandomUser } from "./randomUser"
 
 const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
   transports: ['websocket'],
+  query: {
+    currentPath: window.location.pathname
+  }
 });
 
 export interface User {
@@ -106,15 +109,18 @@ const PageManager: React.FC = () => {
   const LocationHandler: React.FC = () => {
     console.log('PageManager: LocationHandler');
     const location = useLocation();
-
+  
     useEffect(() => {
-      console.log('PageManager: LocationHandler useEffect');
+      console.log('PageManager: LocationHandler useEffect:', location.pathname, user?.username);
       if (!location.pathname.includes('/pong')) {
         console.log('PageManager: Not at pong page', user?.username);
         leaveQueue();
         leaveGame();
       }
+      // Emit custom event to update currentPath
+      pSock.emit('updateCurrentPath', { currentPath: location.pathname });
     }, [location.pathname]);
+  
     return null;
   };
 

@@ -94,6 +94,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log(`gameType: ${data.gameType}`);
 	}
 
+	@SubscribeMessage('updateCurrentPath')
+	handleUpdateCurrentPath(client: Socket, data: { currentPath: string }) {
+		console.log('Updating currentPath for client:', client.id, 'to', data.currentPath);
+		client.handshake.query.currentPath = data.currentPath;
+	}
+
 	@SubscribeMessage('invitedMatch')
 	handleGameInvite(client: Socket, data: { player1SocketID: string, player1ID: number, player1Username: string, player2SocketID: string, player2ID:number, player2Username: string, gameType: number }) {
 		console.log('NestJS pong: invitedMatch');
@@ -108,6 +114,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log('NestJS pong: invitedMatch: player2SocketID:', data.player2SocketID);
 		console.log('NestJS pong: invitedMatch: client.id:', client.id);
 		const inviterLocation = player1Client.handshake.query.currentPath;
+		console.log('NestJS pong: invitedMatch: inviterLocation:', inviterLocation);
 		if (inviterLocation !== '/pong') {
 			client.emit('chatAlert', { message: 'The person who invited you is not at the pong screen' });
 			return;
