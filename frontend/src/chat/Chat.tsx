@@ -14,7 +14,7 @@ interface ChatProps {
 
 interface InvitationData {
   player1SocketID: string;
-  player1ID: string;
+  player1ID: number;
   player1Username: string;
 }
 
