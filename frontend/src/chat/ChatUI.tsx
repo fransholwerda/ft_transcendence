@@ -38,12 +38,24 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       setActiveType('channel');
     });
 
+    // socket.on('channelJoined', ({ channel }: { channel: string }) => {
+    //   const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
+    //   setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
+    //   setActiveTabId(newId);
+    //   setActiveType('channel');
+    // });
     socket.on('channelJoined', ({ channel }: { channel: string }) => {
-      const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
-      setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
-      setActiveTabId(newId);
-      setActiveType('channel');
+      setChannels(prevChannels => {
+        const newId = prevChannels.length ? prevChannels[prevChannels.length - 1].id + 1 : 1;
+        const updatedChannels = [...prevChannels, { id: newId, title: channel, content: '' }];
+
+        setActiveTabId(newId);
+        setActiveType('channel');
+        
+        return updatedChannels;
+      });
     });
+    
 
     socket.on('channelLeft', ({ channel }: { channel: string }) => {
       setChannels(prevChannels => {
@@ -66,11 +78,19 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
     });
 
     socket.on('dmCreated', ({ dm }: { dm: string }) => {
-      const newId = dms.length ? dms[dms.length - 1].id + 1 : 101;
-      setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `` }]);
-      setActiveTabId(newId);
+      const existingDm = dms.find((existing) => existing.title === dm);
+    
+      if (existingDm) {
+        setActiveTabId(existingDm.id);
+      } else {
+        const newId = dms.length ? dms[dms.length - 1].id + 1 : 101;
+        setDms(prevDms => [...prevDms, { id: newId, title: dm, content: `` }]);
+        setActiveTabId(newId);
+      }
+    
       setActiveType('dm');
     });
+    
 
     socket.on('dmJoined', ({ dm }: { dm: string }) => {
       let newId: number | undefined;

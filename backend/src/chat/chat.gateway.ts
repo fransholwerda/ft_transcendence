@@ -10,6 +10,10 @@ import { UsersService } from 'src/users/users.service';
 
 // HASH ALL PASSWORDS !!!
 
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*'} })
 @UseFilters(new WsValidationExceptionFilter())
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -51,7 +55,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinChat')
-  handleJoinChat(@MessageBody() joinChatDto: JoinChatDto, @ConnectedSocket() client: Socket) {
+  async handleJoinChat(@MessageBody() joinChatDto: JoinChatDto, @ConnectedSocket() client: Socket) {
     // Username validation? !!!
     const { userId, username } = joinChatDto;
 
@@ -79,7 +83,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     for (const room of chatuser.rooms) {
-      client.join(room.roomId);
+      await delay(10);
+      await client.join(room.roomId);
       client.emit('channelJoined', { channel: room.roomId });
     }
   }
@@ -160,7 +165,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       return;
     }
     this.server.to('@' + user).emit('dmCreated', { dm: '@' + targetUser });
-    this.server.to('@' + targetUser).emit('dmCreated', { dm: '@' + user });
+    this.server.to('@' + targetUser).emit('dmJoined', { dm: '@' + user });
   }
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
