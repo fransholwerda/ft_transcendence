@@ -2,6 +2,8 @@ import { IsNotEmpty, IsString, Matches, IsOptional, IsEnum, IsNumber, Length } f
 import { ChannelType, ActionType } from './chat.enum';
 
 export class JoinChatDto {
+  @IsNumber()
+  @IsNotEmpty({ message: 'No empty ID numbers.' })
   userId: number;
 
   @IsString()
