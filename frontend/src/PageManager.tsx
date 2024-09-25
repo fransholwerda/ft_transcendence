@@ -16,7 +16,7 @@ const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
 });
 
 export interface User {
-  id:  string,
+  id:  number,
   username: string,
   avatarURL: string,
   TwoFactorSecret: string,

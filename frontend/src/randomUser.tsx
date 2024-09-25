@@ -1,7 +1,7 @@
 import { User } from './PageManager';
 
 // TURN ON/OFF RANDOM USER DEBUG
-export const randomDebug = false;
+export const randomDebug = true;
 // TURN ON/OFF RANDOM USER DEBUG
 
 const randomNames = [
@@ -58,7 +58,7 @@ let randomNamesIndex = parseInt(getCookie('randomNamesIndex') || '0', 10) || 0;
 
 export const createRandomUser = (user: User): User => {
 	const randomUser: User = {
-		id: randomNamesIndex.toString(),
+		id: (randomNamesIndex*100),
 		username: randomNames[randomNamesIndex],
 		avatarURL:  user.avatarURL,
 		TwoFactorSecret: user.TwoFactorSecret,

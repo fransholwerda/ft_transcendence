@@ -86,7 +86,7 @@ export function findGameSessionByClientId(games: GameSession[], clientId: string
     return gameSession;
 }
 
-export function findGameSessionByUserId(games: GameSession[], userId: string): GameSession | null {
+export function findGameSessionByUserId(games: GameSession[], userId: number): GameSession | null {
     pongPrint(`NestJS pong: findGameSessionByUserId ${userId}`);
     const gameSession = games.find((game) => game.p1.userid === userId || game.p2.userid === userId);
     if (!gameSession) {
@@ -96,7 +96,7 @@ export function findGameSessionByUserId(games: GameSession[], userId: string): G
     return gameSession;
 }
 
-export function isUserInGame(games: GameSession[], userId: string): boolean {
+export function isUserInGame(games: GameSession[], userId: number): boolean {
     pongPrint(`NestJS pong: Checking if user ${userId} is in a game`);
     return findGameSessionByUserId(games, userId) !== null;
 }

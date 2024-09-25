@@ -8,7 +8,7 @@ export interface Paddle {
 
 export interface player {
 	clientid: string;
-	userid: string;
+	userid: number;
 	username: string;
 	score: number;
 	paddle: Paddle;
@@ -37,7 +37,7 @@ export interface GameSession {
 }
 
 export interface User {
-	id:  string,
+	id:  number,
 	username: string,
 	avatarURL: string
 }

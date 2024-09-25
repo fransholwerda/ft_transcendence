@@ -35,12 +35,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private async sendCreateMatch(sesh: GameSession) {
 		const createMatchDto = {
 			player1: sesh.p1.username,
-			player1ID: Number(sesh.p1.userid),
+			player1ID: sesh.p1.userid,
 			player1Score: sesh.p1.score,
 			player2: sesh.p2.username,
-			player2ID: Number(sesh.p2.userid),
+			player2ID: sesh.p2.userid,
 			player2Score: sesh.p2.score,
-			winner: sesh.p1.score === MAX_SCORE ? sesh.p1.userid : sesh.p2.userid
+			winner: sesh.p1.score === MAX_SCORE ? sesh.p1.userid.toString() : sesh.p2.userid.toString()
 		};
 		await this.matchService.createNewMatch(createMatchDto);
 	}
@@ -83,7 +83,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		disconnectFromGame(this.server, this.games, client.id);
 	}
 
-	private printMatchData(data: { player1SocketID: string, player1ID: string, player1Username: string, player2SocketID: string, player2ID:string, player2Username: string, gameType: number }) {
+	private printMatchData(data: { player1SocketID: string, player1ID: number, player1Username: string, player2SocketID: string, player2ID:number, player2Username: string, gameType: number }) {
 		console.log('NestJS pong: printMatchData');
 		console.log(`player1SocketID: ${data.player1SocketID}`);
 		console.log(`player1ID: ${data.player1ID}`);
@@ -95,13 +95,24 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('invitedMatch')
-	handleGameInvite(client: Socket, data: { player1SocketID: string, player1ID: string, player1Username: string, player2SocketID: string, player2ID:string, player2Username: string, gameType: number }) {
+	handleGameInvite(client: Socket, data: { player1SocketID: string, player1ID: number, player1Username: string, player2SocketID: string, player2ID:number, player2Username: string, gameType: number }) {
 		console.log('NestJS pong: invitedMatch');
 		this.printMatchData(data);
 		if (!this.ClientIDSockets.has(data.player1SocketID)) {
 			client.emit('chatAlert', { message: 'The clientid who invited went offline' });
 			return;
 		}
+		// check if player1SocketID is still at /pong
+		const player1Client = this.ClientIDSockets.get(data.player1SocketID);
+		console.log('NestJS pong: invitedMatch: player1SocketID:', data.player1SocketID);
+		console.log('NestJS pong: invitedMatch: player2SocketID:', data.player2SocketID);
+		console.log('NestJS pong: invitedMatch: client.id:', client.id);
+		const inviterLocation = player1Client.handshake.query.currentPath;
+		if (inviterLocation !== '/pong') {
+			client.emit('chatAlert', { message: 'The person who invited you is not at the pong screen' });
+			return;
+		}
+
 		// remove them from active game or queue
 		this.queue = removeFromQueue(this.queue, data.player1SocketID);
 		this.queue = removeFromQueue(this.queue, data.player2SocketID);
@@ -275,11 +286,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		let newSpeedX = Math.cos(angle) * speedDistance * signX;
 		let newSpeedY = Math.sin(angle) * speedDistance * signY;
-		console.log(`angle: ${angle}`);
-		console.log(`new absSpeedX: ${Math.abs(newSpeedX)} absSpeedY: ${Math.abs(newSpeedY)}`);
-		console.log(`newSpeedX: ${newSpeedX} newSpeedY: ${newSpeedY}`);
-		console.log(`new **2 newSpeedX: ${newSpeedX**2} newSpeedY: ${newSpeedY**2}`);
-		console.log(`new speedDistance: ${Math.sqrt(newSpeedX ** 2 + newSpeedY ** 2)}`);
+		// console.log(`angle: ${angle}`);
+		// console.log(`new absSpeedX: ${Math.abs(newSpeedX)} absSpeedY: ${Math.abs(newSpeedY)}`);
+		// console.log(`newSpeedX: ${newSpeedX} newSpeedY: ${newSpeedY}`);
+		// console.log(`new **2 newSpeedX: ${newSpeedX**2} newSpeedY: ${newSpeedY**2}`);
+		// console.log(`new speedDistance: ${Math.sqrt(newSpeedX ** 2 + newSpeedY ** 2)}`);
 		b.speedX = newSpeedX;
 		b.speedY = newSpeedY;
 		console.log(`-----------------BALLMOD--------------`);
