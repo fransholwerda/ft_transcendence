@@ -102,7 +102,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('updateCurrentPath')
-	handleUpdateCurrentPat(@MessageBody() PongCurrentPathDto: PongCurrentPathDto, @ConnectedSocket() client: Socket) {
+	handleUpdateCurrentPath(@MessageBody() PongCurrentPathDto: PongCurrentPathDto, @ConnectedSocket() client: Socket) {
 		const { currentPath } = PongCurrentPathDto;
 		console.log('Updating currentPath for client:', client.id, 'to', currentPath);
 		client.handshake.query.currentPath = currentPath;
