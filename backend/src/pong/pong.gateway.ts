@@ -21,7 +21,13 @@ import { MatchService } from '../matches/matches.service';
 import { MatchModule } from '../matches/matches.module';
 import { sign } from 'crypto';
 
+import { WsValidationExceptionFilter } from '../chat/exception';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
+import { PongCurrentPathDto, PongGameInviteDto,	PongJoinQueueDto, PongMovePaddleDto } from './pong.dto';
+
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
+@UseFilters(new WsValidationExceptionFilter())
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
@@ -94,24 +100,29 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log(`gameType: ${data.gameType}`);
 	}
 
+	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('updateCurrentPath')
-	handleUpdateCurrentPath(client: Socket, data: { currentPath: string }) {
-		console.log('Updating currentPath for client:', client.id, 'to', data.currentPath);
-		client.handshake.query.currentPath = data.currentPath;
+	handleJoinChat(@MessageBody() PongCurrentPathDto: PongCurrentPathDto, @ConnectedSocket() client: Socket) {
+		const { currentPath } = PongCurrentPathDto;
+		console.log('Updating currentPath for client:', client.id, 'to', currentPath);
+		client.handshake.query.currentPath = currentPath;
 	}
 
+	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('invitedMatch')
-	handleGameInvite(client: Socket, data: { player1SocketID: string, player1ID: number, player1Username: string, player2SocketID: string, player2ID:number, player2Username: string, gameType: number }) {
+	handleJoinChat(@MessageBody() PongGameInviteDto: PongGameInviteDto, @ConnectedSocket() client: Socket) {
+		const { player1SocketID, player1ID, player1Username, player2SocketID, player2ID, player2Username, gameType } = PongGameInviteDto;
+
 		console.log('NestJS pong: invitedMatch');
 		this.printMatchData(data);
-		if (!this.ClientIDSockets.has(data.player1SocketID)) {
+		if (!this.ClientIDSockets.has(player1SocketID)) {
 			client.emit('chatAlert', { message: 'The clientid who invited went offline' });
 			return;
 		}
 		// check if player1SocketID is still at /pong
-		const player1Client = this.ClientIDSockets.get(data.player1SocketID);
-		console.log('NestJS pong: invitedMatch: player1SocketID:', data.player1SocketID);
-		console.log('NestJS pong: invitedMatch: player2SocketID:', data.player2SocketID);
+		const player1Client = this.ClientIDSockets.get(player1SocketID);
+		console.log('NestJS pong: invitedMatch: player1SocketID:', player1SocketID);
+		console.log('NestJS pong: invitedMatch: player2SocketID:', player2SocketID);
 		console.log('NestJS pong: invitedMatch: client.id:', client.id);
 		const inviterLocation = player1Client.handshake.query.currentPath;
 		console.log('NestJS pong: invitedMatch: inviterLocation:', inviterLocation);
@@ -121,15 +132,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 
 		// remove them from active game or queue
-		this.queue = removeFromQueue(this.queue, data.player1SocketID);
-		this.queue = removeFromQueue(this.queue, data.player2SocketID);
-		this.leavingGame(this.ClientIDSockets.get(data.player1SocketID));
-		this.leavingGame(this.ClientIDSockets.get(data.player2SocketID));
+		this.queue = removeFromQueue(this.queue, player1SocketID);
+		this.queue = removeFromQueue(this.queue, player2SocketID);
+		this.leavingGame(this.ClientIDSockets.get(player1SocketID));
+		this.leavingGame(this.ClientIDSockets.get(player2SocketID));
 		// fill information
-		const gameMode = data.gameType === 1 ? 'default' : 'Speed Surge';
-		const isCustom = data.gameType === 2;
-		const p1 = { clientId: data.player1SocketID, user: { id: data.player1ID, username: data.player1Username, avatarURL: '' }, gameMode: gameMode };
-		const p2 = { clientId: data.player2SocketID, user: { id: data.player2ID, username: data.player2Username, avatarURL: '' }, gameMode: gameMode };
+		const gameMode = gameType === 1 ? 'default' : 'Speed Surge';
+		const isCustom = gameType === 2;
+		const p1 = { clientId: player1SocketID, user: { id: player1ID, username: player1Username, avatarURL: '' }, gameMode: gameMode };
+		const p2 = { clientId: player2SocketID, user: { id: player2ID, username: player2Username, avatarURL: '' }, gameMode: gameMode };
 		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
 		const gameSession = fillGameSession(p1, p2, roomId, isCustom);
 		// start game
@@ -143,21 +154,23 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		printGames(this.games);
 	}
 
+	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('joinQueue')
-	handleJoinQueue(client: Socket, data: { user: User, gameMode: string }) {
-		pongPrint(`NestJS pong: ${client.id} : ${data.user.id} trying to join queue`);
-		if (isUserInGame(this.games, data.user.id)) {
-			pongPrint(`NestJS pong: ${client.id} : ${data.user.id} is already in a game`);
+	handleJoinChat(@MessageBody() PongJoinQueueDto: PongJoinQueueDto, @ConnectedSocket() client: Socket) {
+		const { user, gameMode } = PongJoinQueueDto;
+		pongPrint(`NestJS pong: ${client.id} : ${user.id} trying to join queue`);
+		if (isUserInGame(this.games, user.id)) {
+			pongPrint(`NestJS pong: ${client.id} : ${user.id} is already in a game`);
 			client.emit('queueStatus', { success: false, message: 'You are already in a game.' });
 		}
-		else if (!this.queue.find((q) => q.user.id === data.user.id)) {
-			pongPrint(`NestJS pong: ${client.id} : ${data.user.id} could not find in queue`);
-			this.queue.push({ clientId: client.id, user: data.user, gameMode: data.gameMode });
+		else if (!this.queue.find((q) => q.user.id === user.id)) {
+			pongPrint(`NestJS pong: ${client.id} : ${user.id} could not find in queue`);
+			this.queue.push({ clientId: client.id, user: user, gameMode: gameMode });
 			this.checkQueue();
 			client.emit('queueStatus', { success: true, message: 'Successfully joined the queue.' });
 		}
 		else {
-			pongPrint(`NestJS pong: ${client.id} : ${data.user.id} is already in the queue`);
+			pongPrint(`NestJS pong: ${client.id} : ${user.id} is already in the queue`);
 			client.emit('queueStatus', { success: false, message: 'You are already in the queue.' });
 		}
 	}
@@ -214,9 +227,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		pongPrint(`NestJS pong checkQueue: Created room ${roomId} for players ${p1.user.id} and ${p2.user.id}`);
 		printGames(this.games);
 	}
-
+	
+	// handleMovePaddle(client: Socket, data: { direction: string  }) {
+	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('movePaddle')
-	handleMovePaddle(client: Socket, data: { direction: string  }) {
+	handleJoinChat(@MessageBody() PongMovePaddleDto: PongMovePaddleDto, @ConnectedSocket() client: Socket) {
+		const { direction } = PongMovePaddleDto;
 		const sesh = findGameSessionByClientId(this.games, client.id);
 		if (!sesh) return;
 		let paddle;
@@ -226,9 +242,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			paddle = sesh.p2.paddle;
 		}
 		if (!paddle) return;
-		if (data.direction === 'w') {
+		if (direction === 'w') {
 			paddle.y = Math.max(0, paddle.y - paddle.speed);
-		} else if (data.direction === 's') {
+		} else if (direction === 's') {
 			paddle.y = Math.min(PongC.CANVAS_HEIGHT - paddle.height, paddle.y + paddle.speed);
 		}
 	}
