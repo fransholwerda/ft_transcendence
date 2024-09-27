@@ -14,9 +14,10 @@ interface Tab {
 interface ChatUIProps {
   socket: Socket;
   user: User;
+  ignoreList: string[];
 }
 
-const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
+const ChatUI: React.FC<ChatUIProps> = ({ socket, user, ignoreList }) => {
   const [channels, setChannels] = useState<Tab[]>([]);
   const [dms, setDms] = useState<Tab[]>([]);
   const [activeTabId, setActiveTabId] = useState<number>(0);
@@ -38,12 +39,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       setActiveType('channel');
     });
 
-    // socket.on('channelJoined', ({ channel }: { channel: string }) => {
-    //   const newId = channels.length ? channels[channels.length - 1].id + 1 : 1;
-    //   setChannels(prevChannels => [...prevChannels, { id: newId, title: channel, content: `` }]);
-    //   setActiveTabId(newId);
-    //   setActiveType('channel');
-    // });
     socket.on('channelJoined', ({ channel }: { channel: string }) => {
       setChannels(prevChannels => {
         const newId = prevChannels.length ? prevChannels[prevChannels.length - 1].id + 1 : 1;
@@ -112,6 +107,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
     });
 
     socket.on('message', ({ channel, message, username }: { channel: string, message: string, username: string }) => {
+      if (ignoreList.includes(username)) {
+        return;
+      }
       setMessages(prevMessages => [...prevMessages, { channel, message, username }]);
     });
 
@@ -127,7 +125,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user }) => {
       socket.off('dmJoined');
       socket.off('message');
     };
-  }, [channels, dms]);
+  }, [channels, dms, ignoreList]);
 
   const handleKeyDown = (inputType: string, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {

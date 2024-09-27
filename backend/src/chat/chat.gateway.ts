@@ -82,6 +82,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.ChatRooms.set('@' + username, new ChatRoom('@' + username, [chatuser]));
     }
 
+    // Give client the ignore list of the user
+    const blockedList = await this.userService.getBlocked(chatuser.id);
+    let ignoreList = blockedList.map(user => user.username);
+    client.emit('updateIgnoreList', ignoreList);
+
+    // Give client all the channels the user is in
     for (const room of chatuser.rooms) {
       await delay(10);
       await client.join(room.roomId);
@@ -404,14 +410,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.server.to('@' + target.username).emit('inviteToGame', { player1SocketID: client.id, player1ID: user.id, player1Username: user.username });
         break;
       case ActionType.Ignore:
-        await this.userService.addBlocked(user.id, target.id);
+        try {
+          await this.userService.addBlocked(user.id, target.id);
+          console.log(user.username, 'blocked', target.username); // REMOVE !!!
+        } catch (error) {
+          client.emit('chatAlert', { message: error.message });
+        }
         const blockedList = await this.userService.getBlocked(user.id);
-        console.log('---------------------');
-        console.log(blockedList);
-        console.log('---------------------');
         const ignoreList = blockedList.map(user => user.username);
-        console.log(ignoreList);
-        console.log('---------------------');
+        console.log(ignoreList); // REMOVE !!!
+        client.emit('updateIgnoreList', ignoreList);
         break;
       default:
         client.emit('chatAlert', { message: 'Action not recognized.' });
