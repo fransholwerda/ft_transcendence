@@ -386,7 +386,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('actionUser')
-  handleActionUser(@MessageBody() actionUserDto: ActionUserDto, @ConnectedSocket() client: Socket) {
+  async handleActionUser(@MessageBody() actionUserDto: ActionUserDto, @ConnectedSocket() client: Socket) {
     const { targetUser, action } = actionUserDto;
 
     if (!this.ChatUsers.has(targetUser)) {
@@ -404,14 +404,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.server.to('@' + target.username).emit('inviteToGame', { player1SocketID: client.id, player1ID: user.id, player1Username: user.username });
         break;
       case ActionType.Ignore:
-        this.userService.addBlocked(user.id, target.id);
-        // const blockedList = this.userService.getBlocked(user.id);
+        await this.userService.addBlocked(user.id, target.id);
+        const blockedList = await this.userService.getBlocked(user.id);
         console.log('---------------------');
-        // console.log(blockedList);
+        console.log(blockedList);
         console.log('---------------------');
-        console.log(user.id);
-        console.log(target.id);
-        console.log(this.ChatUsers);
+        const ignoreList = blockedList.map(user => user.username);
+        console.log(ignoreList);
+        console.log('---------------------');
         break;
       default:
         client.emit('chatAlert', { message: 'Action not recognized.' });
