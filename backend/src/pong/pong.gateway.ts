@@ -89,7 +89,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		disconnectFromGame(this.server, this.games, client.id);
 	}
 
-	private printMatchData(data: { player1SocketID: string, player1ID: number, player1Username: string, player2SocketID: string, player2ID:number, player2Username: string, gameType: number }) {
+	private printMatchData(data: PongGameInviteDto) {
 		console.log('NestJS pong: printMatchData');
 		console.log(`player1SocketID: ${data.player1SocketID}`);
 		console.log(`player1ID: ${data.player1ID}`);
@@ -102,7 +102,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('updateCurrentPath')
-	handleJoinChat(@MessageBody() PongCurrentPathDto: PongCurrentPathDto, @ConnectedSocket() client: Socket) {
+	handleUpdateCurrentPat(@MessageBody() PongCurrentPathDto: PongCurrentPathDto, @ConnectedSocket() client: Socket) {
 		const { currentPath } = PongCurrentPathDto;
 		console.log('Updating currentPath for client:', client.id, 'to', currentPath);
 		client.handshake.query.currentPath = currentPath;
@@ -110,11 +110,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('invitedMatch')
-	handleJoinChat(@MessageBody() PongGameInviteDto: PongGameInviteDto, @ConnectedSocket() client: Socket) {
+	handleGameInvite(@MessageBody() PongGameInviteDto: PongGameInviteDto, @ConnectedSocket() client: Socket) {
 		const { player1SocketID, player1ID, player1Username, player2SocketID, player2ID, player2Username, gameType } = PongGameInviteDto;
 
 		console.log('NestJS pong: invitedMatch');
-		this.printMatchData(data);
+		this.printMatchData(PongGameInviteDto);
 		if (!this.ClientIDSockets.has(player1SocketID)) {
 			client.emit('chatAlert', { message: 'The clientid who invited went offline' });
 			return;
@@ -156,7 +156,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('joinQueue')
-	handleJoinChat(@MessageBody() PongJoinQueueDto: PongJoinQueueDto, @ConnectedSocket() client: Socket) {
+	handleJoinQueue(@MessageBody() PongJoinQueueDto: PongJoinQueueDto, @ConnectedSocket() client: Socket) {
 		const { user, gameMode } = PongJoinQueueDto;
 		pongPrint(`NestJS pong: ${client.id} : ${user.id} trying to join queue`);
 		if (isUserInGame(this.games, user.id)) {
@@ -231,7 +231,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// handleMovePaddle(client: Socket, data: { direction: string  }) {
 	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('movePaddle')
-	handleJoinChat(@MessageBody() PongMovePaddleDto: PongMovePaddleDto, @ConnectedSocket() client: Socket) {
+	handleMovePaddle(@MessageBody() PongMovePaddleDto: PongMovePaddleDto, @ConnectedSocket() client: Socket) {
 		const { direction } = PongMovePaddleDto;
 		const sesh = findGameSessionByClientId(this.games, client.id);
 		if (!sesh) return;

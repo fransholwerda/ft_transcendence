@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, Matches, IsOptional, IsEnum, IsNumber, Length } from 'class-validator';
-import { User } from 'pong/types';
+import { User } from './pong.types';
 
 export class PongCurrentPathDto {
 	currentPath: string;
