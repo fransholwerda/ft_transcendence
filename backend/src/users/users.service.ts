@@ -77,6 +77,13 @@ export class UsersService {
 		throw new Error ('User or friend not found');
 	}
 
+	const existingFriendship = await this.friendshipRepository.findOne({
+		where: { follower: user, followedUser: friend }
+	});
+	if (existingFriendship) {
+		throw new Error('Friendship already exists');
+	}
+
 	const friendship = new Friendship();
 	friendship.follower = user;
 	friendship.followedUser = friend;
@@ -107,6 +114,13 @@ export class UsersService {
 
 		if (!user || !blockedUser){
 			throw new Error('User or target User not found');
+		}
+
+		const existingBlock = await this.blockedRepository.findOne({
+			where: { user: user, blockedUser: blockedUser }
+		});
+		if (existingBlock) {
+			throw new Error('User already blocked');
 		}
 
 		const blocked = new Blocked();
