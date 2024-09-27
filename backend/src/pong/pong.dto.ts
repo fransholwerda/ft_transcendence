@@ -1,5 +1,19 @@
-import { IsNotEmpty, IsString, Matches, IsOptional, IsEnum, IsNumber, Length, isNotEmpty, matches, IsObject } from 'class-validator';
-import { User } from './pong.types';
+import { IsNotEmpty, IsString, Matches, IsOptional, IsEnum, IsNumber, Length, isNotEmpty, matches, IsObject, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class UserDto {
+    @IsNumber()
+    @IsNotEmpty()
+    id: number;
+
+    @IsString()
+    @IsNotEmpty()
+    username: string;
+
+    @IsString()
+    @IsNotEmpty()
+    avatarURL: string;
+}
 
 // Classes implementing interfaces
 export class PongCurrentPathDto {
@@ -31,18 +45,21 @@ export class PongGameInviteDto {
 }
 
 export class PongJoinQueueDto {
-	@IsObject()
+    @IsObject()
+    @ValidateNested()
+    @Type(() => UserDto)
     @IsNotEmpty()
-    user: User;
+    user: UserDto;
 
     @IsString()
+    @IsNotEmpty()
     gameMode: string;
 }
 
 export class PongMovePaddleDto {
 	@IsNotEmpty()
     @IsString()
-	@Length(2, 4, { message: 'Direction must be either "up" or "down".' })
-	@Matches(/^(up|down)$/, { message: 'Direction must be either "up" or "down".' })
+	@Length(1, 1, { message: 'Direction must be either "w" or "s".' })
+	@Matches(/^(w|s)$/, { message: 'Direction must be either "w" or "s".' })
     direction: string;
 }
