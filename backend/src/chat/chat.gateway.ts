@@ -161,13 +161,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinDM')
-  handleJoinDM(@MessageBody() joinDmDto: JoinDmDto, @ConnectedSocket() client: Socket) {
+  async handleJoinDM(@MessageBody() joinDmDto: JoinDmDto, @ConnectedSocket() client: Socket) {
     const { user, targetUser } = joinDmDto;
     // ADD USER CHECK TO DATABASE !!!
     // IS TARGETUSER BLOCKED? !!!
     // DID TARGETUSER BLOCK YOU? !!!
     if (!this.ChatUsers.has(targetUser)) {
-      client.emit('chatAlert', { message: 'Target user is not online, has blocked you or does not exist.' });
+      client.emit('chatAlert', { message: 'Target user is not online or does not exist.' });
+      return;
+    }
+    const chatuser = this.ChatUsers.get(user);
+    const target = this.ChatUsers.get(targetUser);
+    const blocked = await this.userService.checkIfBlocked(target.id, chatuser.id);
+    if (blocked) {
+      client.emit('chatAlert', { message: 'Target has blocked you.' });
       return;
     }
     this.server.to('@' + user).emit('dmCreated', { dm: '@' + targetUser });
@@ -262,7 +269,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('channelInviteUser')
-  handleChannelInviteUser(@MessageBody() channelInviteUserDto: ChannelInviteUserDto, @ConnectedSocket() client: Socket) {
+  async handleChannelInviteUser(@MessageBody() channelInviteUserDto: ChannelInviteUserDto, @ConnectedSocket() client: Socket) {
     // Make sure channel name has proper characters in it !!!
     const { channel, userInvite } = channelInviteUserDto;
 
@@ -296,6 +303,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     if (chatroom.isBanned(userToInvite)) {
       client.emit('chatAlert', { message: 'User is banned from this channel.' });
+      return;
+    }
+
+    const blocked = await this.userService.checkIfBlocked(userToInvite.id, user.id);
+    if (blocked) {
+      client.emit('chatAlert', { message: 'Target has blocked you.' });
       return;
     }
 
@@ -338,21 +351,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         for (const clientID of target.clientIDs) {
           const socket = this.ClientIDSockets.get(clientID);
           socket.emit('channelLeft', { channel: chatroom.roomId });
-          socket.emit('chatAlert', { message: 'You have been kicked from channel: ' + chatroom.roomId } );
+          socket.emit('chatAlert', { message: 'You have been kicked from channel: ' + chatroom.roomId + '.' } );
         }
         break;
       case ActionType.Mute:
         chatroom.muteUser(target);
         for (const clientID of target.clientIDs) {
           const socket = this.ClientIDSockets.get(clientID);
-          socket.emit('chatAlert', { message: 'You have been muted on channel: ' + chatroom.roomId } );
+          socket.emit('chatAlert', { message: 'You have been muted on channel: ' + chatroom.roomId + ' for 600 seconds.' } );
         }
         break;
       case ActionType.Unmute:
         chatroom.unmuteUser(target);
         for (const clientID of target.clientIDs) {
           const socket = this.ClientIDSockets.get(clientID);
-          socket.emit('chatAlert', { message: 'You have been unmuted on channel: ' + chatroom.roomId } );
+          socket.emit('chatAlert', { message: 'You have been unmuted on channel: ' + chatroom.roomId + '.' } );
         }
         break;
       case ActionType.Ban:
@@ -360,7 +373,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         for (const clientID of target.clientIDs) {
           const socket = this.ClientIDSockets.get(clientID);
           socket.emit('channelLeft', { channel: chatroom.roomId });
-          socket.emit('chatAlert', { message: 'You have been banned from channel: ' + chatroom.roomId } );
+          socket.emit('chatAlert', { message: 'You have been banned from channel: ' + chatroom.roomId + '.' } );
         }
         break;
       case ActionType.Promote:
@@ -370,7 +383,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         if (chatroom.promoteUser(target)) {
           for (const clientID of target.clientIDs) {
             const socket = this.ClientIDSockets.get(clientID);
-            socket.emit('chatAlert', { message: 'You have been promoted on channel: ' + chatroom.roomId });
+            socket.emit('chatAlert', { message: 'You have been promoted on channel: ' + chatroom.roomId + '.' });
           }
         }
         break;
@@ -381,7 +394,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         if (chatroom.demoteUser(target)) {
           for (const clientID of target.clientIDs) {
             const socket = this.ClientIDSockets.get(clientID);
-            socket.emit('chatAlert', { message: 'You have been demoted on channel: ' + chatroom.roomId });
+            socket.emit('chatAlert', { message: 'You have been demoted on channel: ' + chatroom.roomId + '.' });
           }
         }
         break;
@@ -407,18 +420,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         client.emit('profilePage', { targetUserID: target.id });
         break;
       case ActionType.Invite:
+        const blocked = await this.userService.checkIfBlocked(target.id, user.id);
+        if (blocked) {
+          client.emit('chatAlert', { message: 'Target has blocked you.' });
+          return;
+        }
         this.server.to('@' + target.username).emit('inviteToGame', { player1SocketID: client.id, player1ID: user.id, player1Username: user.username });
         break;
       case ActionType.Ignore:
         try {
           await this.userService.addBlocked(user.id, target.id);
-          console.log(user.username, 'blocked', target.username); // REMOVE !!!
         } catch (error) {
           client.emit('chatAlert', { message: error.message });
         }
         const blockedList = await this.userService.getBlocked(user.id);
         const ignoreList = blockedList.map(user => user.username);
-        console.log(ignoreList); // REMOVE !!!
         client.emit('updateIgnoreList', ignoreList);
         break;
       default:
