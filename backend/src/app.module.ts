@@ -12,6 +12,7 @@ import { MatchModule } from './matches/matches.module';
 import { TwostepController } from './twostep/twostep.controller';
 import { MatchService } from './matches/matches.service';
 import { FriendsModule } from './friends/friends.module';
+import { AchievementModule } from './achievements/achievements.module';
 
 @Module({
 imports: [
@@ -22,6 +23,7 @@ imports: [
 		UsersModule,
 		MatchModule,
 		FriendsModule,
+		AchievementModule,
 		TypeOrmModule.forRoot(typeOrmConfig)
 	],
 controllers: [AppController, AuthController, TwostepController],
