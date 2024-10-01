@@ -303,7 +303,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user, ignoreList }) => {
                 >
                   <Popup className='chat-channel-popup' trigger={<span>⚙</span>}>
                     <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>Close DM</span>
-                    <span className="close-button" onClick={(e) => { e.stopPropagation(); deleteTab(dm.id, 'dm', dm.title); }}>Invite to Game</span>
+                    <span className="invite-button" onClick={() => handleUserAction(ActionType.Invite, dm.title.substring(1))}>Invite to Game</span>
                   </Popup>
                   {dm.title}
                 </button>
