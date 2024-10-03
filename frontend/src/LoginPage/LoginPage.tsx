@@ -52,6 +52,8 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
 
   async function load_user() {
     const access_token = await requestToken("authorization_code", client_id, url_params.get("code") || "", redirect_uri);
+    if (access_token.error == 'invalid_client')
+        return ;
     const intra_user = await requestIntraUser(access_token);
     window.history.pushState({}, document.title, "/");
     const user = await onLogin(intra_user);
