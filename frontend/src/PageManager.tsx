@@ -15,7 +15,8 @@ const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
   transports: ['websocket'],
   query: {
     currentPath: window.location.pathname
-  }
+  },
+  withCredentials: true,
 });
 
 export interface User {
@@ -73,6 +74,10 @@ const PageManager: React.FC = () => {
       }
       console.log('PageManager: Random User created', user);
     }
+    const jwt = await fetch(`${Constants.BACKEND_HOST_URL}/auth/jwt/${intraUser.id}`, {
+      method: 'GET'
+    });
+    const jwt_result = await jwt.json();
     setUser({
       id: user.id,
       username: user.username,
@@ -80,6 +85,7 @@ const PageManager: React.FC = () => {
       TwoFactorSecret: user.TwoFactorSecret,
       TwoFactorEnabled: user.TwoFactorEnabled
     });
+    document.cookie = `jwt=${jwt_result.token}; path=/;`;
     return user;
   };
 
