@@ -59,7 +59,7 @@ export class ChatRoom {
   protect: boolean;
   password: string;
   banned: number[];
-  muted: number[];
+  muted: Map<number, number>;
   invited: number[];
 
   constructor(roomId: string,
@@ -70,7 +70,7 @@ export class ChatRoom {
               protect: boolean = false,
               password: string = '',
               banned: number[] = [],
-              muted: number[] = [],
+              muted: Map<number, number> = new Map<number, number>(),
               invited: number[] = []) {
     this.roomId = roomId;
     this.users = users;
@@ -229,18 +229,24 @@ export class ChatRoom {
   }
 
   isMuted(user: ChatUser): boolean {
-    return this.muted.includes(user.id);
+    if (!this.muted.has(user.id)) {
+      return false;
+    } else if ((this.muted.get(user.id) + 600 * 1000) < Date.now()) { // Mutes for 600 seconds
+      this.muted.delete(user.id);
+      return false;
+    }
+    return true;
   }
 
   muteUser(user: ChatUser) {
     if (!this.isMuted(user)) {
-      this.muted.push(user.id);
+      this.muted.set(user.id, Date.now());
     }
   }
 
   unmuteUser(user: ChatUser) {
     if (this.isMuted(user)) {
-      this.muted = this.muted.filter(unmute => unmute !== user.id);
+      this.muted.delete(user.id);
     }
   }
 

@@ -48,7 +48,7 @@ export class JoinDmDto {
 export class SendMessageDto {
   @IsNotEmpty()
   @IsString()
-  @Matches(/^[a-zA-Z0-9-_]+$/, { message: 'Channel name can only contain letters, numbers, hyphens and underscores.' })
+  @Matches(/^[a-zA-Z0-9@_-]+$/, { message: 'Channel name can only contain letters, numbers, hyphens, underscores and the @ symbol.' })
   channel: string;
 
   @IsNotEmpty()
