@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
 import { PongGateway } from './pong/pong.gateway';
+import { AuthModule } from './auth/auth.module';
 import { AuthController } from './auth/auth.controller';
 import { MatchModule } from './matches/matches.module';
 import { TwostepController } from './twostep/twostep.controller';
@@ -20,11 +21,12 @@ imports: [
 		  
 		}),
 		UsersModule,
+        AuthModule,
 		MatchModule,
 		FriendsModule,
 		TypeOrmModule.forRoot(typeOrmConfig)
 	],
-controllers: [AppController, AuthController, TwostepController],
+controllers: [AppController, TwostepController],
   providers: [AppService, ChatGateway, PongGateway, MatchService],
 })
 export class AppModule {}

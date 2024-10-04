@@ -5,7 +5,7 @@ FROM node:latest
 COPY package*.json ./
 
 RUN npm install
-RUN npm install speakeasy qrcode
+RUN npm install speakeasy qrcode @nestjs/jwt @nestjs/passport passport passport-jwt passport-local
 
 COPY . .
 
