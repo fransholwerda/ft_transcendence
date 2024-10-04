@@ -8,13 +8,17 @@ import { WsValidationExceptionFilter } from './exception';
 import { UsersModule } from 'src/users/users.module';
 import { UsersService } from 'src/users/users.service';
 
+import * as cookie from 'cookie';
+import { AuthModule } from 'src/auth/auth.module';
+import { AuthService } from 'src/auth/auth.service';
+
 // HASH ALL PASSWORDS !!!
 
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-@WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*'} })
+@WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*', credentials: true} })
 @UseFilters(new WsValidationExceptionFilter())
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
@@ -23,20 +27,43 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   private ChatRooms = new Map<string, ChatRoom>();
   private SocketUsernames = new Map<string, string>();
   private ClientIDSockets = new Map<string, Socket>();
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly authService: AuthService
+  ) {}
 
   afterInit(server: Server) {
     this.server = server;
     console.log('NestJS Chat Gateway Init');
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
-    const username = client.handshake.query.username as string;
+  async handleConnection(client: Socket) {
+    const cookies = client.handshake.headers.cookie;
 
-    console.log(`NestJS Chat Gateway Username is: ${username}`);
+    if (cookies) {
+        const parsedCookies = cookie.parse(cookies);
+        const token = parsedCookies['jwt'];
+
+        if (token) {
+            try {
+                const payload = await this.authService.verifyJwtAccessToken(token);
+                const user = await this.userService.findUser(payload.user);
+                console.log('Authenticated user:', payload.user, 'username:', user.username);
+            } catch (error) {
+                console.log('Invalid JWT token:', error.message);
+                client.disconnect();
+            }
+        } else {
+            console.log('No JWT token found in cookies');
+            client.disconnect();
+        }
+    } else {
+        console.log('No cookies found');
+        client.disconnect();
+    }
+
     this.ClientIDSockets.set(client.id, client);
-    console.log(`NestJS Chat Gateway Client connected: ${client.id}`);
-  }
+}
 
   handleDisconnect(client: Socket) {
     console.log(`NestJS Chat handleDisconnect: Client disconnected: ${client.id}`);
@@ -56,7 +83,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('joinChat')
   async handleJoinChat(@MessageBody() joinChatDto: JoinChatDto, @ConnectedSocket() client: Socket) {
-    // Username validation? !!!
     const { userId, username } = joinChatDto;
 
     // DELETE LATER vvv (once cookie identification is implemented) !!!
