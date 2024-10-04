@@ -92,6 +92,11 @@
 	cursor: pointer;
 }
 
+.chat-button .invite-button {
+	margin-left: 5px;
+	cursor: pointer;
+}
+
 .add-channel-form {
 	display: grid;
 	grid-template-columns: 4fr 1fr;

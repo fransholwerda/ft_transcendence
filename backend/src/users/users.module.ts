@@ -13,5 +13,6 @@ import { BlockedModule } from 'src/ignores/ignores.module';
   imports: [TypeOrmModule.forFeature([User]), FriendsModule, BlockedModule],
   controllers: [UsersController],
   providers: [UsersService, UserRepository, FriendshipRepository, BlockedRepository],
+  exports: [TypeOrmModule, UsersService, UserRepository]
 })
 export class UsersModule {}

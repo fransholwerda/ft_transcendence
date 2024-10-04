@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import './Chat.css';
-// import { Constants } from '../../shared/constants';
 import { User } from '../PageManager';
 import ChatUI from './ChatUI.tsx';
-// import Popup from 'reactjs-popup';
 import { useNavigate } from 'react-router-dom';
 
 interface ChatProps {
@@ -24,6 +22,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);  // For game invite modal
   const [invitationData, setInvitationData] = useState<InvitationData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [ignoreList, setIgnoreList] = useState<string[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,16 +49,24 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
       navigate(`/profile/${targetUserID}`);
     });
 
+    socket.on('updateIgnoreList', (newIgnoreList: string[]) => {
+      setIgnoreList(newIgnoreList);
+    });
+
     return () => {
       socket.off('chatJoined');
       socket.off('chatAlert');
+      socket.off('inviteToGame');
+      socket.off('closeInvitationModal');
+      socket.off('profilePage');
+      socket.off('updateIgnoreList');
     };
-  });
+  },[socket, ignoreList]);
 
   const handleConnect = async () => {
     setLoading(true);
     setError(null);
-    
+
     socket.emit('joinChat', { userId: user.id, username: user.username });
   };
 
@@ -82,14 +89,13 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
   const handleDenyInvite = () => {
     setIsInviteModalOpen(false);
     socket.emit('closeInvitationModal');
-    // Additional logic for denying the invite can go here (e.g., notifying the server) !!!
   };
 
   return (
     <div className="chat-container-wrapper">
       {isInviteModalOpen && invitationData && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="chat-modal-overlay">
+          <div className="chat-modal-content">
             <h1>Game Invitation</h1>
             <p>{invitationData.player1Username} <h1>has invited you to play pong. Do you accept?</h1></p>
             <button onClick={() => handleAcceptInvite(1)}><h3>Accept (Normal game)</h3></button>
@@ -112,7 +118,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
         <ChatUI
           socket={socket}
           user={user}
-
+          ignoreList={ignoreList}
         />
       )}
     </div>
