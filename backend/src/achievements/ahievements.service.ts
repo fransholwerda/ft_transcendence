@@ -16,10 +16,9 @@ export class AchievementService {
         @InjectRepository(UserRepository) private userRepository: UserRepository
     ) {}
 
-    async createAchievement(name: string, description: string): Promise<Achievement> {
+    async createAchievement(name: string): Promise<Achievement> {
         const achievement = new Achievement();
         achievement.name = name;
-        achievement.description = description;
         return this.achievementRepository.save(achievement);
     }
 
@@ -27,8 +26,11 @@ export class AchievementService {
         const userAchievement = new UserAchievement();
         userAchievement.user = await this.getUserById(userID);
         userAchievement.achievement = await this.getAchievementByName(achievementName);
+        if (!userAchievement) {
+            await this.createAchievement(achievementName);
+            userAchievement.achievement = await this.getAchievementByName(achievementName);
+        }
         return this.userAchievementRepository.save(userAchievement);
-
     }
 
     async getUserAchievements(userID: number): Promise<UserAchievement[]> {

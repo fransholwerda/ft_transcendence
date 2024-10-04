@@ -8,7 +8,4 @@ export class Achievement {
 
     @Column({type: 'varchar'})
     name: string;
-
-    @Column({type: 'varchar'})
-    description: string;
 }
