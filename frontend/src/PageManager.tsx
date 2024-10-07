@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 import LoginPage from './LoginPage/LoginPage';
 import AuthenticationPage from './AuthenticationPage/AuthenticationPage';
 import MainGrid from './mainGrid/MainGrid';
@@ -11,13 +11,13 @@ import { Constants } from '../shared/constants';
 import { randomDebug, createRandomUser } from "./randomUser"
 // --- DEBUG --- //
 
-const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
-  transports: ['websocket'],
-  query: {
-    currentPath: window.location.pathname
-  },
-  withCredentials: true,
-});
+// const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
+//   transports: ['websocket'],
+//   query: {
+//     currentPath: window.location.pathname
+//   },
+//   withCredentials: true,
+// });
 
 export interface User {
   id:  number,
@@ -29,6 +29,7 @@ export interface User {
 
 const PageManager: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [pSock, setPSock] = useState<Socket | null>(null);
 
   const handleLogin = async (intraUser: any) => {
     console.log('PageManager: Logging in', intraUser);
@@ -85,32 +86,50 @@ const PageManager: React.FC = () => {
       TwoFactorSecret: user.TwoFactorSecret,
       TwoFactorEnabled: user.TwoFactorEnabled
     });
+
     document.cookie = `jwt=${jwt_result.token}; path=/;`;
+
+    const socket = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
+      transports: ['websocket'],
+      query: {
+        currentPath: window.location.pathname,
+      },
+      withCredentials: true,
+    });
+
+    setPSock(socket);
+
     return user;
   };
 
   const handleLogout = () => {
     console.log('PageManager: Logging out');
     setUser(null);
+    if (pSock) {
+      pSock.disconnect();
+      setPSock(null);
+    }
   };
 
   const leaveQueue = () => {
     console.log('PageManager: Leaving Queue');
-    pSock.emit('leaveQueue');
+    pSock?.emit('leaveQueue');
   };
 
   const leaveGame = () => {
     console.log('PageManager: Leaving Game');
-    pSock.emit('leaveGame');
+    pSock?.emit('leaveGame');
   };
 
   useEffect(() => {
     return () => {
       console.log('PageManager: standalone useEffect return');
-      console.log('Disconnecting socket:', pSock, user?.username);
-      pSock.disconnect();
+      if (pSock) {
+        console.log('Disconnecting socket:', pSock, user?.username);
+        pSock.disconnect();
+      }
     };
-  }, []);
+  }, [pSock, user]);
 
   const LocationHandler: React.FC = () => {
     console.log('PageManager: LocationHandler');
@@ -124,7 +143,7 @@ const PageManager: React.FC = () => {
         leaveGame();
       }
       // Emit custom event to update currentPath
-      pSock.emit('updateCurrentPath', { currentPath: location.pathname });
+      pSock?.emit('updateCurrentPath', { currentPath: location.pathname });
     }, [location.pathname]);
   
     return null;
@@ -147,7 +166,7 @@ const PageManager: React.FC = () => {
         <Route
           path="/pong"
           element={
-            user ?
+            user && pSock ?
               <MainGrid
                 contentComponent="Pong"
                 user={user}
@@ -162,7 +181,7 @@ const PageManager: React.FC = () => {
         <Route
           path="/settings"
           element={
-            user ?
+            user && pSock ?
               <MainGrid
                 contentComponent="SettingsPage"
                 user={user}
@@ -177,7 +196,7 @@ const PageManager: React.FC = () => {
         <Route
           path="/profile/:id"
           element={
-            user ?
+            user && pSock ?
               <MainGrid
                 contentComponent="ProfilePage"
                 user={user}
