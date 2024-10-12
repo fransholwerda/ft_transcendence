@@ -93,6 +93,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(client: Socket) {
 		const cookies = client.handshake.headers.cookie;
+		let user: User | null = null;
 
 		if (cookies) {
 			const parsedCookies = cookie.parse(cookies);
@@ -101,7 +102,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (token) {
 				try {
 					const payload = await this.authService.verifyJwtAccessToken(token);
-					const user = await this.userService.findUser(payload.user);
+					user = await this.userService.findUser(payload.user);
 					console.log('Authenticated user:', payload.user, 'username:', user.username);
 
 					// Doe je shit hier !!!
@@ -120,15 +121,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.disconnect();
 			// Navigate to logout !!!
 		}
-
+		if (user == null) {
+			console.log("NestJS pong: user == null");
+			// Doe je shit hier !!!
+		}
 		pongPrint(`NestJS pong: connected: ${client.id}`);
 		this.ClientIDSockets.set(client.id, client);
-		// this.ClientIDPongConnections(client.id, )
+		this.ClientIDPongConnections.set(client.id, { Socket: client, User: user });
 	}
 
 	handleDisconnect(client: Socket) {
 		pongPrint(`NestJS pong: disconnected: ${client.id}`);
 		this.ClientIDSockets.delete(client.id);
+		this.ClientIDPongConnections.delete(client.id);
 		this.queue = removeFromQueue(this.queue, client.id);
 		this.leavingGame(client);
 		disconnectFromGame(this.server, this.games, client.id);
