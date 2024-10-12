@@ -49,17 +49,47 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 const payload = await this.authService.verifyJwtAccessToken(token);
                 const user = await this.userService.findUser(payload.user);
                 console.log('Authenticated user:', payload.user, 'username:', user.username);
+
+                this.SocketUsernames.set(client.id, user.username);
+                console.log('SocketID to Username: ' + client.id + ' = ' + this.SocketUsernames.get(client.id));
+
+                if (!this.ChatUsers.has(user.username)) {
+                  // User is connecting for the first time
+                  this.ChatUsers.set(user.username, new ChatUser(user.id, user.username));
+                }
+            
+                const chatuser = this.ChatUsers.get(user.username);
+                if (chatuser) {
+                  chatuser.addClientID(client.id);
+                }
+                client.join('@' + user.username);
+                client.emit('chatJoined');
+
+                // Give client the ignore list of the user
+                const blockedList = await this.userService.getBlocked(chatuser.id);
+                let ignoreList = blockedList.map(user => user.username);
+                client.emit('updateIgnoreList', ignoreList);
+
+                // Give client all the channels the user is in
+                for (const room of chatuser.rooms) {
+                  await delay(10);
+                  await client.join(room.roomId);
+                  client.emit('channelJoined', { channel: room.roomId });
+                }
             } catch (error) {
                 console.log('Invalid JWT token:', error.message);
                 client.disconnect();
+                // Navigate to logout !!!
             }
         } else {
             console.log('No JWT token found in cookies');
             client.disconnect();
+            // Navigate to logout !!!
         }
     } else {
         console.log('No cookies found');
         client.disconnect();
+        // Navigate to logout !!!
     }
 
     this.ClientIDSockets.set(client.id, client);
@@ -86,39 +116,38 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { userId, username } = joinChatDto;
 
     // DELETE LATER vvv (once cookie identification is implemented) !!!
-    this.SocketUsernames.set(client.id, username);
-    console.log('SocketID to Username: ' + client.id + ' = ' + this.SocketUsernames.get(client.id));
+    // this.SocketUsernames.set(client.id, username);
+    // console.log('SocketID to Username: ' + client.id + ' = ' + this.SocketUsernames.get(client.id));
     // DELETE LATER ^^^
 
-    console.log('userid: ' + userId);
+    // console.log('userid: ' + userId);
 
-    if (!this.ChatUsers.has(username)) {
-      // User is connecting for the first time
-      this.ChatUsers.set(username, new ChatUser(userId, username));
-    }
-    const chatuser = this.ChatUsers.get(username);
-    console.log(chatuser);
-    if (chatuser) {
-      chatuser.addClientID(client.id);
-      console.log(chatuser.clientIDs);
-    }
-    client.join('@' + username);
-    client.emit('chatJoined');
-    if (!this.ChatRooms.has('@' + username)) {
-      this.ChatRooms.set('@' + username, new ChatRoom('@' + username, [chatuser]));
-    }
+    // if (!this.ChatUsers.has(username)) {
+    //   // User is connecting for the first time
+    //   this.ChatUsers.set(username, new ChatUser(userId, username));
+    // }
+
+    // const chatuser = this.ChatUsers.get(username);
+    // if (chatuser) {
+    //   chatuser.addClientID(client.id);
+    // }
+    // client.join('@' + username);
+    // client.emit('chatJoined');
+    // // if (!this.ChatRooms.has('@' + username)) {
+    // //   this.ChatRooms.set('@' + username, new ChatRoom('@' + username, [chatuser]));
+    // // }
 
     // Give client the ignore list of the user
-    const blockedList = await this.userService.getBlocked(chatuser.id);
-    let ignoreList = blockedList.map(user => user.username);
-    client.emit('updateIgnoreList', ignoreList);
+    // const blockedList = await this.userService.getBlocked(chatuser.id);
+    // let ignoreList = blockedList.map(user => user.username);
+    // client.emit('updateIgnoreList', ignoreList);
 
-    // Give client all the channels the user is in
-    for (const room of chatuser.rooms) {
-      await delay(10);
-      await client.join(room.roomId);
-      client.emit('channelJoined', { channel: room.roomId });
-    }
+    // // Give client all the channels the user is in
+    // for (const room of chatuser.rooms) {
+    //   await delay(10);
+    //   await client.join(room.roomId);
+    //   client.emit('channelJoined', { channel: room.roomId });
+    // }
   }
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
@@ -189,6 +218,26 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('joinDM')
   async handleJoinDM(@MessageBody() joinDmDto: JoinDmDto, @ConnectedSocket() client: Socket) {
     const { user, targetUser } = joinDmDto;
+    const cookies = client.handshake.headers.cookie;
+
+    if (cookies) {
+      const parsedCookies = cookie.parse(cookies);
+      const token = parsedCookies['jwt'];
+
+      if (token) {
+        try {
+          const payload = await this.authService.verifyJwtAccessToken(token);
+          const user = await this.userService.findUser(payload.user);
+        } catch (error) {
+          console.log('Invalid JWT token:', error.message);
+          client.disconnect();
+          // Navigate to logout !!!
+        }
+      }
+    } else {
+      // Navigate to logout !!!
+    }
+
     // ADD USER CHECK TO DATABASE !!!
     // IS TARGETUSER BLOCKED? !!!
     // DID TARGETUSER BLOCK YOU? !!!
