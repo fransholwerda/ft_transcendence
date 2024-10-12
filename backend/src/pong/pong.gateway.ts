@@ -93,6 +93,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(client: Socket) {
 		const cookies = client.handshake.headers.cookie;
+		let user: User | null = null;
 
 		if (cookies) {
 			const parsedCookies = cookie.parse(cookies);
@@ -101,47 +102,52 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (token) {
 				try {
 					const payload = await this.authService.verifyJwtAccessToken(token);
-					const user = await this.userService.findUser(payload.user);
-					console.log('Authenticated user:', payload.user, 'username:', user.username);
+					user = await this.userService.findUser(payload.user);
+					console.log('NestJS pong: Authenticated user:', payload.user, 'user:', user);
 
 					// Doe je shit hier !!!
 				} catch (error) {
-					console.log('Invalid JWT token:', error.message);
+					console.log('NestJS pong: Invalid JWT token:', error.message);
 					client.disconnect();
 					// Navigate to logout !!!
 				}
 			} else {
-				console.log('No JWT token found in cookies');
+				console.log('NestJS pong: No JWT token found in cookies');
 				client.disconnect();
 				// Navigate to logout !!!
 			}
 		} else {
-			console.log('No cookies found');
+			console.log('NestJS pong: No cookies found');
 			client.disconnect();
 			// Navigate to logout !!!
 		}
-
+		if (user == null) {
+			console.log("NestJS pong: user == null");
+			// Doe je shit hier !!!
+		}
 		pongPrint(`NestJS pong: connected: ${client.id}`);
 		this.ClientIDSockets.set(client.id, client);
-		// this.ClientIDPongConnections(client.id, )
+		this.ClientIDPongConnections.set(client.id, { Socket: client, User: user });
 	}
 
 	handleDisconnect(client: Socket) {
 		pongPrint(`NestJS pong: disconnected: ${client.id}`);
 		this.ClientIDSockets.delete(client.id);
+		this.ClientIDPongConnections.delete(client.id);
 		this.queue = removeFromQueue(this.queue, client.id);
 		this.leavingGame(client);
 		disconnectFromGame(this.server, this.games, client.id);
 	}
 
-	private printMatchData(data: PongGameInviteDto) {
+	private printMatchData(data: PongGameInviteDto, player2Connection: pongConnection) {
 		console.log('NestJS pong: printMatchData');
 		console.log(`player1SocketID: ${data.player1SocketID}`);
 		console.log(`player1ID: ${data.player1ID}`);
 		console.log(`player1Username: ${data.player1Username}`);
-		console.log(`player2SocketID: ${data.player2SocketID}`);
-		console.log(`player2ID: ${data.player2ID}`);
-		console.log(`player2Username: ${data.player2Username}`);
+
+		console.log(`player2Connection.Socket.id: ${player2Connection.Socket.id}`);
+		console.log(`player2Connection.User.id: ${player2Connection.User.id}`);
+		console.log(`player2Connection.User.username: ${player2Connection.User.username}`);
 		console.log(`gameType: ${data.gameType}`);
 	}
 
@@ -156,10 +162,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('invitedMatch')
 	handleGameInvite(@MessageBody() PongGameInviteDto: PongGameInviteDto, @ConnectedSocket() client: Socket) {
-		const { player1SocketID, player1ID, player1Username, player2SocketID, player2ID, player2Username, gameType } = PongGameInviteDto;
-
+		const { player1SocketID, player1ID, player1Username, gameType } = PongGameInviteDto;
+		const player2Connection = this.ClientIDPongConnections.get(client.id);
 		console.log('NestJS pong: invitedMatch');
-		this.printMatchData(PongGameInviteDto);
+		this.printMatchData(PongGameInviteDto, player2Connection);
 		if (!this.ClientIDSockets.has(player1SocketID)) {
 			client.emit('chatAlert', { message: 'The clientid who invited went offline' });
 			return;
@@ -167,8 +173,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// check if player1SocketID is still at /pong
 		const player1Client = this.ClientIDSockets.get(player1SocketID);
 		console.log('NestJS pong: invitedMatch: player1SocketID:', player1SocketID);
-		console.log('NestJS pong: invitedMatch: player2SocketID:', player2SocketID);
-		console.log('NestJS pong: invitedMatch: client.id:', client.id);
+		console.log('NestJS pong: invitedMatch: player2Connection.Socket.id:', player2Connection.Socket.id);
+		console.log('NestJS pong: invitedMatch: client.id:', client.id); // same as player2Connection.Socket.id
 		const inviterLocation = player1Client.handshake.query.currentPath;
 		console.log('NestJS pong: invitedMatch: inviterLocation:', inviterLocation);
 		if (inviterLocation !== '/pong') {
@@ -178,14 +184,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		// remove them from active game or queue
 		this.queue = removeFromQueue(this.queue, player1SocketID);
-		this.queue = removeFromQueue(this.queue, player2SocketID);
+		this.queue = removeFromQueue(this.queue, player2Connection.Socket.id);
 		this.leavingGame(this.ClientIDSockets.get(player1SocketID));
-		this.leavingGame(this.ClientIDSockets.get(player2SocketID));
+		this.leavingGame(this.ClientIDSockets.get(player2Connection.Socket.id));
 		// fill information
 		const gameMode = gameType === 1 ? 'default' : 'Speed Surge';
 		const isCustom = gameType === 2;
 		const p1 = { clientId: player1SocketID, user: { id: player1ID, username: player1Username, avatarURL: '' }, gameMode: gameMode };
-		const p2 = { clientId: player2SocketID, user: { id: player2ID, username: player2Username, avatarURL: '' }, gameMode: gameMode };
+		const p2 = { clientId: player2Connection.Socket.id, user: { id: player2Connection.User.id, username: player2Connection.User.username, avatarURL: player2Connection.User.avatarURL }, gameMode: gameMode };
 		const roomId = `#pong_${p1.user.id}_${p2.user.id}`;
 		const gameSession = fillGameSession(p1, p2, roomId, isCustom);
 		// start game
