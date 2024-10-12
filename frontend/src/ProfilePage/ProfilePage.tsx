@@ -48,7 +48,11 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="profile_container">
       <div className="profile_header">
-        <h1>Welcome to profile page of "{id}"</h1>
+        {/* replace id with username !!! */}
+        <h1>Profile of "{id}"</h1>
+        {/* check if user id is same as own user id, then dont show button !!! */}
+        {/* replace button with remove friend if already your friend !!! */}
+        <button className="add_friend_button">Add as Friend</button>
       </div>
       <div className="profile_content">
         <div className="profile_section profile_friends">
