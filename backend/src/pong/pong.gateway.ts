@@ -55,7 +55,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		pongPrint(`NestJS pong: gameEnd: ${sesh.roomId}`);
 		this.sendCreateMatch(sesh);
 		this.server.to(sesh.roomId).emit('gameEnd', { sesh });
-		this.games = removeGameSession(this.games, sesh.roomId);
+		this.games = removeGameSession(this.games, sesh.roomId);	
 	}
 
 	private leavingGame(client: Socket) {
