@@ -9,4 +9,12 @@ export class AuthService {
         const jwt = this.jwtService.sign(id);
         return ({token: jwt});
     }
+
+    async verifyJwtAccessToken(token: string): Promise<any> {
+        try {
+          return this.jwtService.verify(token);
+        } catch (err) {
+          throw new Error('Invalid token');
+        }
+      }
 }
