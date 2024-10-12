@@ -103,21 +103,21 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				try {
 					const payload = await this.authService.verifyJwtAccessToken(token);
 					user = await this.userService.findUser(payload.user);
-					console.log('Authenticated user:', payload.user, 'username:', user.username);
+					console.log('NestJS pong: Authenticated user:', payload.user, 'username:', user.username);
 
 					// Doe je shit hier !!!
 				} catch (error) {
-					console.log('Invalid JWT token:', error.message);
+					console.log('NestJS pong: Invalid JWT token:', error.message);
 					client.disconnect();
 					// Navigate to logout !!!
 				}
 			} else {
-				console.log('No JWT token found in cookies');
+				console.log('NestJS pong: No JWT token found in cookies');
 				client.disconnect();
 				// Navigate to logout !!!
 			}
 		} else {
-			console.log('No cookies found');
+			console.log('NestJS pong: No cookies found');
 			client.disconnect();
 			// Navigate to logout !!!
 		}
