@@ -26,6 +26,17 @@ import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
 import { PongCurrentPathDto, PongGameInviteDto,	PongJoinQueueDto, PongMovePaddleDto } from './pong.dto';
 
+import { UsersModule } from 'src/users/users.module';
+import { UsersService } from 'src/users/users.service';
+import * as cookie from 'cookie';
+import { AuthModule } from 'src/auth/auth.module';
+import { AuthService } from 'src/auth/auth.service';
+
+interface pongConnection {
+	Socket: Socket;
+	User: User;
+}
+
 @WebSocketGateway({ namespace: '/ft_transcendence', cors: { origin: '*' } })
 @UseFilters(new WsValidationExceptionFilter())
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -35,8 +46,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private queue: { clientId: string, user: User, gameMode: string }[] = [];	
 	private games: GameSession[] = [];
 	private ClientIDSockets = new Map<string, Socket>();
-
-	constructor(private readonly matchService: MatchService) {}
+	private ClientIDPongConnections = new Map<string, pongConnection>();
+	constructor(
+		private readonly matchService: MatchService,
+		private readonly userService: UsersService,
+		private readonly authService: AuthService
+	) {}
 
 	private async sendCreateMatch(sesh: GameSession) {
 		const createMatchDto = {
@@ -76,9 +91,39 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.gameEnd(sesh);
 	}
 
-	handleConnection(client: Socket) {
+	async handleConnection(client: Socket) {
+		const cookies = client.handshake.headers.cookie;
+
+		if (cookies) {
+			const parsedCookies = cookie.parse(cookies);
+			const token = parsedCookies['jwt'];
+
+			if (token) {
+				try {
+					const payload = await this.authService.verifyJwtAccessToken(token);
+					const user = await this.userService.findUser(payload.user);
+					console.log('Authenticated user:', payload.user, 'username:', user.username);
+
+					// Doe je shit hier !!!
+				} catch (error) {
+					console.log('Invalid JWT token:', error.message);
+					client.disconnect();
+					// Navigate to logout !!!
+				}
+			} else {
+				console.log('No JWT token found in cookies');
+				client.disconnect();
+				// Navigate to logout !!!
+			}
+		} else {
+			console.log('No cookies found');
+			client.disconnect();
+			// Navigate to logout !!!
+		}
+
 		pongPrint(`NestJS pong: connected: ${client.id}`);
 		this.ClientIDSockets.set(client.id, client);
+		// this.ClientIDPongConnections(client.id, )
 	}
 
 	handleDisconnect(client: Socket) {
