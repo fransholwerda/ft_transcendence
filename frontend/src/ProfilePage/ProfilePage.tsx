@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './ProfilePage.css';
 import { useParams } from 'react-router-dom';
 import { Constants } from '../../shared/constants';
+import { User } from '../PageManager';
 
 interface Match {
   id: string;
@@ -12,13 +13,30 @@ interface Match {
   winner: string;
 }
 
-const ProfilePage: React.FC = () => {
+interface ProfilePageProps {
+  loggedInUser: User;
+}
+
+const ProfilePage: React.FC<ProfilePageProps> = ({ loggedInUser }) => {
   const { id } = useParams<{ id: string }>();
   const [matchHistory, setMatchHistory] = useState<Match[]>([]);
+  const [profileUser, setProfileUser] = useState<User | null>(null);
 
   async function fetchMatchHistory(playerID: string) {
     console.log('Fetching match history for player:', playerID);
     const response = await fetch(`${Constants.FRONTEND_HOST_URL}/match/${playerID}/matchHistory`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = await response.json();
+    return result;
+  }
+
+  async function fetchProfileUser(userID: string) {
+    console.log('Fetching profile user:', userID);
+    const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/${userID}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -42,17 +60,36 @@ const ProfilePage: React.FC = () => {
       }
     }
 
+    async function loadProfileUser() {
+      console.log('Loading profile user for id:', id);
+      if (id) {
+        try {
+          const user = await fetchProfileUser(id);
+          setProfileUser(user);
+        } catch (error) {
+          console.error('Error fetching profile user:', error);
+        }
+      }
+    }
+
     loadMatchHistory();
+    loadProfileUser();
   }, [id]);
 
   return (
     <div className="profile_container">
       <div className="profile_header">
-        {/* replace id with username !!! */}
-        <h1>Profile of "{id}"</h1>
-        {/* check if user id is same as own user id, then dont show button !!! */}
-        {/* replace button with remove friend if already your friend !!! */}
-        <button className="add_friend_button">Add as Friend</button>
+        <div>
+          <h1>Profile of "{profileUser?.username}"</h1>
+        </div>
+        <div>
+          {loggedInUser.id !== profileUser?.id && (
+            <button className="add_friend_button">Add as Friend</button>
+          )}
+          {loggedInUser.id !== profileUser?.id && (
+            <button className="add_friend_button">Add as Friend</button>
+          )}
+        </div>
       </div>
       <div className="profile_content">
         <div className="profile_section profile_friends">
