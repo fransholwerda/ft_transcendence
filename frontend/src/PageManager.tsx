@@ -7,10 +7,6 @@ import AuthenticationPage from './AuthenticationPage/AuthenticationPage';
 import MainGrid from './mainGrid/MainGrid';
 import { Constants } from '../shared/constants';
 
-// --- DEBUG --- //
-import { randomDebug, createRandomUser } from "./randomUser"
-// --- DEBUG --- //
-
 // const pSock = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
 //   transports: ['websocket'],
 //   query: {
@@ -37,42 +33,20 @@ const PageManager: React.FC = () => {
       method:  'GET'
     });
     let user = await response.json();
-    // --- DEBUG --- //
-    if (randomDebug) {
-      user = createRandomUser(user);
-      console.log('PageManager: Random User created', user);
-    }
-    // --- DEBUG --- //
     if (user.statusCode === 404) {
       console.log('PageManager: User not found, creating new user');
-      if (randomDebug) {
-        const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/create`, {
-          method:  'POST',
-          headers: {
-            'Content-Type':  'application/json'
-          },
-          body: JSON.stringify({
-            id:   user.id,
-            username:  user.username,
-            avatarURL:  user.avatarURL
-          })
-        });
-        user = await response.json();
-      }
-      else {
-        const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/create`, {
-          method:  'POST',
-          headers: {
-            'Content-Type':  'application/json'
-          },
-          body: JSON.stringify({
-            id:  intraUser.id,
-            username:  intraUser.login,
-            avatarURL:  intraUser.image.link
-          })
-        });
-        user = await response.json();
-      }
+      const response = await fetch(`${Constants.BACKEND_HOST_URL}/user/create`, {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json'
+        },
+        body: JSON.stringify({
+          id:  intraUser.id,
+          username:  intraUser.login,
+          avatarURL:  intraUser.image.link
+        })
+      });
+      user = await response.json();
       console.log('PageManager: Random User created', user);
     }
     const jwt = await fetch(`${Constants.BACKEND_HOST_URL}/auth/jwt/${intraUser.id}`, {
