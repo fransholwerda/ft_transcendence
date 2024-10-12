@@ -222,7 +222,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('joinQueue')
 	handleJoinQueue(@MessageBody() PongJoinQueueDto: PongJoinQueueDto, @ConnectedSocket() client: Socket) {
-		const { user, gameMode } = PongJoinQueueDto;
+		const user = this.ClientIDPongConnections.get(client.id).User;
+		const { gameMode } = PongJoinQueueDto;
 		pongPrint(`NestJS pong: ${client.id} : ${user.id} trying to join queue`);
 		if (isUserInGame(this.games, user.id)) {
 			pongPrint(`NestJS pong: ${client.id} : ${user.id} is already in a game`);
