@@ -25,7 +25,7 @@ services:
 #     - postgres
 #   ports:
 #     - 8888:80
-#   environment: 
+#   environment: #              !!!!!!!!!!!!!!CONVERT THIS TO AN ENV FILE LATER!!!!!!!!!!!!!
 #     - PGADMIN_DEFAULT_EMAIL=username@domain.com
 #     - PGADMIN_DEFAULT_PASSWORD=password
 #   volumes:
