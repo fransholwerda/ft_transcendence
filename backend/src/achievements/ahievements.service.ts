@@ -5,6 +5,7 @@ import { UserAchievement } from "./entity/userAchievement";
 import { AchievementRepository } from "./achievements.repository";
 import { UserAcheivementRepository } from "./userAchievements.repository";
 import { UserRepository } from "src/users/user.repository";
+import { UsersService } from "src/users/users.service";
 import { User } from "src/users/entities/user.entity";
 
 
@@ -21,7 +22,8 @@ export class AchievementService {
         achievement.name = name;
         return this.achievementRepository.save(achievement);
     }
-
+    
+    
     async earnAchievement(userID: number, achievementName: string): Promise<UserAchievement> {
         const userAchievement = new UserAchievement();
         userAchievement.user = await this.getUserById(userID);
@@ -32,6 +34,16 @@ export class AchievementService {
         }
         return this.userAchievementRepository.save(userAchievement);
     }
+    
+    async assignAllAchievements(userID: number): Promise<User> {
+        const friends = await this.getFriends(userID);
+        if (friends.size() >= 2)
+            this.earnAchievement(userID, "Look Who's Popular");
+        const matches = await this.getUserById(userID);
+        if (matches.matchesWon > 0)
+            this.earnAchievement(userID, "A Winner is You");
+        return this.
+    }
 
     async getUserAchievements(userID: number): Promise<UserAchievement[]> {
         return this.userAchievementRepository.find({
@@ -39,11 +51,11 @@ export class AchievementService {
             relations: ['achievement']
         })
     }
-
+    
     private async getUserById(id:number): Promise<User> {
         return this.userRepository.findOne({where: {id: id}})
     }
-
+    
     private async getAchievementByName(name: string): Promise<Achievement> {
         return this.achievementRepository.findOne({where: {name: name}});
     }
