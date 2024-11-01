@@ -37,7 +37,7 @@ const ProfilePage: React.FC<ProfileProps> = ({ socket }) => {
       },
     });
     const result = await response.json();
-    socket.emit('getFriendlist');
+    socket.emit('getFriendlist', { userID: parseInt(playerID) });
     return result;
   }
 

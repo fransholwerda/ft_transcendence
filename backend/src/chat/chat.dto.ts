@@ -120,3 +120,9 @@ export class ActionUserDto {
   @IsEnum(ActionType, { message: 'Invalid action type.' })
   action: ActionType;
 }
+
+export class GetFriendListDto {
+  @IsNumber()
+  @IsNotEmpty({ message: 'No empty ID numbers.' })
+  userID: number;
+}

@@ -3,7 +3,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnG
 import { Server, Socket } from 'socket.io';
 import { ChatUser, ChatRoom } from './chat.types'
 import { ChatRoomEnum, ChannelType, ActionType } from './chat.enum';
-import { ActionUserDto, ChannelActionUserDto, ChannelInviteUserDto, JoinChannelDto, JoinChatDto, JoinDmDto, LeaveChannelDto, SendMessageDto, SetChannelTypeDto } from './chat.dto';
+import { ActionUserDto, ChannelActionUserDto, ChannelInviteUserDto, GetFriendListDto, JoinChannelDto, JoinChatDto, JoinDmDto, LeaveChannelDto, SendMessageDto, SetChannelTypeDto } from './chat.dto';
 import { WsValidationExceptionFilter } from './exception';
 import { UsersModule } from 'src/users/users.module';
 import { FriendsModule } from 'src/friends/friends.module';
@@ -527,11 +527,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.to("@" + user.username).emit('closeInvitationModal');
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   @SubscribeMessage('getFriendlist')
-  async handleGetFriendList(client: Socket) {
-    const user = this.ChatUsers.get(this.SocketUsernames.get(client.id));
+  async handleGetFriendList(@MessageBody() getFriendListDto: GetFriendListDto, @ConnectedSocket() client: Socket) {
+    const { userID } = getFriendListDto;
     try {
-      const friendList = await this.userService.getFriends(user.id);
+      const friendList = await this.userService.getFriends(userID);
       const friendListWithStatus = friendList.map(friend => {
         const isOnline = this.ChatUsers.has(friend.username);
         return {
