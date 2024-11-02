@@ -28,4 +28,15 @@ export class AchievementController {
         }
     }
 
+	@Post(':UserID/AchievementSync')
+	async achievementSync(@Param('UserID') userID: number): Promise <UserAchievement[]> {
+		try{
+			return await this.achievementsService.assignAllAchievements(+userID);
+		}
+		catch (Error){
+			console.log("User Achivement sync failed.");
+			throw(Error);
+		}
+	}
+
 }

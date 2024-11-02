@@ -12,9 +12,15 @@ interface Match {
   winner: string;
 }
 
+interface Achievement {
+	id: number;
+	name: string;
+}
+
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [matchHistory, setMatchHistory] = useState<Match[]>([]);
+  const [achievementList, setAchievementList] = useState<Achievement[]>([]);
 
   async function fetchMatchHistory(playerID: string) {
     console.log('Fetching match history for player:', playerID);
@@ -26,24 +32,53 @@ const ProfilePage: React.FC = () => {
     });
     const result = await response.json();
     return result;
-  }
+	}
+	
+	useEffect(() => {
+		async function loadMatchHistory() {
+			console.log('Loading match history for player:', id);
+			if (id) {
+				try {
+					console.log('Trying to fetch match history for: ', id);
+					const history = await fetchMatchHistory(id);
+					setMatchHistory(history);
+				} catch (error) {
+					console.error('Error fetching match history:', error);
+				}
+			}
+		}
+		
+		loadMatchHistory();
+	}, [id]);
 
-  useEffect(() => {
-    async function loadMatchHistory() {
-      console.log('Loading match history for player:', id);
-      if (id) {
-        try {
-          console.log('Trying to fetch match history for: ', id);
-          const history = await fetchMatchHistory(id);
-          setMatchHistory(history);
-        } catch (error) {
-          console.error('Error fetching match history:', error);
-        }
-      }
-    }
+	async function fetchAchievementList(playerID: string) {
+		console.log('fetching achievements for player:', playerID);
+		const response = await fetch(`${Constants.FRONTEND_HOST_URL}/achievement/${playerID}/AchievementSync`, {
+			method: 'POST',
+			headers: {
+			  'Content-Type': 'application/json',
+			},
+		  });
+		  const result = await response.json();
+		  return result;
+	}
+	
+	useEffect(() => {
+		async function loadAchievementList() {
+			console.log('Loading achievemnt history for player:', id);
+			if (id) {
+				try {
+					console.log('Trying to achievements for: ', id);
+					const history = await fetchAchievementList(id);
+					setAchievementList(history);
+				} catch (error) {
+					console.error('Error fetching achievements:', error);
+				}
+			}
+		}
 
-    loadMatchHistory();
-  }, [id]);
+		loadAchievementList();
+	}, [id]);
 
   return (
     <div className="profile_container">
@@ -97,6 +132,18 @@ const ProfilePage: React.FC = () => {
             ))
           ) : (
             <p>No match history available.</p>
+          )}
+        </div>
+		<div className="profile_section profile_achievements">
+          <h2>Achievements</h2>
+          {achievementList.length > 0 ? (
+            achievementList.map((achievement) => (
+              <div>
+				<p> {achievement.id} </p>
+              </div>
+            ))
+          ) : (
+            <p>No achievements earned.</p>
           )}
         </div>
       </div>
