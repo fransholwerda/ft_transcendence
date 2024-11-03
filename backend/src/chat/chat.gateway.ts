@@ -498,6 +498,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       case ActionType.Profile:
         client.emit('profilePage', { targetUserID: target.id });
         break;
+      case ActionType.AddFriend:
+        try {
+          await this.userService.addFriend(user.id, target.id);
+          console.log(user.username + ' has added ' + target.username + ' to their friendlist.');
+        } catch (error) {
+          client.emit('chatAlert', { message: 'Adding friend failed.' });
+        }
+        break;
       case ActionType.Invite:
         const blocked = await this.userService.checkIfBlocked(target.id, user.id);
         if (blocked) {
