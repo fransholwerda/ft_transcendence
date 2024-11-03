@@ -1,3 +1,4 @@
+import { UserAchievement } from 'src/achievements/entity/userAchievement';
 import { Friendship } from 'src/friends/entity/friends.entity';
 import { Blocked } from 'src/ignores/entities/ignores.entity';
 import { Column, Entity, PrimaryColumn, ManyToMany, JoinTable, ManyToOne, OneToMany } from 'typeorm';
@@ -39,4 +40,7 @@ export class User {
 	
 	@OneToMany(() => Blocked, (blocked) => blocked.blockedUser)
 	blockedBy: Blocked[];
+
+	@OneToMany(() => UserAchievement, userAchievement => userAchievement.user)
+	achievements: UserAchievement[];
 }
