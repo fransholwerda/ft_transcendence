@@ -3,14 +3,15 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnG
 import { Server, Socket } from 'socket.io';
 import { ChatUser, ChatRoom } from './chat.types'
 import { ChatRoomEnum, ChannelType, ActionType } from './chat.enum';
-import { ActionUserDto, ChannelActionUserDto, ChannelInviteUserDto, JoinChannelDto, JoinChatDto, JoinDmDto, LeaveChannelDto, SendMessageDto, SetChannelTypeDto } from './chat.dto';
+import { ActionUserDto, ChannelActionUserDto, ChannelInviteUserDto, GetFriendListDto, JoinChannelDto, JoinChatDto, JoinDmDto, LeaveChannelDto, SendMessageDto, SetChannelTypeDto } from './chat.dto';
 import { WsValidationExceptionFilter } from './exception';
 import { UsersModule } from 'src/users/users.module';
+import { FriendsModule } from 'src/friends/friends.module';
 import { UsersService } from 'src/users/users.service';
-
-import * as cookie from 'cookie';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
+import * as cookie from 'cookie';
+
 
 // HASH ALL PASSWORDS !!!
 
@@ -78,26 +79,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 }
             } catch (error) {
                 console.log('Invalid JWT token:', error.message);
-                client.disconnect();
-                // Navigate to logout !!!
+                this.handleDisconnect(client);
             }
         } else {
             console.log('No JWT token found in cookies');
-            client.disconnect();
-            // Navigate to logout !!!
+            this.handleDisconnect(client);
         }
     } else {
         console.log('No cookies found');
-        client.disconnect();
-        // Navigate to logout !!!
+        this.handleDisconnect(client);
     }
 
     this.ClientIDSockets.set(client.id, client);
 }
 
   handleDisconnect(client: Socket) {
-    console.log(`NestJS Chat handleDisconnect: Client disconnected: ${client.id}`);
-    if (!this.SocketUsernames.has(client.id)) {
+    if (!this.SocketUsernames.has(client.id) ||
+        !this.ChatUsers.has(this.SocketUsernames.get(client.id))) {
       return;
     }
     const chatuser = this.ChatUsers.get(this.SocketUsernames.get(client.id));
@@ -107,7 +105,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       chatuser.removeUserFromAllRooms();
       this.ChatUsers.delete(chatuser.username);
     }
+    if (!this.ClientIDSockets.has(client.id)) {
+      return;
+    }
     this.ClientIDSockets.delete(client.id);
+    // Navigate to logout !!!
+    client.disconnect();
+    console.log(`NestJS Chat handleDisconnect: Client disconnected: ${client.id}`);
   }
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
@@ -523,4 +527,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.to("@" + user.username).emit('closeInvitationModal');
   }
 
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  @SubscribeMessage('getFriendlist')
+  async handleGetFriendList(@MessageBody() getFriendListDto: GetFriendListDto, @ConnectedSocket() client: Socket) {
+    const { userID } = getFriendListDto;
+    try {
+      const friendList = await this.userService.getFriends(userID);
+      const friendListWithStatus = friendList.map(friend => {
+        const isOnline = this.ChatUsers.has(friend.username);
+        return {
+          ...friend,
+          online: isOnline
+        };
+      });
+      console.log(friendListWithStatus);
+      client.emit('friendlistStatus', friendListWithStatus);
+    } catch (error) {
+      console.log('Error retrieving friendlist.');
+    }
+  }
 }

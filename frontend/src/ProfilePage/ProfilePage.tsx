@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './ProfilePage.css';
 import { useParams } from 'react-router-dom';
 import { Constants } from '../../shared/constants';
+import { Socket } from 'socket.io-client';
 
 interface Match {
   id: string;
@@ -17,9 +18,20 @@ interface Achievement {
 	name: string;
 }
 
-const ProfilePage: React.FC = () => {
+interface Friend {
+	id: number;
+	username: string;
+	online: boolean;
+}
+
+interface ProfileProps {
+  socket: Socket;
+}
+
+const ProfilePage: React.FC<ProfileProps> = ({ socket }) => {
   const { id } = useParams<{ id: string }>();
   const [matchHistory, setMatchHistory] = useState<Match[]>([]);
+  const [friendList, setFriendList] = useState<Friend[]>([]);
   const [achievementList, setAchievementList] = useState<Achievement[]>([]);
 
   async function fetchMatchHistory(playerID: string) {
@@ -31,31 +43,36 @@ const ProfilePage: React.FC = () => {
       },
     });
     const result = await response.json();
+    socket.emit('getFriendlist', { userID: parseInt(playerID) });
     return result;
-	}
-	
-	useEffect(() => {
-		async function loadMatchHistory() {
-			console.log('Loading match history for player:', id);
-			if (id) {
-				try {
-					console.log('Trying to fetch match history for: ', id);
-					const history = await fetchMatchHistory(id);
-					setMatchHistory(history);
-				} catch (error) {
-					console.error('Error fetching match history:', error);
-				}
+}
+
+useEffect(() => {
+	async function loadMatchHistory() {
+		console.log('Loading match history for player:', id);
+		if (id) {
+			try {
+				console.log('Trying to fetch match history for: ', id);
+				const history = await fetchMatchHistory(id);
+				setMatchHistory(history);
+			} catch (error) {
+				console.error('Error fetching match history:', error);
 			}
 		}
-		
-		loadMatchHistory();
-	}, [id]);
+	}
+	
+	socket.on('friendlistStatus', (data: Friend[]) => {
+	  setFriendList(data);
+	});
 
-	async function fetchAchievementList(playerID: string) {
-		console.log('fetching achievements for player:', playerID);
-		const response = await fetch(`${Constants.FRONTEND_HOST_URL}/achievement/${playerID}/AchievementSync`, {
-			method: 'POST',
-			headers: {
+	loadMatchHistory();
+}, [id]);
+
+async function fetchAchievementList(playerID: string) {
+	console.log('fetching achievements for player:', playerID);
+	const response = await fetch(`${Constants.FRONTEND_HOST_URL}/achievement/${playerID}/AchievementSync`, {
+		method: 'POST',
+		headers: {
 			  'Content-Type': 'application/json',
 			},
 		  });
@@ -79,7 +96,7 @@ const ProfilePage: React.FC = () => {
 
 		loadAchievementList();
 	}, [id]);
-
+	
   return (
     <div className="profile_container">
       <div className="profile_header">
@@ -88,18 +105,16 @@ const ProfilePage: React.FC = () => {
       <div className="profile_content">
         <div className="profile_section profile_friends">
           <h2>Profile Friends</h2>
-          <div className="friend_item">
-            <span className="status_circle offline"></span>
-            <h3>Friend_1</h3>
-          </div>
-          <div className="friend_item">
-            <span className="status_circle offline"></span>
-            <h3>Friend_2</h3>
-          </div>
-          <div className="friend_item">
-            <span className="status_circle online"></span>
-            <h3>Friend_3</h3>
-          </div>
+          <ul>
+            {friendList.map(friend => (
+              <li key={friend.id}>
+                <div className="friend_item">
+                  <span className={`status_circle ${friend.online ? 'online' : 'offline'}`}></span>
+                  <h3>{friend.username}</h3>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="profile_section profile_av">
           <h2>Achievements</h2>
