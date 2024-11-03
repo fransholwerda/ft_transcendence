@@ -5,7 +5,7 @@ export enum ChannelType {
   }
 
 export enum ActionType {
-  Profile,
+  Profile = 0,
   Invite,
   Ignore,
   Kick,
@@ -14,5 +14,6 @@ export enum ActionType {
   Ban,
   Promote,
   Demote,
-  AddFriend
+  AddFriend,
+  RemoveFriend
 }

@@ -12,9 +12,6 @@ import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import * as cookie from 'cookie';
 
-
-// HASH ALL PASSWORDS !!!
-
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -504,6 +501,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           console.log(user.username + ' has added ' + target.username + ' to their friendlist.');
         } catch (error) {
           client.emit('chatAlert', { message: 'Adding friend failed.' });
+        }
+        break;
+      case ActionType.RemoveFriend:
+        try {
+          await this.userService.removeFriend(user.id, target.id);
+          console.log(user.username + ' has removed ' + target.username + ' to their friendlist.');
+        } catch (error) {
+          client.emit('chatAlert', { message: 'Removing friend failed.' });
         }
         break;
       case ActionType.Invite:
