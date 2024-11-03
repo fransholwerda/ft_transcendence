@@ -3,6 +3,7 @@ import './ProfilePage.css';
 import { useParams } from 'react-router-dom';
 import { Constants } from '../../shared/constants';
 import { Socket } from 'socket.io-client';
+import { ActionType } from '../chat/chat.enum';
 
 interface Match {
   id: string;
@@ -45,30 +46,30 @@ const ProfilePage: React.FC<ProfileProps> = ({ socket }) => {
     const result = await response.json();
     socket.emit('getFriendlist', { userID: parseInt(playerID) });
     return result;
-}
+  }
 
-useEffect(() => {
-	async function loadMatchHistory() {
-		console.log('Loading match history for player:', id);
-		if (id) {
-			try {
-				console.log('Trying to fetch match history for: ', id);
-				const history = await fetchMatchHistory(id);
-				setMatchHistory(history);
-			} catch (error) {
-				console.error('Error fetching match history:', error);
-			}
-		}
-	}
-	
-	socket.on('friendlistStatus', (data: Friend[]) => {
-	  setFriendList(data);
-	});
+  useEffect(() => {
+    async function loadMatchHistory() {
+      console.log('Loading match history for player:', id);
+      if (id) {
+        try {
+          console.log('Trying to fetch match history for: ', id);
+          const history = await fetchMatchHistory(id);
+          setMatchHistory(history);
+        } catch (error) {
+          console.error('Error fetching match history:', error);
+        }
+      }
+    }
+    
+    socket.on('friendlistStatus', (data: Friend[]) => {
+      setFriendList(data);
+    });
 
-	loadMatchHistory();
-}, [id]);
+    loadMatchHistory();
+  }, [id]);
 
-async function fetchAchievementList(playerID: string) {
+  async function fetchAchievementList(playerID: string) {
 	console.log('fetching achievements for player:', playerID);
 	const response = await fetch(`${Constants.FRONTEND_HOST_URL}/achievement/${playerID}/AchievementSync`, {
 		method: 'POST',
@@ -79,6 +80,10 @@ async function fetchAchievementList(playerID: string) {
 		  const result = await response.json();
 		  return result;
 	}
+
+  const handleRemoveFriend = (friendName: string) => {
+    socket.emit('actionUser', { targetUser: friendName, action: ActionType.RemoveFriend });
+  };
 	
 	useEffect(() => {
 		async function loadAchievementList() {
@@ -111,6 +116,9 @@ async function fetchAchievementList(playerID: string) {
                 <div className="friend_item">
                   <span className={`status_circle ${friend.online ? 'online' : 'offline'}`}></span>
                   <h3>{friend.username}</h3>
+                  <button onClick={() => handleRemoveFriend(friend.username)} className="remove_button">
+                    X
+                  </button>
                 </div>
               </li>
             ))}
