@@ -21,5 +21,6 @@ export enum ActionType {
   Unmute,
   Ban,
   Promote,
-  Demote
+  Demote,
+  AddFriend
 }

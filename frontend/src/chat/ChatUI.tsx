@@ -224,6 +224,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user, ignoreList }) => {
       case ActionType.Profile:
         socket.emit('actionUser', { targetUser: username, action: action });
         break;
+      case ActionType.AddFriend:
+            socket.emit('actionUser', { targetUser: username, action: action });
+            break;
       case ActionType.Invite:
         socket.emit('actionUser', { targetUser: username, action: action });
         break;
@@ -350,6 +353,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user, ignoreList }) => {
                           {activeType === 'channel' ? (
                             <>
                               <button onClick={() => handleUserAction(ActionType.Profile, msg.username)}>Profile</button>
+                              <button onClick={() => handleUserAction(ActionType.AddFriend, msg.username)}>Add Friend</button>
                               <button onClick={() => handleUserAction(ActionType.Invite, msg.username)}>Invite</button>
                               <button onClick={() => handleUserAction(ActionType.Ignore, msg.username)}>Ignore</button>
                               <button onClick={() => handleUserAction(ActionType.Kick, msg.username)}>Kick</button>
@@ -362,6 +366,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user, ignoreList }) => {
                           ) : (
                             <>
                               <button onClick={() => handleUserAction(ActionType.Profile, msg.username)}>Profile</button>
+                              <button onClick={() => handleUserAction(ActionType.AddFriend, msg.username)}>Add Friend</button>
                               <button onClick={() => handleUserAction(ActionType.Invite, msg.username)}>Invite</button>
                               <button onClick={() => handleUserAction(ActionType.Ignore, msg.username)}>Ignore</button>
                             </>
