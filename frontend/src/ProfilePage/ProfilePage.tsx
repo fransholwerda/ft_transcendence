@@ -95,10 +95,14 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
 	}
 
   const handleRemoveFriend = (friendName: string) => {
+    const tempFriendList = friendList.filter(friend => friend.username !== friendName);
+    setFriendList(tempFriendList);
     socket.emit('actionUser', { targetUser: friendName, action: ActionType.RemoveFriend });
   };
 
   const handleRemoveBlock = (blockName: string) => {
+    const tempBlockList = blockList.filter(block => block.username !== blockName);
+    setBlockList(tempBlockList);
     socket.emit('actionUser', { targetUser: blockName, action: ActionType.RemoveBlock });
   };
 	
