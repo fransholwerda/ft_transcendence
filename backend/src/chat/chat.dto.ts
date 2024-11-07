@@ -126,3 +126,9 @@ export class GetFriendListDto {
   @IsNotEmpty({ message: 'No empty ID numbers.' })
   userID: number;
 }
+
+export class GetBlockListDto {
+  @IsNumber()
+  @IsNotEmpty({ message: 'No empty ID numbers.' })
+  userID: number;
+}

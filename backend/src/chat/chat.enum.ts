@@ -23,5 +23,6 @@ export enum ActionType {
   Promote,
   Demote,
   AddFriend,
-  RemoveFriend
+  RemoveFriend,
+  RemoveBlock
 }

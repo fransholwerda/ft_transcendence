@@ -104,6 +104,11 @@
   align-items: center;
 }
 
+.block_item {
+  display: flex;
+  align-items: center;
+}
+
 .status_circle {
   width: 0.47vw;
   height: 0.47vw;
