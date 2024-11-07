@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Constants } from '../../shared/constants';
 import { Socket } from 'socket.io-client';
 import { ActionType } from '../chat/chat.enum';
+import { User } from '../PageManager';
 
 interface Match {
   id: string;
@@ -26,10 +27,11 @@ interface Friend {
 }
 
 interface ProfileProps {
+  user: User;
   socket: Socket;
 }
 
-const ProfilePage: React.FC<ProfileProps> = ({ socket }) => {
+const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
   const { id } = useParams<{ id: string }>();
   const [matchHistory, setMatchHistory] = useState<Match[]>([]);
   const [friendList, setFriendList] = useState<Friend[]>([]);
@@ -116,9 +118,11 @@ const ProfilePage: React.FC<ProfileProps> = ({ socket }) => {
                 <div className="friend_item">
                   <span className={`status_circle ${friend.online ? 'online' : 'offline'}`}></span>
                   <h3>{friend.username}</h3>
-                  <button onClick={() => handleRemoveFriend(friend.username)} className="remove_button">
-                    X
-                  </button>
+                  {user.id === Number(id) && (
+                    <button onClick={() => handleRemoveFriend(friend.username)} className="remove_button">
+                      X
+                    </button>
+                  )}
                 </div>
               </li>
             ))}
