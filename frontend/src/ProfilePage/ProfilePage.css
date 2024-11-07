@@ -61,6 +61,30 @@
   height: calc(var(--maingrid_content_height) - 5vh);
 }
 
+.profile_section .profile_friends {
+  display: grid;
+  /* 50% top, 50% bottom */
+  grid-template-rows: 50% 50%;
+  /* 100% left */
+  grid-template-columns: 100%;
+  /* 100% width */
+  width: 100%;
+  /* 100% height */
+  height: 100%;
+}
+
+.friends_display {
+  background-color: red;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.blocked_display {
+  background-color: green;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
 .profile_section p {
   font-size: 0.625vw;
   color: #070000;

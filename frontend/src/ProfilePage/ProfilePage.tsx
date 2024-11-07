@@ -111,22 +111,27 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
       </div>
       <div className="profile_content">
         <div className="profile_section profile_friends">
-          <h2>Profile Friends</h2>
-          <ul>
-            {friendList.map(friend => (
-              <li key={friend.id}>
-                <div className="friend_item">
-                  <span className={`status_circle ${friend.online ? 'online' : 'offline'}`}></span>
-                  <h3>{friend.username}</h3>
-                  {user.id === Number(id) && (
-                    <button onClick={() => handleRemoveFriend(friend.username)} className="remove_button">
-                      X
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="friends_display">
+            <h2>Friends</h2>
+            <ul>
+              {friendList.map(friend => (
+                <li key={friend.id}>
+                  <div className="friend_item">
+                    <span className={`status_circle ${friend.online ? 'online' : 'offline'}`}></span>
+                    <h3>{friend.username}</h3>
+                    {user.id === Number(id) && (
+                      <button onClick={() => handleRemoveFriend(friend.username)} className="remove_button">
+                        X
+                      </button>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="blocked_display">
+            <h2>Blocked</h2>
+          </div>
         </div>
         <div className="profile_section profile_av">
           <h2>Achievements</h2>
