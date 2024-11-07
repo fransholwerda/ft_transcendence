@@ -218,5 +218,3 @@ const PageManager: React.FC = () => {
 };
 
 export default PageManager;
-// over multiple lines
-// profile/id
