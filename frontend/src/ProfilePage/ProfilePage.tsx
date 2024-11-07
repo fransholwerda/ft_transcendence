@@ -161,12 +161,12 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
             <p>No match history available.</p>
           )}
         </div>
-		<div className="profile_section profile_achievements">
+		    <div className="profile_section profile_achievements">
           <h2>Achievements</h2>
           {achievementList.length > 0 ? (
             achievementList.map((achievement) => (
               <div>
-				<p> {achievement.id} </p>
+				        <p> {achievement.id} </p>
               </div>
             ))
           ) : (
