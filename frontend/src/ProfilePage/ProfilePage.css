@@ -63,26 +63,25 @@
 
 .profile_section .profile_friends {
   display: grid;
-  /* 50% top, 50% bottom */
-  grid-template-rows: 50% 50%;
-  /* 100% left */
-  grid-template-columns: 100%;
-  /* 100% width */
+  grid-template-rows: 1fr 1fr;
   width: 100%;
-  /* 100% height */
   height: 100%;
 }
 
 .friends_display {
-  background-color: red;
+  /* background-color: red; */
   overflow-y: auto;
-  max-height: 100%;
+  min-height: calc((var(--maingrid_content_height) - 5vh)/2);
+  max-height: calc((var(--maingrid_content_height) - 5vh)/2);
+  height: calc((var(--maingrid_content_height) - 5vh)/2); 
 }
 
 .blocked_display {
-  background-color: green;
+  /* background-color: green; */
   overflow-y: auto;
-  max-height: 100%;
+  min-height: calc((var(--maingrid_content_height) - 5vh)/2);
+  max-height: calc((var(--maingrid_content_height) - 5vh)/2);
+  height: calc((var(--maingrid_content_height) - 5vh)/2);
 }
 
 .profile_section p {
