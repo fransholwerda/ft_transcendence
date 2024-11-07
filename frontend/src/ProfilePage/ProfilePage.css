@@ -61,6 +61,29 @@
   height: calc(var(--maingrid_content_height) - 5vh);
 }
 
+.profile_section .profile_friends {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+}
+
+.friends_display {
+  /* background-color: red; */
+  overflow-y: auto;
+  min-height: calc((var(--maingrid_content_height) - 5vh)/2);
+  max-height: calc((var(--maingrid_content_height) - 5vh)/2);
+  height: calc((var(--maingrid_content_height) - 5vh)/2); 
+}
+
+.blocked_display {
+  /* background-color: green; */
+  overflow-y: auto;
+  min-height: calc((var(--maingrid_content_height) - 5vh)/2);
+  max-height: calc((var(--maingrid_content_height) - 5vh)/2);
+  height: calc((var(--maingrid_content_height) - 5vh)/2);
+}
+
 .profile_section p {
   font-size: 0.625vw;
   color: #070000;
@@ -77,6 +100,11 @@
 }
 
 .friend_item {
+  display: flex;
+  align-items: center;
+}
+
+.block_item {
   display: flex;
   align-items: center;
 }

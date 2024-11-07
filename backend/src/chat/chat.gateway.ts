@@ -3,7 +3,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnG
 import { Server, Socket } from 'socket.io';
 import { ChatUser, ChatRoom } from './chat.types'
 import { ChatRoomEnum, ChannelType, ActionType } from './chat.enum';
-import { ActionUserDto, ChannelActionUserDto, ChannelInviteUserDto, GetFriendListDto, JoinChannelDto, JoinChatDto, JoinDmDto, LeaveChannelDto, SendMessageDto, SetChannelTypeDto } from './chat.dto';
+import { ActionUserDto, ChannelActionUserDto, ChannelInviteUserDto, GetFriendListDto, GetBlockListDto, JoinChannelDto, JoinChatDto, JoinDmDto, LeaveChannelDto, SendMessageDto, SetChannelTypeDto } from './chat.dto';
 import { WsValidationExceptionFilter } from './exception';
 import { UsersModule } from 'src/users/users.module';
 import { FriendsModule } from 'src/friends/friends.module';
@@ -506,9 +506,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       case ActionType.RemoveFriend:
         try {
           await this.userService.removeFriend(user.id, target.id);
-          console.log(user.username + ' has removed ' + target.username + ' to their friendlist.');
+          console.log(user.username + ' has removed ' + target.username + ' from their friendlist.');
         } catch (error) {
           client.emit('chatAlert', { message: 'Removing friend failed.' });
+        }
+        break;
+      case ActionType.RemoveBlock:
+        try {
+          await this.userService.removeBlock(user.id, target.id);
+          console.log(user.username + ' has removed ' + target.username + ' from their blocklist.');
+        } catch (error) {
+          client.emit('chatAlert', { message: 'Unblocking user failed.' });
         }
         break;
       case ActionType.Invite:
@@ -557,6 +565,26 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.emit('friendlistStatus', friendListWithStatus);
     } catch (error) {
       console.log('Error retrieving friendlist.');
+    }
+  }
+
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  @SubscribeMessage('getBlocklist')
+  async handleGetBlockList(@MessageBody() getBlockListDto: GetBlockListDto, @ConnectedSocket() client: Socket) {
+    const { userID } = getBlockListDto;
+    try {
+      const blockList = await this.userService.getBlocked(userID);
+      const blockListWithStatus = blockList.map(block => {
+        const isOnline = this.ChatUsers.has(block.username);
+        return {
+          ...block,
+          online: isOnline
+        };
+      });
+      console.log(blockListWithStatus);
+      client.emit('blocklistStatus', blockListWithStatus);
+    } catch (error) {
+      console.log('Error retrieving blocklist.');
     }
   }
 }

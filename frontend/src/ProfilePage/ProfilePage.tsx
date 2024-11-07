@@ -26,6 +26,12 @@ interface Friend {
 	online: boolean;
 }
 
+interface Block {
+	id: number;
+	username: string;
+	online: boolean;
+}
+
 interface ProfileProps {
   user: User;
   socket: Socket;
@@ -35,6 +41,7 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
   const { id } = useParams<{ id: string }>();
   const [matchHistory, setMatchHistory] = useState<Match[]>([]);
   const [friendList, setFriendList] = useState<Friend[]>([]);
+  const [blockList, setBlockList] = useState<Block[]>([]);
   const [achievementList, setAchievementList] = useState<Achievement[]>([]);
 
   async function fetchMatchHistory(playerID: string) {
@@ -47,6 +54,7 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
     });
     const result = await response.json();
     socket.emit('getFriendlist', { userID: parseInt(playerID) });
+    socket.emit('getBlocklist', { userID: parseInt(playerID) });
     return result;
   }
 
@@ -67,6 +75,9 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
     socket.on('friendlistStatus', (data: Friend[]) => {
       setFriendList(data);
     });
+    socket.on('blocklistStatus', (data: Block[]) => {
+      setBlockList(data);
+    });
 
     loadMatchHistory();
   }, [id]);
@@ -84,7 +95,15 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
 	}
 
   const handleRemoveFriend = (friendName: string) => {
+    const tempFriendList = friendList.filter(friend => friend.username !== friendName);
+    setFriendList(tempFriendList);
     socket.emit('actionUser', { targetUser: friendName, action: ActionType.RemoveFriend });
+  };
+
+  const handleRemoveBlock = (blockName: string) => {
+    const tempBlockList = blockList.filter(block => block.username !== blockName);
+    setBlockList(tempBlockList);
+    socket.emit('actionUser', { targetUser: blockName, action: ActionType.RemoveBlock });
   };
 	
 	useEffect(() => {
@@ -111,26 +130,54 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
       </div>
       <div className="profile_content">
         <div className="profile_section profile_friends">
-          <h2>Profile Friends</h2>
-          <ul>
-            {friendList.map(friend => (
-              <li key={friend.id}>
-                <div className="friend_item">
-                  <span className={`status_circle ${friend.online ? 'online' : 'offline'}`}></span>
-                  <h3>{friend.username}</h3>
-                  {user.id === Number(id) && (
-                    <button onClick={() => handleRemoveFriend(friend.username)} className="remove_button">
-                      X
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="friends_display">
+            <h2>Friends</h2>
+            <ul>
+              {friendList.map(friend => (
+                <li key={friend.id}>
+                  <div className="friend_item">
+                    <span className={`status_circle ${friend.online ? 'online' : 'offline'}`}></span>
+                    <h3>{friend.username}</h3>
+                    {user.id === Number(id) && (
+                      <button onClick={() => handleRemoveFriend(friend.username)} className="remove_button">
+                        X
+                      </button>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="blocked_display">
+            <h2>Blocked</h2>
+            <ul>
+              {blockList.map(block => (
+                <li key={block.id}>
+                  <div className="block_item">
+                    <span className={`status_circle ${block.online ? 'online' : 'offline'}`}></span>
+                    <h3>{block.username}</h3>
+                    {user.id === Number(id) && (
+                      <button onClick={() => handleRemoveBlock(block.username)} className="remove_button">
+                        X
+                      </button>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <div className="profile_section profile_av">
-          <h2>Achievements</h2>
-          <h3>Win_in_a_row_1</h3>
+        <h2>Achievements</h2>
+          {achievementList.length > 0 ? (
+            achievementList.map((achievement) => (
+              <div>
+				        <p> {achievement.id} </p>
+              </div>
+            ))
+          ) : (
+            <p>No achievements earned.</p>
+          )}
         </div>
         <div className="profile_section profile_game_history">
           <h2>Game History</h2>
@@ -159,18 +206,6 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
             ))
           ) : (
             <p>No match history available.</p>
-          )}
-        </div>
-		<div className="profile_section profile_achievements">
-          <h2>Achievements</h2>
-          {achievementList.length > 0 ? (
-            achievementList.map((achievement) => (
-              <div>
-				<p> {achievement.id} </p>
-              </div>
-            ))
-          ) : (
-            <p>No achievements earned.</p>
           )}
         </div>
       </div>

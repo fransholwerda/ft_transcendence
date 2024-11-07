@@ -87,7 +87,7 @@ const PageManager: React.FC = () => {
       TwoFactorEnabled: user.TwoFactorEnabled
     });
 
-    document.cookie = `jwt=${jwt_result.token}; path=/;`;
+    document.cookie = `jwt=${jwt_result.token}; path=/; SameSite=Lax;`;
 
     const socket = io(`${Constants.BACKEND_HOST_URL}/ft_transcendence`, {
       transports: ['websocket'],
@@ -218,5 +218,3 @@ const PageManager: React.FC = () => {
 };
 
 export default PageManager;
-// over multiple lines
-// profile/id
