@@ -52,7 +52,7 @@ const Pong: React.FC<PongProps> = ({ user, pSock }) => {
 
 	const joinQueue = () => {
 		pongPrint(`pong.tsx: Asking server to join queue: ${user.id}`);
-		pSock.emit('joinQueue', { user: user, gameMode: gameMode });
+		pSock.emit('joinQueue', { gameMode: gameMode });
 	};
 
 	const leaveQueue = () => {

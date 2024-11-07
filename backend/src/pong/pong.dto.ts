@@ -45,12 +45,6 @@ export class PongGameInviteDto {
 }
 
 export class PongJoinQueueDto {
-    @IsObject()
-    @ValidateNested()
-    @Type(() => UserDto)
-    @IsNotEmpty()
-    user: UserDto;
-
     @IsString()
     @IsNotEmpty()
     gameMode: string;
