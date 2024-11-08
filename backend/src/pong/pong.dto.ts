@@ -59,7 +59,7 @@ export class PongGameInviteDto {
 
 export class PongJoinQueueDto {
     @IsString()
-    @IsNotEmpty({ message: 'PongJoinQueueDto: gameType is empty' })
+    @IsNotEmpty({ message: 'PongJoinQueueDto: gameMode is empty' })
     gameMode: string;
 }
 
