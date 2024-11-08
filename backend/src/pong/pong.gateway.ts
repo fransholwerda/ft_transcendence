@@ -186,11 +186,15 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log('NestJS pong: invitedMatch: client.id:', client.id); // same as p2Conn.Socket.id
 		const inviterLocation = player1Client.handshake.query.currentPath;
 		console.log('NestJS pong: invitedMatch: inviterLocation:', inviterLocation);
+		
 		if (inviterLocation !== '/pong') {
 			client.emit('chatAlert', { message: 'The person who invited you is not at the pong screen' });
 			return;
 		}
-
+		//inviter has to go to /pong
+		// player1Client.emit('pongRedirect');
+		// to to the person who is invited that they have to go to /pong
+		// client.emit('pongRedirect');
 		// remove them from active game or queue
 		this.queue = removeFromQueue(this.queue, p1Conn.Socket.id);
 		this.queue = removeFromQueue(this.queue, p2Conn.Socket.id);

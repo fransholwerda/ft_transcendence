@@ -53,6 +53,10 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
       setIgnoreList(newIgnoreList);
     });
 
+    // socket.on('pongRedirect', () => {
+    //   navigate(`/pong`);
+    // });
+
     return () => {
       socket.off('chatJoined');
       socket.off('chatAlert');
@@ -60,6 +64,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
       socket.off('closeInvitationModal');
       socket.off('profilePage');
       socket.off('updateIgnoreList');
+      // socket.off('pongRedirect');
     };
   },[socket, ignoreList]);
 
@@ -81,6 +86,7 @@ const Chat: React.FC<ChatProps> = ({ user, socket }) => {
         player2Username: user.username,
         gameType: gameType
       });
+      navigate('/pong');
       // setIsInviteModalOpen(false);
       socket.emit('closeInvitationModal');
     }
