@@ -105,29 +105,24 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					user = await this.userService.findUser(payload.user);
 					console.log('NestJS pong: Authenticated user:', payload.user, 'user:', user);
 
-					// Doe je shit hier !!!
+					if (user == null) {
+						console.log("NestJS pong: user == null");
+					}
+					pongPrint(`NestJS pong: connected: ${client.id}`);
+					this.ClientIDSockets.set(client.id, client);
+					this.ClientIDPongConnections.set(client.id, { Socket: client, User: user });
 				} catch (error) {
 					console.log('NestJS pong: Invalid JWT token:', error.message);
 					client.disconnect();
-					// Navigate to logout !!!
 				}
 			} else {
 				console.log('NestJS pong: No JWT token found in cookies');
 				client.disconnect();
-				// Navigate to logout !!!
 			}
 		} else {
 			console.log('NestJS pong: No cookies found');
 			client.disconnect();
-			// Navigate to logout !!!
 		}
-		if (user == null) {
-			console.log("NestJS pong: user == null");
-			// Doe je shit hier !!!
-		}
-		pongPrint(`NestJS pong: connected: ${client.id}`);
-		this.ClientIDSockets.set(client.id, client);
-		this.ClientIDPongConnections.set(client.id, { Socket: client, User: user });
 	}
 
 	handleDisconnect(client: Socket) {

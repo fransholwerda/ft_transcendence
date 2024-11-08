@@ -3,12 +3,17 @@ services:
  postgres:
   container_name: postgres
   image: postgres:latest
-  environment: #              !!!!!!!!!!!!!!CONVERT THIS TO AN ENV FILE LATER!!!!!!!!!!!!!
-    - POSTGRES_HOST=postgres
-    - POSTGRES_PORT=5432
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=postpass
-    - POSTGRES_DB=postgres
+  environment:
+    - POSTGRES_HOST=$(POSTGRES_HOST)
+    - POSTGRES_PORT=$(POSTGRES_PORT)
+    - POSTGRES_USER=$(POSTGRES_USER)
+    - POSTGRES_PASSWORD=$(POSTGRES_PASSWORD)
+    - POSTGRES_DB=$(POSTGRES_DB)
+    # - POSTGRES_HOST=postgres
+    # - POSTGRES_PORT=5432
+    # - POSTGRES_USER=postgres
+    # - POSTGRES_PASSWORD=postpass
+    # - POSTGRES_DB=postgres
   ports:
     - 5432:5432
   restart: always
@@ -18,20 +23,20 @@ services:
   networks:
     - db
 
- pgadmin:
-  container_name: pgadmin
-  image: dpage/pgadmin4
-  depends_on:
-    - postgres
-  ports:
-    - 8888:80
-  environment: 
-    - PGADMIN_DEFAULT_EMAIL=username@domain.com
-    - PGADMIN_DEFAULT_PASSWORD=password
-  volumes:
-    - ./database/pgadmin:/data/pgadmin
-  networks:
-    - db
+#  pgadmin:
+#   container_name: pgadmin
+#   image: dpage/pgadmin4
+#   depends_on:
+#     - postgres
+#   ports:
+#     - 8888:80
+#   environment: 
+#     - PGADMIN_DEFAULT_EMAIL=username@domain.com
+#     - PGADMIN_DEFAULT_PASSWORD=password
+#   volumes:
+#     - ./database/pgadmin:/data/pgadmin
+#   networks:
+#     - db
 
 # !!!!!UNCOMMENTING THE ABOVE WILL CREATE AN ADDITIONAL CONTAINER RUNNING PGADMIN IN CASE YOU WANT
 # TO HAVE A GUI WHEN WORKING WITH THE DATABASE !!!!!!
