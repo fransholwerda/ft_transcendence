@@ -4,6 +4,7 @@ import './ChatUI.css';
 import { User } from '../PageManager';
 import Popup from 'reactjs-popup';
 import { ActionType, ChannelType } from './chat.enum';
+import { useNavigate } from 'react-router-dom';
 
 interface Tab {
   id: number;
@@ -30,6 +31,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user, ignoreList }) => {
   const [messages, setMessages] = useState<{ channel: string, message: string, username: string }[]>([]);
   const [currentMessage, setCurrentMessage] = useState<string>('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     socket.on('channelCreated', ({ channel }: { channel: string }) => {
@@ -228,6 +230,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ socket, user, ignoreList }) => {
             socket.emit('actionUser', { targetUser: username, action: action });
             break;
       case ActionType.Invite:
+        navigate('/pong');
         socket.emit('actionUser', { targetUser: username, action: action });
         break;
       case ActionType.Ignore:
