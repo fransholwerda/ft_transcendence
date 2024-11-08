@@ -106,49 +106,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       return;
     }
     this.ClientIDSockets.delete(client.id);
-    // Navigate to logout !!!
     client.disconnect();
     console.log(`NestJS Chat handleDisconnect: Client disconnected: ${client.id}`);
-  }
-
-  @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
-  @SubscribeMessage('joinChat')
-  async handleJoinChat(@MessageBody() joinChatDto: JoinChatDto, @ConnectedSocket() client: Socket) {
-    const { userId, username } = joinChatDto;
-
-    // DELETE LATER vvv (once cookie identification is implemented) !!!
-    // this.SocketUsernames.set(client.id, username);
-    // console.log('SocketID to Username: ' + client.id + ' = ' + this.SocketUsernames.get(client.id));
-    // DELETE LATER ^^^
-
-    // console.log('userid: ' + userId);
-
-    // if (!this.ChatUsers.has(username)) {
-    //   // User is connecting for the first time
-    //   this.ChatUsers.set(username, new ChatUser(userId, username));
-    // }
-
-    // const chatuser = this.ChatUsers.get(username);
-    // if (chatuser) {
-    //   chatuser.addClientID(client.id);
-    // }
-    // client.join('@' + username);
-    // client.emit('chatJoined');
-    // // if (!this.ChatRooms.has('@' + username)) {
-    // //   this.ChatRooms.set('@' + username, new ChatRoom('@' + username, [chatuser]));
-    // // }
-
-    // Give client the ignore list of the user
-    // const blockedList = await this.userService.getBlocked(chatuser.id);
-    // let ignoreList = blockedList.map(user => user.username);
-    // client.emit('updateIgnoreList', ignoreList);
-
-    // // Give client all the channels the user is in
-    // for (const room of chatuser.rooms) {
-    //   await delay(10);
-    //   await client.join(room.roomId);
-    //   client.emit('channelJoined', { channel: room.roomId });
-    // }
   }
 
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
@@ -232,16 +191,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         } catch (error) {
           console.log('Invalid JWT token:', error.message);
           client.disconnect();
-          // Navigate to logout !!!
         }
       }
     } else {
-      // Navigate to logout !!!
+      client.disconnect();
     }
 
-    // ADD USER CHECK TO DATABASE !!!
-    // IS TARGETUSER BLOCKED? !!!
-    // DID TARGETUSER BLOCK YOU? !!!
     if (!this.ChatUsers.has(targetUser)) {
       client.emit('chatAlert', { message: 'Target user is not online or does not exist.' });
       return;
@@ -289,7 +244,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('setChannelType')
   handleSetChannelType(@MessageBody() setChannelTypeDto: SetChannelTypeDto, @ConnectedSocket() client: Socket) {
-    // Make sure channel name has proper characters in it !!!
     const { channel, type, password } = setChannelTypeDto;
 
     if (!this.ChatRooms.has(channel)) {
@@ -346,7 +300,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
   @SubscribeMessage('channelInviteUser')
   async handleChannelInviteUser(@MessageBody() channelInviteUserDto: ChannelInviteUserDto, @ConnectedSocket() client: Socket) {
-    // Make sure channel name has proper characters in it !!!
     const { channel, userInvite } = channelInviteUserDto;
 
     if (!this.ChatRooms.has(channel)) {
