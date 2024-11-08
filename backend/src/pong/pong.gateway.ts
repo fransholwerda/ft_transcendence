@@ -294,7 +294,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		printGames(this.games);
 	}
 	
-	// handleMovePaddle(client: Socket, data: { direction: string  }) {
 	@UsePipes(new ValidationPipe({ whitelist: true, transform: true}))
 	@SubscribeMessage('movePaddle')
 	handleMovePaddle(@MessageBody() PongMovePaddleDto: PongMovePaddleDto, @ConnectedSocket() client: Socket) {
@@ -332,7 +331,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return null;
 	}
 
-	// print all and calc more
 	private modifyBallSpeed(b: Ball, collisionPercentage: number) {
 		console.log(`-----------------BALLMOD--------------`);
 		let absSpeedX = Math.abs(b.speedX);
