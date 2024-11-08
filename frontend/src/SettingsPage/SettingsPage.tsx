@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import './SettingsPage.css';  // Import the CSS file
 import { Constants } from '../../shared/constants';
 import { User } from '../PageManager.tsx';
+import { useNavigate } from 'react-router-dom';
 
 interface SettingsPageProps {
   user: User;
+  onLogout: () => void;
 }
 
-const SettingsPage: React.FC<SettingsPageProps> = ({ user }) => {
+const SettingsPage: React.FC<SettingsPageProps> = ({ user, onLogout }) => {
   const [currentAvatar, setCurrentAvatar] = useState<string>(user.avatarURL);
   const [currentUsername, setCurrentUsername] = useState<string>(user.username);
   const [twoStepSecret, setTwoStepSecret] = useState<any>({});
   const [verificationCode, setVerificationCode] = useState<string>('');
   const [hasGeneratedCode, setHasGeneratedCode] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentAvatar(e.target.value);
@@ -106,6 +109,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user }) => {
               "Content-Type": "application/json"
           }
       });
+      onLogout();
+      navigate('/');
   }
 
   return (
