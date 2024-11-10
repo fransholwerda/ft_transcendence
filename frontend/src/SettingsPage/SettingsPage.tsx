@@ -21,6 +21,27 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, onLogout }) => {
     setCurrentAvatar(e.target.value);
   };
 
+  function validateUsername(str: string): boolean {
+    if (!str) {
+      alert('A name is required.');
+      return false;
+    }
+    if (typeof str !== 'string') {
+      alert('Name must be a string.');
+      return false;
+    }
+    if (str.length < 2 || str.length > 30) {
+      alert('Name must be between 2 and 30 characters.');
+      return false;
+    }
+    const strPattern = /^[a-zA-Z0-9-]+$/;
+    if (!strPattern.test(str)) {
+      alert('str can only contain letters, numbers, and hyphens.');
+      return false;
+    }
+    return true;
+  }
+
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentUsername(e.target.value);
   };
@@ -99,18 +120,20 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, onLogout }) => {
   }
 
   async function applyChanges() {
-      await fetch(`${Constants.FRONTEND_HOST_URL}/user/${user.id}`, {
-          method: 'PATCH',
-          body: JSON.stringify({
-              "username": currentUsername,
-              "avatarURL": currentAvatar
-          }),
-          headers: {
-              "Content-Type": "application/json"
-          }
-      });
-      onLogout();
-      navigate('/');
+    if (!validateUsername(currentUsername))
+      return ;
+    await fetch(`${Constants.FRONTEND_HOST_URL}/user/${user.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            "username": currentUsername,
+            "avatarURL": currentAvatar
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    onLogout();
+    navigate('/');
   }
 
   return (
