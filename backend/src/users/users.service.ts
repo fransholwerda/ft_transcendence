@@ -156,4 +156,8 @@ export class UsersService {
 
 		return blockedUsers.map(entry => entry.blockedUser);
 	}
+
+	async winMatch(userID: number) {
+		await this.userRepository.update(userID, { matchesWon: () => 'matchesWon + 1'});
+	}
 }

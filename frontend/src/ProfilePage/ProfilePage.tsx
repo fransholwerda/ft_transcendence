@@ -17,6 +17,7 @@ interface Match {
 
 interface Achievement {
 	id: number;
+	achievement: Achievement
 	name: string;
 }
 
@@ -168,16 +169,17 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
           </div>
         </div>
         <div className="profile_section profile_av">
-        <h2>Achievements</h2>
-          {achievementList.length > 0 ? (
-            achievementList.map((achievement) => (
-              <div>
-				        <p> {achievement.id} </p>
-              </div>
-            ))
-          ) : (
-            <p>No achievements earned.</p>
-          )}
+		{achievementList.length > 0 ? (
+			achievementList.map((achievement) => (
+				<div key={achievement.id}>
+					<p>ID: {achievement.achievement.id}</p>
+					<p>Name: {achievement.achievement.name}</p>
+					<p> --------------------</p>
+				</div>
+			))
+			) : (
+			<p>No achievements earned.</p>
+			)}
         </div>
         <div className="profile_section profile_game_history">
           <h2>Game History</h2>

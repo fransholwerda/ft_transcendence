@@ -119,4 +119,9 @@ export class UsersController {
 	const result = await this.usersService.getBlocked(+userID);
 	return result;
   }
+
+  @Post(':UserID/wonMatch')
+  async matchWon(@Param('UserID') userID: number) {
+	await this.usersService.winMatch(userID);
+  }
 }
