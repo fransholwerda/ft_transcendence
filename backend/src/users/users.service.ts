@@ -10,12 +10,14 @@ import { Friendship } from 'src/friends/entity/friends.entity';
 import { FriendshipRepository } from 'src/friends/friends.repository';
 import { BlockedRepository } from 'src/ignores/ignores.repostiory';
 import { Blocked } from 'src/ignores/entities/ignores.entity';
+import { MatchRepository } from 'src/matches/matches.repository';
 
 @Injectable()
 export class UsersService {
 	constructor(@InjectRepository(User) public userRepository: UserRepository,
 	@InjectRepository(Friendship) private friendshipRepository: FriendshipRepository,
-	@InjectRepository(Blocked) private blockedRepository: BlockedRepository
+	@InjectRepository(Blocked) private blockedRepository: BlockedRepository,
+	@InjectRepository(MatchRepository) private matchRepository: MatchRepository
 	){}
 
 	//This function should create a User in User Entity. the createUserData paramater will create an object
@@ -60,8 +62,28 @@ export class UsersService {
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
 	const existingUser =  await this.findUser(id);
+	const oldName = existingUser.username;
 	const updatedUserData = this.userRepository.merge(existingUser, updateUserDto);
+	const newName = updatedUserData.username;
+	this.updateMatchUsername(oldName, newName);
 	return await this.userRepository.save(updatedUserData);
+  }
+
+  async updateMatchUsername(oldName: string, newName: string): Promise<void> {
+	const matches = await this.matchRepository.createQueryBuilder('match')
+	.where( 'match.player1 = :oldName OR match.player2 = :oldName', { oldName })
+	.getMany();
+
+	for (const match of matches) {
+		if (match.player1 === oldName)
+			match.player1 = newName;
+		else
+			match.player2 = newName;
+		if (match.winner === oldName)
+			match.winner = newName;
+	}
+	await this.matchRepository.save(matches);
+	return;
   }
 
   async addFriend(userID: number, friendID: number): Promise<void> {
