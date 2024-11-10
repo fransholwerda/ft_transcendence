@@ -36,10 +36,10 @@ export class AchievementService {
         }
 		// if (await this.hasAchievement(userID, achievementName) == false) {
 		// 	console.log("user granted achievement: ", achievementName);
-			return this.userAchievementRepository.save(userAchievement);
+		// 	return this.userAchievementRepository.save(userAchievement);
 		// }
 		// else
-		// 	return;
+			return;
     }
     
     async assignAllAchievements(userID: number): Promise<UserAchievement[]> {
@@ -75,30 +75,30 @@ export class AchievementService {
         return this.achievementRepository.findOne({where: {name: name}});
     }
 
-// 	private async hasAchievement(userID: number, achievementName: string): Promise<Boolean> {
-// 		try {
-// 		const user = await this.userAchievementRepository.findOne({where: { id: userID } });
-// 		if (!user) {
-// 			throw new Error('User not found');
-// 		}
+	// private async hasAchievement(userID: number, achievementName: string): Promise<Boolean> {
+	// 	try {
+	// 	const user = await this.userAchievementRepository.findOne({where: { userId: userID } });
+	// 	if (!user) {
+	// 		throw new Error('User not found');
+	// 	}
 
-// 		const achievement = await this.achievementRepository.findOne({where: { name: achievementName}});
-// 		if (!achievement) {
-// 			throw new Error ('Achievement not found');
-// 		}
+	// 	const achievement = await this.achievementRepository.findOne({where: { name: achievementName}});
+	// 	if (!achievement) {
+	// 		throw new Error ('Achievement not found');
+	// 	}
 
-// 		const userAchievement = await this.userRepository
-// 		.createQueryBuilder('user')
-// 		.leftJoinAndSelect('user.achievements', 'ua')
-// 		.leftJoinAndSelect('ua.achievment', 'a')
-// 		.where('user.id = :userID', {userID})
-// 		.andWhere('a.name = :achievementName', {achievementName})
-// 		.getOne();
+	// 	const userAchievement = await this.userRepository
+	// 	.createQueryBuilder('user')
+	// 	.leftJoinAndSelect('user.achievements', 'ua')
+	// 	.leftJoinAndSelect('ua.achievement', 'a')
+	// 	.where('user.id = :userID', {userID})
+	// 	.andWhere('a.name = :achievementName', {achievementName})
+	// 	.getOne();
 
-// 		return !!userAchievement;
-// 		} catch (error) {
-// 			console.error('Error in Achievement checking:', error);
-// 			throw error;
-// 		}
-// 	}
+	// 	return !!userAchievement;
+	// 	} catch (error) {
+	// 		console.error('Error in Achievement checking:', error);
+	// 		throw error;
+	// 	}
+	// }
 }
