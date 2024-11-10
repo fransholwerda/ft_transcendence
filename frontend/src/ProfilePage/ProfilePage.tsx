@@ -178,8 +178,8 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
   return (
     <div className="profile_container">
       <div className="profile_header">
-        <div className="profile_header_item">
-          <h1>Hello</h1>
+        <div className="profile_header_item user_avatar">
+          <img src={userAvatar} alt="avatar" />
         </div>
         <div className="profile_header_item">
           <h1>Profile of {id}</h1>

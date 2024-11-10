@@ -36,6 +36,22 @@
   width: calc((var(--maingrid_content_width) - 2vw)/3); 
 }
 
+.user_avatar {
+  min-width: 4vw;
+  max-width: 4vw;
+  width: 4vw;
+  min-height: 4vh;
+  max-height: 4vh;
+  height: 4vh; 
+  border-radius: 50%;
+}
+
+.user_avatar img {
+  width: 4vw;
+  height: 4vh;
+  border-radius: 50%;
+}
+
 .profile_header h1 {
   color: #222;
 }
