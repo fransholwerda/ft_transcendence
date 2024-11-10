@@ -8,11 +8,12 @@ import { FriendsModule } from 'src/friends/friends.module';
 import { FriendshipRepository } from 'src/friends/friends.repository';
 import { BlockedRepository } from 'src/ignores/ignores.repostiory';
 import { BlockedModule } from 'src/ignores/ignores.module';
+import { MatchRepository } from 'src/matches/matches.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), FriendsModule, BlockedModule],
   controllers: [UsersController],
-  providers: [UsersService, UserRepository, FriendshipRepository, BlockedRepository],
+  providers: [UsersService, UserRepository, FriendshipRepository, BlockedRepository, MatchRepository],
   exports: [TypeOrmModule, UsersService, UserRepository]
 })
 export class UsersModule {}
