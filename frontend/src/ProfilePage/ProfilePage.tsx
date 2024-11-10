@@ -43,6 +43,7 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
   const [friendList, setFriendList] = useState<Friend[]>([]);
   const [blockList, setBlockList] = useState<Block[]>([]);
   const [achievementList, setAchievementList] = useState<Achievement[]>([]);
+  const [userAvatar, setUserAvatar] = useState<string>(user.avatarURL);
   const [userRank, setUserRank] = useState<number | null>(null);
 
   async function fetchUserRankings() {
@@ -120,6 +121,18 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
 		  return result;
 	}
 
+  async function fetchUser(playerID: string) {
+    console.log('fetching user object from:', playerID);
+    const response = await fetch(`${Constants.FRONTEND_HOST_URL}/user/${playerID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = await response.json();
+    return result;
+  }
+
   const handleRemoveFriend = (friendName: string) => {
     const tempFriendList = friendList.filter(friend => friend.username !== friendName);
     setFriendList(tempFriendList);
@@ -146,7 +159,20 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
 			}
 		}
 
+    async function loadUserAvatar() {
+      if (id) {
+        try {
+          console.log('Loading user avatar for player:', id);
+          const user = await fetchUser(id);
+          setUserAvatar(user.avatarURL);
+        } catch (error) {
+          console.error('Error fetching user avatar:', error);
+        }
+      }
+    }
+
 		loadAchievementList();
+    loadUserAvatar();
 	}, [id]);
 	
   return (
