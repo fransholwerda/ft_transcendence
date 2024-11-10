@@ -43,6 +43,10 @@ export class MatchService {
 
 	async getUserRankings(): Promise<{ id: number, matchesWon: number }[]> {
 		const matches = await this.matchRepository.find();
+		// console.log("-----------------");
+		// console.log("the matches");
+		// console.log(matches);
+		// console.log("-----------------");
 		const userWins = new Map<number, { id: number, matchesWon: number }>();
 	
 		matches.forEach(match => {
@@ -52,9 +56,9 @@ export class MatchService {
 			if (!userWins.has(match.player2ID)) {
 				userWins.set(match.player2ID, { id: match.player2ID, matchesWon: 0 });
 			}
-			if (match.winner === match.player1) {
+			if (match.winner === match.player1ID.toString()) {
 				userWins.get(match.player1ID).matchesWon++;
-			} else if (match.winner === match.player2) {
+			} else if (match.winner === match.player2ID.toString()) {
 				userWins.get(match.player2ID).matchesWon++;
 			}
 		});
@@ -63,6 +67,10 @@ export class MatchService {
 	
 	async getUserRanking(id: number): Promise<number> {
 		const rankings = await this.getUserRankings();
+		// console.log("-----------------");
+		// console.log("getUserRanking");
+		// console.log(rankings);
+		// console.log("-----------------");
 		const userRank = rankings.findIndex(r => r.id === id);
 		return userRank + 1;
 	}
