@@ -26,6 +26,14 @@
   color: #000000;
   font-size: 0.625vw;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.profile_header_item {
+  min-width: calc((var(--maingrid_content_width) - 2vw)/3);
+  max-width: calc((var(--maingrid_content_width) - 2vw)/3);
+  width: calc((var(--maingrid_content_width) - 2vw)/3); 
 }
 
 .profile_header h1 {
