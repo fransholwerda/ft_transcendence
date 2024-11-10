@@ -152,8 +152,16 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
   return (
     <div className="profile_container">
       <div className="profile_header">
-        <h1>Profile of {id}</h1>
-        {userRank !== null && <h2>Ladder: {userRank}</h2>}
+        <div className="profile_header_item">
+          <h1>Hello</h1>
+        </div>
+        <div className="profile_header_item">
+          <h1>Profile of {id}</h1>
+        </div>
+        <div className="profile_header_item">
+          {userRank !== null && <h1>Ladder: {userRank}</h1>}
+          {userRank === null && <h1>Ladder: none</h1>}
+        </div>
       </div>
       <div className="profile_content">
         <div className="profile_section profile_friends">
