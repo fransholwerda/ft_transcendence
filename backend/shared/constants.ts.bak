@@ -1,4 +1,4 @@
-const HOST_HOSTNAME = '10.11.3.13';
+const HOST_HOSTNAME = '10.11.3.19';
 
 export class Constants {
 	public static FRONTEND_HOST_PROTOCOL = 'http://';
