@@ -40,4 +40,9 @@ export class MatchController {
             throw (error);
         }
     }
+
+	@Get('/rankings/:id')
+	async getUserRanking(@Param('id', ParseIntPipe) id: number) {
+		return await this.matchService.getUserRanking(id);
+	}
 }

@@ -44,6 +44,18 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
   const [blockList, setBlockList] = useState<Block[]>([]);
   const [achievementList, setAchievementList] = useState<Achievement[]>([]);
   const [userAvatar, setUserAvatar] = useState<string>(user.avatarURL);
+  const [userRank, setUserRank] = useState<number | null>(null);
+
+  async function fetchUserRankings() {
+    const response = await fetch(`${Constants.FRONTEND_HOST_URL}/match/rankings/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = await response.json();
+    return result;
+  }
 
   async function fetchMatchHistory(playerID: string) {
     console.log('Fetching match history for player:', playerID);
@@ -72,6 +84,19 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
         }
       }
     }
+
+    async function loadUserRankings() {
+      console.log('Loading rank for player:', id);
+      if (id) {
+        try {
+          console.log('Trying to fetch rank for: ', id);
+          const ranking = await fetchUserRankings();
+          setUserRank(ranking);
+        } catch (error) {
+          console.error('Error fetching rank:', error);
+        }
+      }
+    }
     
     socket.on('friendlistStatus', (data: Friend[]) => {
       setFriendList(data);
@@ -81,6 +106,7 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
     });
 
     loadMatchHistory();
+    loadUserRankings();
   }, [id]);
 
   async function fetchAchievementList(playerID: string) {
@@ -152,7 +178,16 @@ const ProfilePage: React.FC<ProfileProps> = ({ user, socket }) => {
   return (
     <div className="profile_container">
       <div className="profile_header">
-        <h1>Welcome to profile page of "{id}"</h1>
+        <div className="profile_header_item">
+          <h1>Hello</h1>
+        </div>
+        <div className="profile_header_item">
+          <h1>Profile of {id}</h1>
+        </div>
+        <div className="profile_header_item">
+          {userRank !== null && <h1>Ladder: {userRank}</h1>}
+          {userRank === null && <h1>Ladder: none</h1>}
+        </div>
       </div>
       <div className="profile_content">
         <div className="profile_section profile_friends">
